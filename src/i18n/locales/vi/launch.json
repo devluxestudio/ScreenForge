@@ -1,0 +1,53 @@
+{
+	"tooltips": {
+		"hideHUD": "áº¨n HUD",
+		"closeApp": "ÄÃ³ng á»©ng dá»¥ng",
+		"restartRecording": "Khá»Ÿi Ä‘á»™ng láº¡i ghi hÃ¬nh",
+		"cancelRecording": "Há»§y ghi hÃ¬nh",
+		"pauseRecording": "Táº¡m dá»«ng ghi hÃ¬nh",
+		"resumeRecording": "Tiáº¿p tá»¥c ghi hÃ¬nh",
+		"openVideoFile": "Má»Ÿ tá»‡p video",
+		"openProject": "Má»Ÿ dá»± Ã¡n",
+		"useVerticalTray": "DÃ¹ng khay dá»c",
+		"useHorizontalTray": "DÃ¹ng khay ngang"
+	},
+	"audio": {
+		"enableSystemAudio": "Báº­t Ã¢m thanh há»‡ thá»‘ng",
+		"disableSystemAudio": "Táº¯t Ã¢m thanh há»‡ thá»‘ng",
+		"enableMicrophone": "Báº­t micro",
+		"disableMicrophone": "Táº¯t micro",
+		"defaultMicrophone": "Micro Máº·c Ä‘á»‹nh"
+	},
+	"webcam": {
+		"enableWebcam": "Báº­t webcam",
+		"disableWebcam": "Táº¯t webcam",
+		"defaultCamera": "MÃ¡y áº£nh Máº·c Ä‘á»‹nh",
+		"searching": "Äang tÃ¬m kiáº¿m...",
+		"noneFound": "KhÃ´ng tÃ¬m tháº¥y mÃ¡y áº£nh",
+		"unavailable": "MÃ¡y áº£nh khÃ´ng kháº£ dá»¥ng"
+	},
+	"sourceSelector": {
+		"loading": "Äang táº£i nguá»“n...",
+		"screens": "MÃ n hÃ¬nh ({{count}})",
+		"windows": "Cá»­a sá»• ({{count}})",
+		"defaultSourceName": "MÃ n hÃ¬nh"
+	},
+	"recording": {
+		"selectSource": "Vui lÃ²ng chá»n má»™t nguá»“n Ä‘á»ƒ ghi"
+	},
+	"language": "NgÃ´n ngá»¯",
+	"systemLanguagePrompt": {
+		"title": "Sá»­ dá»¥ng ngÃ´n ngá»¯ há»‡ thá»‘ng cá»§a báº¡n?",
+		"description": "ChÃºng tÃ´i phÃ¡t hiá»‡n {{language}} lÃ  ngÃ´n ngá»¯ há»‡ thá»‘ng cá»§a báº¡n. Báº¡n cÃ³ muá»‘n chuyá»ƒn OpenScreen sang {{language}} khÃ´ng?",
+		"switch": "Chuyá»ƒn sang {{language}}",
+		"keepDefault": "Giá»¯ ngÃ´n ngá»¯ hiá»‡n táº¡i"
+	},
+	"cursor": {
+		"useEditableCursor": "DÃ¹ng con trá» cÃ³ thá»ƒ chá»‰nh sá»­a",
+		"useSystemCursor": "DÃ¹ng con trá» há»‡ thá»‘ng"
+	},
+	"keystroke": {
+		"enable": "Enable shortcut key capture",
+		"disable": "Disable shortcut key capture"
+	}
+}

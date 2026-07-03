@@ -1,0 +1,53 @@
+{
+	"tooltips": {
+		"hideHUD": "Masquer le HUD",
+		"closeApp": "Fermer l'application",
+		"restartRecording": "RedÃ©marrer l'enregistrement",
+		"cancelRecording": "Annuler l'enregistrement",
+		"pauseRecording": "Mettre en pause l'enregistrement",
+		"resumeRecording": "Reprendre l'enregistrement",
+		"openVideoFile": "Ouvrir un fichier vidÃ©o",
+		"openProject": "Ouvrir un projet",
+		"useVerticalTray": "Utiliser la barre verticale",
+		"useHorizontalTray": "Utiliser la barre horizontale"
+	},
+	"audio": {
+		"enableSystemAudio": "Activer l'audio systÃ¨me",
+		"disableSystemAudio": "DÃ©sactiver l'audio systÃ¨me",
+		"enableMicrophone": "Activer le microphone",
+		"disableMicrophone": "DÃ©sactiver le microphone",
+		"defaultMicrophone": "Microphone par dÃ©faut"
+	},
+	"webcam": {
+		"enableWebcam": "Activer la webcam",
+		"disableWebcam": "DÃ©sactiver la webcam",
+		"defaultCamera": "CamÃ©ra par dÃ©faut",
+		"searching": "Recherche en cours...",
+		"noneFound": "Aucune camÃ©ra trouvÃ©e",
+		"unavailable": "CamÃ©ra non disponible"
+	},
+	"cursor": {
+		"useEditableCursor": "Utiliser le curseur Ã©ditable",
+		"useSystemCursor": "Utiliser le curseur systÃ¨me"
+	},
+	"keystroke": {
+		"enable": "Enable shortcut key capture",
+		"disable": "Disable shortcut key capture"
+	},
+	"sourceSelector": {
+		"loading": "Chargement des sources...",
+		"screens": "Ã‰crans ({{count}})",
+		"windows": "FenÃªtres ({{count}})",
+		"defaultSourceName": "Ã‰cran"
+	},
+	"recording": {
+		"selectSource": "Veuillez sÃ©lectionner une source Ã  enregistrer"
+	},
+	"language": "Langue",
+	"systemLanguagePrompt": {
+		"title": "Utiliser la langue de votre systÃ¨me ?",
+		"description": "Nous avons dÃ©tectÃ© {{language}} comme langue systÃ¨me. Voulez-vous passer OpenScreen en {{language}} ?",
+		"switch": "Passer en {{language}}",
+		"keepDefault": "Conserver la langue actuelle"
+	}
+}

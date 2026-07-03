@@ -1,0 +1,51 @@
+{
+	"tooltips": {
+		"hideHUD": "Ocultar HUD",
+		"closeApp": "Fechar App",
+		"restartRecording": "Reiniciar gravaÃ§Ã£o",
+		"cancelRecording": "Cancelar gravaÃ§Ã£o",
+		"pauseRecording": "Pausar gravaÃ§Ã£o",
+		"resumeRecording": "Retomar gravaÃ§Ã£o",
+		"openVideoFile": "Abrir arquivo de vÃ­deo",
+		"openProject": "Abrir projeto"
+	},
+	"audio": {
+		"enableSystemAudio": "Ativar Ã¡udio do sistema",
+		"disableSystemAudio": "Desativar Ã¡udio do sistema",
+		"enableMicrophone": "Ativar microfone",
+		"disableMicrophone": "Desativar microfone",
+		"defaultMicrophone": "Microfone PadrÃ£o"
+	},
+	"webcam": {
+		"enableWebcam": "Ativar webcam",
+		"disableWebcam": "Desativar webcam",
+		"defaultCamera": "CÃ¢mera PadrÃ£o",
+		"searching": "Procurando...",
+		"noneFound": "Nenhuma cÃ¢mera encontrada",
+		"unavailable": "CÃ¢mera indisponÃ­vel"
+	},
+	"cursor": {
+		"useEditableCursor": "Usar cursor editÃ¡vel",
+		"useSystemCursor": "Usar cursor do sistema"
+	},
+	"keystroke": {
+		"enable": "Enable shortcut key capture",
+		"disable": "Disable shortcut key capture"
+	},
+	"sourceSelector": {
+		"loading": "Carregando fontes...",
+		"screens": "Telas ({{count}})",
+		"windows": "Janelas ({{count}})",
+		"defaultSourceName": "Tela"
+	},
+	"recording": {
+		"selectSource": "Por favor, selecione uma fonte para gravar"
+	},
+	"language": "Idioma",
+	"systemLanguagePrompt": {
+		"title": "Usar o idioma do seu sistema?",
+		"description": "Detectamos {{language}} como o idioma do seu sistema. Deseja mudar o OpenScreen para {{language}}?",
+		"switch": "Mudar para {{language}}",
+		"keepDefault": "Manter idioma atual"
+	}
+}

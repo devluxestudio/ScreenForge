@@ -1,0 +1,53 @@
+{
+	"tooltips": {
+		"hideHUD": "Kontrol panelini gizle",
+		"closeApp": "UygulamayÄ± kapat",
+		"restartRecording": "KaydÄ± yeniden baÅŸlat",
+		"cancelRecording": "KaydÄ± iptal et",
+		"pauseRecording": "KaydÄ± duraklat",
+		"resumeRecording": "Kayda devam et",
+		"openVideoFile": "Video dosyasÄ± aÃ§",
+		"openProject": "Proje aÃ§",
+		"useVerticalTray": "Dikey araÃ§ Ã§ubuÄŸunu kullan",
+		"useHorizontalTray": "Yatay araÃ§ Ã§ubuÄŸunu kullan"
+	},
+	"audio": {
+		"enableSystemAudio": "Sistem sesini etkinleÅŸtir",
+		"disableSystemAudio": "Sistem sesini devre dÄ±ÅŸÄ± bÄ±rak",
+		"enableMicrophone": "Mikrofonu etkinleÅŸtir",
+		"disableMicrophone": "Mikrofonu devre dÄ±ÅŸÄ± bÄ±rak",
+		"defaultMicrophone": "VarsayÄ±lan Mikrofon"
+	},
+	"webcam": {
+		"enableWebcam": "KamerayÄ± etkinleÅŸtir",
+		"disableWebcam": "KamerayÄ± devre dÄ±ÅŸÄ± bÄ±rak",
+		"defaultCamera": "VarsayÄ±lan Kamera",
+		"searching": "AranÄ±yor...",
+		"noneFound": "Kamera bulunamadÄ±",
+		"unavailable": "Kamera kullanÄ±lamÄ±yor"
+	},
+	"cursor": {
+		"useEditableCursor": "DÃ¼zenlenebilir imleci kullan",
+		"useSystemCursor": "Sistem imlecini kullan"
+	},
+	"keystroke": {
+		"enable": "Enable shortcut key capture",
+		"disable": "Disable shortcut key capture"
+	},
+	"sourceSelector": {
+		"loading": "Kaynaklar yÃ¼kleniyor...",
+		"screens": "Ekranlar ({{count}})",
+		"windows": "Pencereler ({{count}})",
+		"defaultSourceName": "Ekran"
+	},
+	"recording": {
+		"selectSource": "LÃ¼tfen kayÄ±t iÃ§in bir kaynak seÃ§in"
+	},
+	"language": "Dil",
+	"systemLanguagePrompt": {
+		"title": "Sistem dilinizi kullanmak ister misiniz?",
+		"description": "Sistem diliniz {{language}} olarak algÄ±landÄ±. OpenScreen i {{language}} diline geÃ§irmek ister misiniz?",
+		"switch": "{{language}} diline geÃ§",
+		"keepDefault": "Mevcut dili koru"
+	}
+}

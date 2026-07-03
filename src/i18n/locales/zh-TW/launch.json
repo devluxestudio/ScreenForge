@@ -1,0 +1,53 @@
+{
+	"tooltips": {
+		"hideHUD": "éš±è—æŽ§åˆ¶é¢æ¿",
+		"closeApp": "é—œé–‰æ‡‰ç”¨ç¨‹å¼",
+		"restartRecording": "é‡æ–°é–‹å§‹éŒ„è£½",
+		"cancelRecording": "å–æ¶ˆéŒ„è£½",
+		"pauseRecording": "æš«åœéŒ„è£½",
+		"resumeRecording": "ç¹¼çºŒéŒ„è£½",
+		"openVideoFile": "é–‹å•Ÿå½±ç‰‡æª”æ¡ˆ",
+		"openProject": "é–‹å•Ÿå°ˆæ¡ˆ",
+		"useVerticalTray": "ä½¿ç”¨ç›´å‘æ‰˜ç›¤",
+		"useHorizontalTray": "ä½¿ç”¨æ©«å‘æ‰˜ç›¤"
+	},
+	"audio": {
+		"enableSystemAudio": "å•Ÿç”¨ç³»çµ±éŸ³è¨Š",
+		"disableSystemAudio": "åœç”¨ç³»çµ±éŸ³è¨Š",
+		"enableMicrophone": "å•Ÿç”¨éº¥å…‹é¢¨",
+		"disableMicrophone": "åœç”¨éº¥å…‹é¢¨",
+		"defaultMicrophone": "é è¨­éº¥å…‹é¢¨"
+	},
+	"webcam": {
+		"enableWebcam": "å•Ÿç”¨æ”å½±æ©Ÿ",
+		"disableWebcam": "åœç”¨æ”å½±æ©Ÿ",
+		"defaultCamera": "é è¨­æ”å½±æ©Ÿ",
+		"searching": "æ­£åœ¨æœå°‹...",
+		"noneFound": "æœªæ‰¾åˆ°æ”å½±æ©Ÿ",
+		"unavailable": "æ”å½±æ©Ÿä¸å¯ç”¨"
+	},
+	"cursor": {
+		"useEditableCursor": "ä½¿ç”¨å¯ç·¨è¼¯æ¸¸æ¨™",
+		"useSystemCursor": "ä½¿ç”¨ç³»çµ±æ¸¸æ¨™"
+	},
+	"keystroke": {
+		"enable": "Enable shortcut key capture",
+		"disable": "Disable shortcut key capture"
+	},
+	"sourceSelector": {
+		"loading": "æ­£åœ¨è¼‰å…¥ä¾†æº...",
+		"screens": "èž¢å¹• ({{count}})",
+		"windows": "è¦–çª— ({{count}})",
+		"defaultSourceName": "èž¢å¹•"
+	},
+	"recording": {
+		"selectSource": "è«‹é¸æ“‡è¦éŒ„è£½çš„ä¾†æº"
+	},
+	"language": "èªžè¨€",
+	"systemLanguagePrompt": {
+		"title": "è¦ä½¿ç”¨ç³»çµ±èªžè¨€å—Žï¼Ÿ",
+		"description": "åµæ¸¬åˆ°ç³»çµ±èªžè¨€ç‚º {{language}}ã€‚è¦å°‡ OpenScreen åˆ‡æ›ç‚º {{language}} å—Žï¼Ÿ",
+		"switch": "åˆ‡æ›ç‚º {{language}}",
+		"keepDefault": "ä¿æŒç›®å‰èªžè¨€"
+	}
+}

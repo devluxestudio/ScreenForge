@@ -1,0 +1,53 @@
+{
+	"tooltips": {
+		"hideHUD": "HUDã‚’éš ã™",
+		"closeApp": "ã‚¢ãƒ—ãƒªã‚’é–‰ã˜ã‚‹",
+		"restartRecording": "éŒ²ç”»ã‚’å†é–‹",
+		"cancelRecording": "éŒ²ç”»ã‚’ã‚­ãƒ£ãƒ³ã‚»ãƒ«",
+		"pauseRecording": "éŒ²ç”»ã‚’ä¸€æ™‚åœæ­¢",
+		"resumeRecording": "éŒ²ç”»ã‚’å†é–‹",
+		"openVideoFile": "å‹•ç”»ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã",
+		"openProject": "ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã‚’é–‹ã",
+		"useVerticalTray": "ç¸¦åž‹ãƒˆãƒ¬ã‚¤ã‚’ä½¿ç”¨",
+		"useHorizontalTray": "æ¨ªåž‹ãƒˆãƒ¬ã‚¤ã‚’ä½¿ç”¨"
+	},
+	"audio": {
+		"enableSystemAudio": "ã‚·ã‚¹ãƒ†ãƒ éŸ³å£°ã‚’æœ‰åŠ¹ã«ã™ã‚‹",
+		"disableSystemAudio": "ã‚·ã‚¹ãƒ†ãƒ éŸ³å£°ã‚’ç„¡åŠ¹ã«ã™ã‚‹",
+		"enableMicrophone": "ãƒžã‚¤ã‚¯ã‚’æœ‰åŠ¹ã«ã™ã‚‹",
+		"disableMicrophone": "ãƒžã‚¤ã‚¯ã‚’ç„¡åŠ¹ã«ã™ã‚‹",
+		"defaultMicrophone": "ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒžã‚¤ã‚¯"
+	},
+	"webcam": {
+		"enableWebcam": "ã‚¦ã‚§ãƒ–ã‚«ãƒ¡ãƒ©ã‚’æœ‰åŠ¹ã«ã™ã‚‹",
+		"disableWebcam": "ã‚¦ã‚§ãƒ–ã‚«ãƒ¡ãƒ©ã‚’ç„¡åŠ¹ã«ã™ã‚‹",
+		"defaultCamera": "ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚«ãƒ¡ãƒ©",
+		"searching": "æ¤œç´¢ä¸­...",
+		"noneFound": "ã‚«ãƒ¡ãƒ©ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“",
+		"unavailable": "ã‚«ãƒ¡ãƒ©ãŒåˆ©ç”¨ã§ãã¾ã›ã‚“"
+	},
+	"cursor": {
+		"useEditableCursor": "ç·¨é›†å¯èƒ½ãªã‚«ãƒ¼ã‚½ãƒ«ã‚’ä½¿ã†",
+		"useSystemCursor": "ã‚·ã‚¹ãƒ†ãƒ ã‚«ãƒ¼ã‚½ãƒ«ã‚’ä½¿ã†"
+	},
+	"keystroke": {
+		"enable": "Enable shortcut key capture",
+		"disable": "Disable shortcut key capture"
+	},
+	"sourceSelector": {
+		"loading": "ã‚½ãƒ¼ã‚¹ã‚’èª­ã¿è¾¼ã¿ä¸­...",
+		"screens": "ç”»é¢ ({{count}})",
+		"windows": "ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ ({{count}})",
+		"defaultSourceName": "ç”»é¢"
+	},
+	"recording": {
+		"selectSource": "éŒ²ç”»ã™ã‚‹ã‚½ãƒ¼ã‚¹ã‚’é¸æŠžã—ã¦ãã ã•ã„"
+	},
+	"language": "è¨€èªž",
+	"systemLanguagePrompt": {
+		"title": "ã‚·ã‚¹ãƒ†ãƒ è¨€èªžã‚’ä½¿ç”¨ã—ã¾ã™ã‹ï¼Ÿ",
+		"description": "ã‚·ã‚¹ãƒ†ãƒ è¨€èªžã¨ã—ã¦{{language}}ãŒæ¤œå‡ºã•ã‚Œã¾ã—ãŸã€‚OpenScreenã‚’{{language}}ã«åˆ‡ã‚Šæ›¿ãˆã¾ã™ã‹ï¼Ÿ",
+		"switch": "{{language}}ã«åˆ‡ã‚Šæ›¿ãˆ",
+		"keepDefault": "ç¾åœ¨ã®è¨€èªžã‚’ä¿æŒ"
+	}
+}

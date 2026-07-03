@@ -1,0 +1,53 @@
+{
+	"tooltips": {
+		"hideHUD": "Ø¥Ø®ÙØ§Ø¡ ÙˆØ§Ø¬Ù‡Ø© Ø§Ù„Ø¹Ø±Ø¶",
+		"closeApp": "Ø¥ØºÙ„Ø§Ù‚ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚",
+		"restartRecording": "Ø¥Ø¹Ø§Ø¯Ø© ØªØ´ØºÙŠÙ„ Ø§Ù„ØªØ³Ø¬ÙŠÙ„",
+		"cancelRecording": "Ø¥Ù„ØºØ§Ø¡ Ø§Ù„ØªØ³Ø¬ÙŠÙ„",
+		"pauseRecording": "Ø¥ÙŠÙ‚Ø§Ù Ø§Ù„ØªØ³Ø¬ÙŠÙ„ Ù…Ø¤Ù‚ØªØ§Ù‹",
+		"resumeRecording": "Ø§Ø³ØªØ¦Ù†Ø§Ù Ø§Ù„ØªØ³Ø¬ÙŠÙ„",
+		"openVideoFile": "ÙØªØ­ Ù…Ù„Ù ÙÙŠØ¯ÙŠÙˆ",
+		"openProject": "ÙØªØ­ Ù…Ø´Ø±ÙˆØ¹",
+		"useVerticalTray": "Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„Ø´Ø±ÙŠØ· Ø§Ù„Ø¹Ù…ÙˆØ¯ÙŠ",
+		"useHorizontalTray": "Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„Ø´Ø±ÙŠØ· Ø§Ù„Ø£ÙÙ‚ÙŠ"
+	},
+	"audio": {
+		"enableSystemAudio": "ØªÙØ¹ÙŠÙ„ ØµÙˆØª Ø§Ù„Ù†Ø¸Ø§Ù…",
+		"disableSystemAudio": "ØªØ¹Ø·ÙŠÙ„ ØµÙˆØª Ø§Ù„Ù†Ø¸Ø§Ù…",
+		"enableMicrophone": "ØªÙØ¹ÙŠÙ„ Ø§Ù„Ù…ÙŠÙƒØ±ÙˆÙÙˆÙ†",
+		"disableMicrophone": "ØªØ¹Ø·ÙŠÙ„ Ø§Ù„Ù…ÙŠÙƒØ±ÙˆÙÙˆÙ†",
+		"defaultMicrophone": "Ø§Ù„Ù…ÙŠÙƒØ±ÙˆÙÙˆÙ† Ø§Ù„Ø§ÙØªØ±Ø§Ø¶ÙŠ"
+	},
+	"webcam": {
+		"enableWebcam": "ØªÙØ¹ÙŠÙ„ ÙƒØ§Ù…ÙŠØ±Ø§ Ø§Ù„ÙˆÙŠØ¨",
+		"disableWebcam": "ØªØ¹Ø·ÙŠÙ„ ÙƒØ§Ù…ÙŠØ±Ø§ Ø§Ù„ÙˆÙŠØ¨",
+		"defaultCamera": "Ø§Ù„ÙƒØ§Ù…ÙŠØ±Ø§ Ø§Ù„Ø§ÙØªØ±Ø§Ø¶ÙŠØ©",
+		"searching": "Ø¬Ø§Ø±ÙŠ Ø§Ù„Ø¨Ø­Ø«...",
+		"noneFound": "Ù„Ù… ÙŠØªÙ… Ø§Ù„Ø¹Ø«ÙˆØ± Ø¹Ù„Ù‰ ÙƒØ§Ù…ÙŠØ±Ø§",
+		"unavailable": "Ø§Ù„ÙƒØ§Ù…ÙŠØ±Ø§ ØºÙŠØ± Ù…ØªÙˆÙØ±Ø©"
+	},
+	"sourceSelector": {
+		"loading": "Ø¬Ø§Ø±ÙŠ ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ù…ØµØ§Ø¯Ø±...",
+		"screens": "Ø§Ù„Ø´Ø§Ø´Ø§Øª ({{count}})",
+		"windows": "Ø§Ù„Ù†ÙˆØ§ÙØ° ({{count}})",
+		"defaultSourceName": "Ø§Ù„Ø´Ø§Ø´Ø©"
+	},
+	"recording": {
+		"selectSource": "ÙŠØ±Ø¬Ù‰ ØªØ­Ø¯ÙŠØ¯ Ù…ØµØ¯Ø± Ù„Ù„ØªØ³Ø¬ÙŠÙ„"
+	},
+	"language": "Ø§Ù„Ù„ØºØ©",
+	"systemLanguagePrompt": {
+		"title": "Ù‡Ù„ ØªØ±ÙŠØ¯ Ø§Ø³ØªØ®Ø¯Ø§Ù… Ù„ØºØ© Ù†Ø¸Ø§Ù…ÙƒØŸ",
+		"description": "Ø§ÙƒØªØ´ÙÙ†Ø§ Ø£Ù† {{language}} Ù‡ÙŠ Ù„ØºØ© Ù†Ø¸Ø§Ù…Ùƒ. Ù‡Ù„ ØªØ±ÙŠØ¯ ØªØ¨Ø¯ÙŠÙ„ OpenScreen Ø¥Ù„Ù‰ {{language}}ØŸ",
+		"switch": "Ø§Ù„ØªØ¨Ø¯ÙŠÙ„ Ø¥Ù„Ù‰ {{language}}",
+		"keepDefault": "Ø§Ù„Ø§Ø­ØªÙØ§Ø¸ Ø¨Ø§Ù„Ù„ØºØ© Ø§Ù„Ø­Ø§Ù„ÙŠØ©"
+	},
+	"cursor": {
+		"useEditableCursor": "Ø§Ø³ØªØ®Ø¯Ø§Ù… Ù…Ø¤Ø´Ø± Ù‚Ø§Ø¨Ù„ Ù„Ù„ØªØ­Ø±ÙŠØ±",
+		"useSystemCursor": "Ø§Ø³ØªØ®Ø¯Ø§Ù… Ù…Ø¤Ø´Ø± Ø§Ù„Ù†Ø¸Ø§Ù…"
+	},
+	"keystroke": {
+		"enable": "Enable shortcut key capture",
+		"disable": "Disable shortcut key capture"
+	}
+}

@@ -1,0 +1,53 @@
+{
+	"tooltips": {
+		"hideHUD": "Ocultar HUD",
+		"closeApp": "Cerrar aplicaciÃ³n",
+		"restartRecording": "Reiniciar grabaciÃ³n",
+		"cancelRecording": "Cancelar grabaciÃ³n",
+		"pauseRecording": "Pausar grabaciÃ³n",
+		"resumeRecording": "Reanudar grabaciÃ³n",
+		"openVideoFile": "Abrir archivo de video",
+		"openProject": "Abrir proyecto",
+		"useVerticalTray": "Usar bandeja vertical",
+		"useHorizontalTray": "Usar bandeja horizontal"
+	},
+	"audio": {
+		"enableSystemAudio": "Activar audio del sistema",
+		"disableSystemAudio": "Desactivar audio del sistema",
+		"enableMicrophone": "Activar micrÃ³fono",
+		"disableMicrophone": "Desactivar micrÃ³fono",
+		"defaultMicrophone": "MicrÃ³fono predeterminado"
+	},
+	"webcam": {
+		"enableWebcam": "Activar cÃ¡mara web",
+		"disableWebcam": "Desactivar cÃ¡mara web",
+		"defaultCamera": "CÃ¡mara predeterminada",
+		"searching": "Buscando...",
+		"noneFound": "No se encontrÃ³ cÃ¡mara",
+		"unavailable": "CÃ¡mara no disponible"
+	},
+	"cursor": {
+		"useEditableCursor": "Usar cursor editable",
+		"useSystemCursor": "Usar cursor del sistema"
+	},
+	"keystroke": {
+		"enable": "Enable shortcut key capture",
+		"disable": "Disable shortcut key capture"
+	},
+	"sourceSelector": {
+		"loading": "Cargando fuentes...",
+		"screens": "Pantallas ({{count}})",
+		"windows": "Ventanas ({{count}})",
+		"defaultSourceName": "Pantalla"
+	},
+	"recording": {
+		"selectSource": "Por favor selecciona una fuente para grabar"
+	},
+	"language": "Idioma",
+	"systemLanguagePrompt": {
+		"title": "Â¿Usar el idioma del sistema?",
+		"description": "Detectamos {{language}} como idioma de tu sistema. Â¿Quieres cambiar OpenScreen a {{language}}?",
+		"switch": "Cambiar a {{language}}",
+		"keepDefault": "Mantener idioma actual"
+	}
+}
