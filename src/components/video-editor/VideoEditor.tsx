@@ -1,5 +1,5 @@
 import type { Span } from "dnd-timeline";
-import { FileDown, FolderOpen, Languages, Save, Settings, Video } from "lucide-react";
+import { FolderOpen, Languages, Save, Video } from "lucide-react";
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { toast } from "sonner";
@@ -12,7 +12,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { EditorSidebar } from "./EditorSidebar";
+
 import { Label } from "@/components/ui/label";
 import {
 	Select,
@@ -2822,11 +2822,7 @@ export default function VideoEditor() {
 												: getAspectRatioValue(aspectRatio),
 										)}
 										onExport={handleOpenExportDialog}
-										onExportPanelOpen={() => {
-											setSelectedZoomId(null);
-											setSelectedTrimId(null);
-											setSelectedSpeedId(null);
-										}}
+
 										selectedAnnotationId={selectedAnnotationId}
 										annotationRegions={annotationOnlyRegions}
 										onAnnotationContentChange={handleAnnotationContentChange}
