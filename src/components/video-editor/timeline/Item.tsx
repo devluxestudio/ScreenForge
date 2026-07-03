@@ -129,19 +129,22 @@ export default function Item({
 						title="Resize right"
 					/>
 					{/* Content */}
-					<div className="relative z-10 flex min-w-0 flex-col items-center justify-center text-white/90 opacity-85 group-hover:opacity-100 transition-opacity select-none overflow-hidden px-3">
-						<div className="flex items-center gap-1.5">
+					<div className={cn(
+						"relative z-10 flex min-w-0 items-center justify-center text-white/90 select-none overflow-hidden",
+						isZoom ? "gap-1 px-2 opacity-100" : "flex-col opacity-85 group-hover:opacity-100 transition-opacity px-3"
+					)}>
+						<div className={cn("flex items-center", isZoom ? "gap-1" : "gap-1.5")}>
 							{isZoom ? (
 								<>
 									<ZoomIn className="w-3.5 h-3.5 shrink-0" />
-									<span className="text-[11px] font-semibold whitespace-nowrap">
+									<span className="text-[12px] font-semibold whitespace-nowrap tracking-tight">
 										{zoomCustomScale != null
 											? `${zoomCustomScale.toFixed(2)}×`
 											: ZOOM_LABELS[zoomDepth] || `${zoomDepth}×`}
 									</span>
 									{isAutoFocus && (
 										<MousePointer2
-											className="w-3 h-3 shrink-0 opacity-90"
+											className="w-3 h-3 shrink-0 opacity-90 ml-0.5"
 											aria-label="Cursor-follow"
 										/>
 									)}
@@ -169,13 +172,15 @@ export default function Item({
 								</>
 							)}
 						</div>
-						<span
-							className={`text-[9px] tabular-nums tracking-tight whitespace-nowrap transition-opacity ${
-								isSelected ? "opacity-60" : "opacity-0 group-hover:opacity-40"
-							}`}
-						>
-							{timeLabel}
-						</span>
+						{!isZoom && (
+							<span
+								className={`text-[9px] tabular-nums tracking-tight whitespace-nowrap transition-opacity ${
+									isSelected ? "opacity-60" : "opacity-0 group-hover:opacity-40"
+								}`}
+							>
+								{timeLabel}
+							</span>
+						)}
 					</div>
 				</div>
 			</div>

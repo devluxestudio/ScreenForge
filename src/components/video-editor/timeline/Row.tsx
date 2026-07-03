@@ -6,19 +6,20 @@ interface RowProps extends RowDefinition {
 	hint?: string;
 	isEmpty?: boolean;
 	background?: React.ReactNode;
+	minHeight?: number;
 }
 
 /**
  * A horizontal timeline lane. Wraps dnd-timeline's `useRow` and adds an optional
  * `background` layer, an empty-state hint label, and a minimum height.
  */
-export default function Row({ id, children, hint, isEmpty, background }: RowProps) {
+export default function Row({ id, children, hint, isEmpty, background, minHeight = 36 }: RowProps) {
 	const { setNodeRef, rowWrapperStyle, rowStyle } = useRow({ id });
 
 	return (
 		<div
 			className="border-b border-white/[0.055] bg-[#101116] relative overflow-hidden"
-			style={{ ...rowWrapperStyle, minHeight: 36 }}
+			style={{ ...rowWrapperStyle, minHeight }}
 		>
 			{background}
 			{isEmpty && hint && (

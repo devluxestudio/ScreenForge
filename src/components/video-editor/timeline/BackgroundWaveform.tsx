@@ -88,11 +88,12 @@ export default function BackgroundWaveform({
 		const drawHeight = bottomY - topY;
 		if (drawHeight <= 0) return;
 
+		const centerY = topY + drawHeight / 2;
 		const N = peaks.length / 2;
-		const amp = drawHeight * 0.9;
+		const amp = drawHeight * 0.45;
 
 		// Rectified: amplitude = max(|min|, |max|), normalized to the loudest peak
-		// and gamma-curved, drawn upward from bottomY.
+		// and gamma-curved.
 		const colY = new Float32Array(W);
 		for (let x = 0; x < W; x++) {
 			const startMs = range.start + (x / W) * rangeMs;
@@ -109,27 +110,33 @@ export default function BackgroundWaveform({
 			}
 			const normalized = Math.min(1, absMax * normFactor);
 			const display = normalized > 0 ? normalized ** WAVEFORM_GAMMA : 0;
-			colY[x] = bottomY - display * amp;
+			colY[x] = display * amp;
 		}
 
-		// Filled polygon: bottom-left, up over the silhouette, down to bottom-right.
+		// Filled polygon: rightwards along top edge, then leftwards along bottom edge
 		ctx.beginPath();
-		ctx.moveTo(0, bottomY);
-		for (let x = 0; x < W; x++) {
-			ctx.lineTo(x, colY[x]);
+		ctx.moveTo(0, centerY - colY[0]);
+		for (let x = 1; x < W; x++) {
+			ctx.lineTo(x, centerY - colY[x]);
 		}
-		ctx.lineTo(W, bottomY);
+		for (let x = W - 1; x >= 0; x--) {
+			ctx.lineTo(x, centerY + colY[x]);
+		}
 		ctx.closePath();
-		ctx.fillStyle = "rgba(74, 222, 128, 0.55)";
+		ctx.fillStyle = "rgba(34, 197, 94, 0.55)";
 		ctx.fill();
 
-		// Crisp top-edge stroke.
+		// Crisp top and bottom edges.
 		ctx.beginPath();
-		ctx.moveTo(0, colY[0]);
+		ctx.moveTo(0, centerY - colY[0]);
 		for (let x = 1; x < W; x++) {
-			ctx.lineTo(x, colY[x]);
+			ctx.lineTo(x, centerY - colY[x]);
 		}
-		ctx.strokeStyle = "rgba(74, 222, 128, 0.85)";
+		ctx.moveTo(0, centerY + colY[0]);
+		for (let x = 1; x < W; x++) {
+			ctx.lineTo(x, centerY + colY[x]);
+		}
+		ctx.strokeStyle = "rgba(34, 197, 94, 0.85)";
 		ctx.lineWidth = 1;
 		ctx.stroke();
 	}, [peaks, normFactor, range, canvasSize, videoDurationMs, topInset, bottomInset]);

@@ -16,6 +16,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import PlaybackControls from "../PlaybackControls";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -28,7 +30,6 @@ import { useAudioPeaks } from "@/hooks/useAudioPeaks";
 import { matchesShortcut } from "@/lib/shortcuts";
 import { cn } from "@/lib/utils";
 import { ASPECT_RATIOS, type AspectRatio, getAspectRatioLabel } from "@/utils/aspectRatioUtils";
-import { formatShortcut } from "@/utils/platformUtils";
 import { BLUR_REGIONS_ENABLED } from "../featureFlags";
 import type { AnnotationRegion, SpeedRegion, TrimRegion, ZoomRegion } from "../types";
 import BackgroundWaveform from "./BackgroundWaveform";
@@ -37,11 +38,11 @@ import KeyframeMarkers from "./KeyframeMarkers";
 import Row from "./Row";
 import TimelineWrapper from "./TimelineWrapper";
 
-const ZOOM_ROW_ID = "row-zoom";
 const TRIM_ROW_ID = "row-trim";
 const ANNOTATION_ROW_ID = "row-annotation";
 const BLUR_ROW_ID = "row-blur";
 const SPEED_ROW_ID = "row-speed";
+const AUDIO_ROW_ID = "row-audio";
 const FALLBACK_RANGE_MS = 1000;
 const TARGET_MARKER_COUNT = 12;
 
@@ -49,6 +50,8 @@ interface TimelineEditorProps {
 	videoDuration: number;
 	hasVideoSource?: boolean;
 	currentTime: number;
+	isPlaying?: boolean;
+	onTogglePlayPause?: () => void;
 	onSeek?: (time: number) => void;
 	zoomRegions: ZoomRegion[];
 	onZoomAdded: (span: Span) => void;
@@ -744,7 +747,6 @@ function Timeline({
 		[onRangeChange, videoDurationMs, range.end, range.start, sidebarWidth, pixelsToValue],
 	);
 
-	const zoomItems = items.filter((item) => item.rowId === ZOOM_ROW_ID);
 	const trimItems = items.filter((item) => item.rowId === TRIM_ROW_ID);
 	const annotationItems = items.filter((item) => item.rowId === ANNOTATION_ROW_ID);
 	const blurItems = items.filter((item) => item.rowId === BLUR_ROW_ID);
@@ -775,25 +777,6 @@ function Timeline({
 				keyframes={keyframes}
 			/>
 
-			<Row id={ZOOM_ROW_ID} isEmpty={zoomItems.length === 0} hint={t("hints.pressZoom")}>
-				{zoomItems.map((item) => (
-					<Item
-						id={item.id}
-						key={item.id}
-						rowId={item.rowId}
-						span={item.span}
-						isSelected={item.id === selectedZoomId}
-						onSelect={() => onSelectZoom?.(item.id)}
-						zoomDepth={item.zoomDepth}
-						zoomCustomScale={item.zoomCustomScale}
-						isAutoFocus={item.isAutoFocus}
-						variant="zoom"
-					>
-						{item.label}
-					</Item>
-				))}
-			</Row>
-
 			<Row
 				id={TRIM_ROW_ID}
 				isEmpty={trimItems.length === 0}
@@ -815,9 +798,12 @@ function Timeline({
 						key={item.id}
 						rowId={item.rowId}
 						span={item.span}
-						isSelected={item.id === selectedTrimId}
-						onSelect={() => onSelectTrim?.(item.id)}
-						variant="trim"
+						isSelected={item.variant === "zoom" ? item.id === selectedZoomId : item.id === selectedTrimId}
+						onSelect={() => (item.variant === "zoom" ? onSelectZoom?.(item.id) : onSelectTrim?.(item.id))}
+						variant={item.variant}
+						zoomDepth={item.zoomDepth}
+						zoomCustomScale={item.zoomCustomScale}
+						isAutoFocus={item.isAutoFocus}
 					>
 						{item.label}
 					</Item>
@@ -878,6 +864,24 @@ function Timeline({
 					</Item>
 				))}
 			</Row>
+
+			{videoUrl && (
+				<Row
+					id={AUDIO_ROW_ID}
+					isEmpty={false}
+					minHeight={32}
+					background={
+						<BackgroundWaveform
+							peaks={peaks}
+							videoDurationMs={videoDurationMs}
+							topInset={2}
+							bottomInset={2}
+						/>
+					}
+				>
+					{null}
+				</Row>
+			)}
 		</div>
 	);
 }
@@ -886,6 +890,8 @@ export default function TimelineEditor({
 	videoDuration,
 	hasVideoSource = false,
 	currentTime,
+	isPlaying,
+	onTogglePlayPause,
 	onSeek,
 	zoomRegions,
 	onZoomAdded,
@@ -944,18 +950,8 @@ export default function TimelineEditor({
 	const [range, setRange] = useState<Range>(() => createInitialRange(totalMs));
 	const [keyframes, setKeyframes] = useState<{ id: string; time: number }[]>([]);
 	const [selectedKeyframeId, setSelectedKeyframeId] = useState<string | null>(null);
-	const [scrollLabels, setScrollLabels] = useState({
-		pan: "Scroll",
-		zoom: "Ctrl + Scroll",
-	});
 	const timelineContainerRef = useRef<HTMLDivElement>(null);
 	const { shortcuts: keyShortcuts, isMac } = useShortcuts();
-
-	useEffect(() => {
-		formatShortcut(["mod", "Scroll"]).then((zoom) => {
-			setScrollLabels({ pan: "Scroll", zoom });
-		});
-	}, []);
 
 	const addKeyframe = useCallback(() => {
 		if (totalMs === 0) return;
@@ -1345,7 +1341,7 @@ export default function TimelineEditor({
 	const timelineItems = useMemo<TimelineRenderItem[]>(() => {
 		const zooms: TimelineRenderItem[] = zoomRegions.map((region, index) => ({
 			id: region.id,
-			rowId: ZOOM_ROW_ID,
+			rowId: TRIM_ROW_ID,
 			span: { start: region.startMs, end: region.endMs },
 			label: t("labels.zoomItem", { index: String(index + 1) }),
 			zoomDepth: region.depth,
@@ -1453,6 +1449,46 @@ export default function TimelineEditor({
 		],
 	);
 
+	const getContainerWidth = useCallback(() => timelineContainerRef.current?.clientWidth || 800, []);
+	const pixelsPerMs = getContainerWidth() / Math.max(1, range.end - range.start);
+
+	const pixelsToValue = useCallback(
+		(pixels: number) => {
+			const minPx =
+				timelineScale.minVisibleRangeMs > 0
+					? getContainerWidth() / timelineScale.minVisibleRangeMs
+					: 0.001;
+			const maxPx = 5;
+			return Math.max(0, Math.min(100, ((pixels - minPx) / (maxPx - minPx)) * 100));
+		},
+		[timelineScale, getContainerWidth],
+	);
+
+	const valueToPixels = useCallback(
+		(value: number) => {
+			const minPx =
+				timelineScale.minVisibleRangeMs > 0
+					? getContainerWidth() / timelineScale.minVisibleRangeMs
+					: 0.001;
+			const maxPx = 5;
+			return minPx + (value / 100) * (maxPx - minPx);
+		},
+		[timelineScale, getContainerWidth],
+	);
+
+	const handleSliderZoom = useCallback(
+		(vals: number[]) => {
+			const val = vals[0];
+			const px = valueToPixels(val);
+			const newDuration = getContainerWidth() / px;
+			const centerMs = range.start + (range.end - range.start) / 2;
+			const start = Math.max(0, centerMs - newDuration / 2);
+			const end = Math.min(videoDuration || 0, start + newDuration);
+			setRange({ start, end });
+		},
+		[valueToPixels, getContainerWidth, range, videoDuration],
+	);
+
 	if (!videoDuration || videoDuration === 0) {
 		return (
 			<div className="flex-1 flex flex-col items-center justify-center rounded-lg bg-[#09090b] gap-3">
@@ -1475,144 +1511,158 @@ export default function TimelineEditor({
 
 	return (
 		<div className="flex-1 min-h-0 flex flex-col bg-[#09090b] overflow-hidden">
-			<div className="flex items-center gap-2 px-3 py-1.5 border-b border-white/[0.06] bg-[#08090b]/95">
-				<div className="flex items-center gap-0.5 rounded-xl border border-white/[0.06] bg-white/[0.025] p-0.5">
-					<Button
-						onClick={handleAddZoom}
-						variant="ghost"
-						size="icon"
-						className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#34B27B] hover:bg-[#34B27B]/10 transition-all"
-						title={t("buttons.addZoom")}
-					>
-						<ZoomIn className="w-4 h-4" />
-					</Button>
-					<Button
-						onClick={() => onToggleAutoZoom?.(!autoZoomEnabled)}
-						variant="ghost"
-						size="icon"
-						aria-pressed={autoZoomEnabled}
-						className={cn(
-							"h-7 w-7 rounded-lg transition-all hover:bg-[#34B27B]/10 hover:text-[#34B27B]",
-							autoZoomEnabled ? "bg-[#34B27B]/15 text-[#34B27B]" : "text-slate-400",
-						)}
-						title={autoZoomEnabled ? t("buttons.autoZoomOn") : t("buttons.autoZoomOff")}
-					>
-						<WandSparkles className="w-4 h-4" />
-					</Button>
-					<Button
-						onClick={() => onToggleAutoFocusAll?.(!autoFocusAll)}
-						variant="ghost"
-						size="icon"
-						aria-pressed={autoFocusAll}
-						className={cn(
-							"h-7 w-7 rounded-lg transition-all hover:bg-[#34B27B]/10 hover:text-[#34B27B]",
-							autoFocusAll ? "bg-[#34B27B]/15 text-[#34B27B]" : "text-slate-400",
-						)}
-						title={autoFocusAll ? t("buttons.autoFocusAllOn") : t("buttons.autoFocusAllOff")}
-					>
-						<ScanEye className="w-4 h-4" />
-					</Button>
-					<Button
-						onClick={handleAddTrim}
-						variant="ghost"
-						size="icon"
-						className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#ef4444] hover:bg-[#ef4444]/10 transition-all"
-						title={t("buttons.addTrim")}
-					>
-						<Scissors className="w-4 h-4" />
-					</Button>
-					<Button
-						onClick={handleAddAnnotation}
-						variant="ghost"
-						size="icon"
-						className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#B4A046] hover:bg-[#B4A046]/10 transition-all"
-						title={t("buttons.addAnnotation")}
-					>
-						<MessageSquare className="w-4 h-4" />
-					</Button>
-					{BLUR_REGIONS_ENABLED && (
-						<Button
-							onClick={handleAddBlur}
-							variant="ghost"
-							size="icon"
-							className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#7dd3fc] hover:bg-[#7dd3fc]/10 transition-all"
-							title={t("buttons.addBlur")}
-						>
-							<svg
-								className="w-4 h-4"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2"
-							>
-								<circle cx="8" cy="12" r="3" />
-								<circle cx="16" cy="12" r="3" />
-								<path d="M6 6h12M6 18h12" />
-							</svg>
-						</Button>
-					)}
-					<Button
-						onClick={handleAddSpeed}
-						variant="ghost"
-						size="icon"
-						className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#d97706] hover:bg-[#d97706]/10 transition-all"
-						title={t("buttons.addSpeed")}
-					>
-						<Gauge className="w-4 h-4" />
-					</Button>
-					{onGenerateCaptions && (
-						<Button
-							onClick={onGenerateCaptions}
-							disabled={isGeneratingCaptions || !videoUrl}
-							variant="ghost"
-							size="icon"
-							className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#a78bfa] hover:bg-[#a78bfa]/10 transition-all"
-							title={captionsLabel}
-						>
-							<Captions className="w-4 h-4" />
-						</Button>
-					)}
+			<div className="flex items-center justify-between px-3 py-1.5 border-b border-white/[0.06] bg-[#08090b]/95">
+				{/* Left: Playback Controls */}
+				<div className="flex items-center gap-2">
+					<PlaybackControls
+						isPlaying={isPlaying ?? false}
+						onTogglePlayPause={onTogglePlayPause ?? (() => {})}
+						currentTime={currentTime}
+						duration={videoDuration}
+						onSeek={onSeek ?? (() => {})}
+					/>
 				</div>
-				<div className="flex items-center gap-1.5 min-w-0">
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
+
+				{/* Center/Right: Action Buttons */}
+				<div className="flex items-center gap-2">
+					<div className="flex items-center gap-0.5 rounded-xl border border-white/[0.06] bg-white/[0.025] p-0.5">
+						<Button
+							onClick={handleAddZoom}
+							variant="ghost"
+							size="icon"
+							className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#34B27B] hover:bg-[#34B27B]/10 transition-all"
+							title={t("buttons.addZoom")}
+						>
+							<ZoomIn className="w-4 h-4" />
+						</Button>
+						<Button
+							onClick={() => onToggleAutoZoom?.(!autoZoomEnabled)}
+							variant="ghost"
+							size="icon"
+							aria-pressed={autoZoomEnabled}
+							className={cn(
+								"h-7 w-7 rounded-lg transition-all hover:bg-[#34B27B]/10 hover:text-[#34B27B]",
+								autoZoomEnabled ? "bg-[#34B27B]/15 text-[#34B27B]" : "text-slate-400",
+							)}
+							title={autoZoomEnabled ? t("buttons.autoZoomOn") : t("buttons.autoZoomOff")}
+						>
+							<WandSparkles className="w-4 h-4" />
+						</Button>
+						<Button
+							onClick={() => onToggleAutoFocusAll?.(!autoFocusAll)}
+							variant="ghost"
+							size="icon"
+							aria-pressed={autoFocusAll}
+							className={cn(
+								"h-7 w-7 rounded-lg transition-all hover:bg-[#34B27B]/10 hover:text-[#34B27B]",
+								autoFocusAll ? "bg-[#34B27B]/15 text-[#34B27B]" : "text-slate-400",
+							)}
+							title={autoFocusAll ? t("buttons.autoFocusAllOn") : t("buttons.autoFocusAllOff")}
+						>
+							<ScanEye className="w-4 h-4" />
+						</Button>
+						<Button
+							onClick={handleAddTrim}
+							variant="ghost"
+							size="icon"
+							className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#ef4444] hover:bg-[#ef4444]/10 transition-all"
+							title={t("buttons.addTrim")}
+						>
+							<Scissors className="w-4 h-4" />
+						</Button>
+						<Button
+							onClick={handleAddAnnotation}
+							variant="ghost"
+							size="icon"
+							className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#B4A046] hover:bg-[#B4A046]/10 transition-all"
+							title={t("buttons.addAnnotation")}
+						>
+							<MessageSquare className="w-4 h-4" />
+						</Button>
+						{BLUR_REGIONS_ENABLED && (
 							<Button
+								onClick={handleAddBlur}
 								variant="ghost"
-								size="sm"
-								className="h-7 px-2 rounded-lg text-[11px] text-slate-400 hover:text-slate-200 hover:bg-white/[0.07] transition-all gap-1"
+								size="icon"
+								className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#7dd3fc] hover:bg-[#7dd3fc]/10 transition-all"
+								title={t("buttons.addBlur")}
 							>
-								<span className="font-medium">{getAspectRatioLabel(aspectRatio)}</span>
-								<ChevronDown className="w-3 h-3" />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end" className="bg-[#1a1a1a] border-white/10">
-							{ASPECT_RATIOS.map((ratio) => (
-								<DropdownMenuItem
-									key={ratio}
-									onClick={() => onAspectRatioChange(ratio)}
-									className="text-slate-300 hover:text-white hover:bg-white/10 cursor-pointer flex items-center justify-between gap-3"
+								<svg
+									className="w-4 h-4"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="2"
 								>
-									<span>{getAspectRatioLabel(ratio)}</span>
-									{aspectRatio === ratio && <Check className="w-3 h-3 text-[#34B27B]" />}
-								</DropdownMenuItem>
-							))}
-						</DropdownMenuContent>
-					</DropdownMenu>
-				</div>
-				<div className="flex-1" />
-				<div className="hidden md:flex items-center gap-3 text-[10px] text-slate-500 font-medium">
-					<span className="flex items-center gap-1.5">
-						<kbd className="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded text-[#34B27B] font-sans">
-							{scrollLabels.pan}
-						</kbd>
-						<span>{t("labels.pan")}</span>
-					</span>
-					<span className="flex items-center gap-1.5">
-						<kbd className="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded text-[#34B27B] font-sans">
-							{scrollLabels.zoom}
-						</kbd>
-						<span>{t("labels.zoom")}</span>
-					</span>
+									<circle cx="8" cy="12" r="3" />
+									<circle cx="16" cy="12" r="3" />
+									<path d="M6 6h12M6 18h12" />
+								</svg>
+							</Button>
+						)}
+						<Button
+							onClick={handleAddSpeed}
+							variant="ghost"
+							size="icon"
+							className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#d97706] hover:bg-[#d97706]/10 transition-all"
+							title={t("buttons.addSpeed")}
+						>
+							<Gauge className="w-4 h-4" />
+						</Button>
+						{onGenerateCaptions && (
+							<Button
+								onClick={onGenerateCaptions}
+								disabled={isGeneratingCaptions || !videoUrl}
+								variant="ghost"
+								size="icon"
+								className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#a78bfa] hover:bg-[#a78bfa]/10 transition-all"
+								title={captionsLabel}
+							>
+								<Captions className="w-4 h-4" />
+							</Button>
+						)}
+					</div>
+					<div className="flex items-center gap-1.5 min-w-0">
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button
+									variant="ghost"
+									size="sm"
+									className="h-7 px-2 rounded-lg text-[11px] text-slate-400 hover:text-slate-200 hover:bg-white/[0.07] transition-all gap-1"
+								>
+									<span className="font-medium">{getAspectRatioLabel(aspectRatio)}</span>
+									<ChevronDown className="w-3 h-3" />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end" className="bg-[#1a1a1a] border-white/10">
+								{ASPECT_RATIOS.map((ratio) => (
+									<DropdownMenuItem
+										key={ratio}
+										onClick={() => onAspectRatioChange(ratio)}
+										className="text-slate-300 hover:text-white hover:bg-white/10 cursor-pointer flex items-center justify-between gap-3"
+									>
+										<span>{getAspectRatioLabel(ratio)}</span>
+										{aspectRatio === ratio && <Check className="w-3 h-3 text-[#34B27B]" />}
+									</DropdownMenuItem>
+								))}
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</div>
+
+					<div className="flex items-center gap-2 px-2 text-slate-400">
+						<ZoomIn className="w-4 h-4" />
+						<Slider
+							value={[pixelsToValue(pixelsPerMs)]}
+							min={0}
+							max={100}
+							step={1}
+							onValueChange={handleSliderZoom}
+							className="w-24"
+						/>
+						<span className="text-[10px] w-8 text-right font-medium">
+							{Math.round(pixelsToValue(pixelsPerMs))}%
+						</span>
+					</div>
 				</div>
 			</div>
 			<div
