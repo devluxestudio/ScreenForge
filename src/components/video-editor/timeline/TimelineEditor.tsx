@@ -11,6 +11,7 @@ import {
 	Pause,
 	Play,
 	Plus,
+	Minus,
 	ScanEye,
 	Scissors,
 	SkipBack,
@@ -751,13 +752,13 @@ function Timeline({
 
 			const pageWidthPx = Math.max(event.currentTarget.clientWidth - sidebarWidth, 1);
 			const normalizedDeltaPx = normalizeWheelDelta(dominantDelta, event.deltaMode, pageWidthPx);
-			const shiftMs = pixelsToValue(normalizedDeltaPx);
+			const deltaMs = (normalizedDeltaPx / pageWidthPx) * visibleMs;
 
 			onRangeChange((previous) => {
 				const nextRange = clampVisibleRange(
 					{
-						start: previous.start + shiftMs,
-						end: previous.end + shiftMs,
+						start: previous.start + deltaMs,
+						end: previous.end + deltaMs,
 					},
 					videoDurationMs,
 				);
@@ -801,7 +802,7 @@ function Timeline({
 		<div
 			ref={setRefs}
 			style={{ ...style, touchAction: "none" }}
-			className="select-none bg-[#0b0c0f] min-h-[190px] relative cursor-pointer group"
+			className="select-none bg-[#0b0c0f] relative cursor-pointer group"
 			onClick={handleTimelineClick}
 			onPointerDown={handleTimelinePointerDown}
 			onPointerMove={handleTimelinePointerMove}
@@ -1498,26 +1499,26 @@ export default function TimelineEditor({
 
 	const pixelsToValue = useCallback(
 		(pixels: number) => {
-			const minPx =
+			const minPx = totalMs > 0 ? getContainerWidth() / totalMs : 0.001;
+			const maxPx =
 				timelineScale.minVisibleRangeMs > 0
 					? getContainerWidth() / timelineScale.minVisibleRangeMs
-					: 0.001;
-			const maxPx = 5;
+					: 5;
 			return Math.max(0, Math.min(100, ((pixels - minPx) / (maxPx - minPx)) * 100));
 		},
-		[timelineScale, getContainerWidth],
+		[timelineScale, getContainerWidth, totalMs],
 	);
 
 	const valueToPixels = useCallback(
 		(value: number) => {
-			const minPx =
+			const minPx = totalMs > 0 ? getContainerWidth() / totalMs : 0.001;
+			const maxPx =
 				timelineScale.minVisibleRangeMs > 0
 					? getContainerWidth() / timelineScale.minVisibleRangeMs
-					: 0.001;
-			const maxPx = 5;
+					: 5;
 			return minPx + (value / 100) * (maxPx - minPx);
 		},
-		[timelineScale, getContainerWidth],
+		[timelineScale, getContainerWidth, totalMs],
 	);
 
 	const handleSliderZoom = useCallback(
@@ -1526,11 +1527,22 @@ export default function TimelineEditor({
 			const px = valueToPixels(val);
 			const newDuration = getContainerWidth() / px;
 			const centerMs = range.start + (range.end - range.start) / 2;
-			const start = Math.max(0, centerMs - newDuration / 2);
-			const end = Math.min(videoDuration || 0, start + newDuration);
+			
+			let start = centerMs - newDuration / 2;
+			let end = start + newDuration;
+
+			if (start < 0) {
+				start = 0;
+				end = Math.min(totalMs, start + newDuration);
+			}
+			if (end > totalMs) {
+				end = totalMs;
+				start = Math.max(0, end - newDuration);
+			}
+
 			setRange({ start, end });
 		},
-		[valueToPixels, getContainerWidth, range, videoDuration],
+		[valueToPixels, getContainerWidth, range, totalMs],
 	);
 
 	if (!videoDuration || videoDuration === 0) {
@@ -1608,14 +1620,17 @@ export default function TimelineEditor({
 					>
 						{isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
 					</Button>
+					
+					{/* Duration display moved to left controls */}
+					<div className="ml-2 flex items-center justify-center bg-white/[0.03] px-2 py-0.5 rounded-md border border-white/5">
+						<span className="text-[11px] font-semibold tabular-nums text-slate-300">
+							{formatMMSS(currentTime)} / {formatMMSS(videoDuration)}
+						</span>
+					</div>
 				</div>
 
-				{/* Center Group: Timecode Display */}
-				<div className="flex items-center justify-center">
-					<span className="text-xs font-semibold tabular-nums text-slate-300">
-						{formatMMSS(currentTime)} / {formatMMSS(videoDuration)}
-					</span>
-				</div>
+				{/* Center Group is now empty since duration moved left */}
+				<div className="flex-1" />
 
 				{/* Right Group: Action Buttons */}
 				<div className="flex items-center gap-2">
@@ -1623,12 +1638,11 @@ export default function TimelineEditor({
 						<Button
 							onClick={handleAddZoom}
 							variant="ghost"
-							size="sm"
-							className="h-7 px-2.5 rounded-lg text-xs font-medium text-slate-400 hover:text-[#34B27B] hover:bg-[#34B27B]/10 transition-all flex items-center gap-1"
+							size="icon"
+							className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#34B27B] hover:bg-[#34B27B]/10 transition-all"
 							title={t("buttons.addZoom")}
 						>
-							<ZoomIn className="w-3.5 h-3.5" />
-							<span>Add Zoom</span>
+							<ZoomIn className="w-4 h-4" />
 						</Button>
 
 						{selectedZoomId && (
@@ -1747,45 +1761,62 @@ export default function TimelineEditor({
 						)}
 					</div>
 					{/* Row mode switcher — controls which overlay row (Row 3) is shown */}
-					<div className="flex items-center gap-0.5 rounded-xl border border-white/[0.06] bg-white/[0.025] p-0.5 mx-1">
-						<button
-							type="button"
-							onClick={() => setThirdRowMode("speed")}
-							className={cn(
-								"h-6 px-2.5 rounded-lg text-[11px] font-semibold transition-all",
-								thirdRowMode === "speed"
-									? "bg-[#d97706]/20 text-[#d97706] border border-[#d97706]/30"
-									: "text-slate-500 hover:text-slate-300 hover:bg-white/[0.06]",
-							)}
-						>
-							Speed
-						</button>
-						<button
-							type="button"
-							onClick={() => setThirdRowMode("annotation")}
-							className={cn(
-								"h-6 px-2.5 rounded-lg text-[11px] font-semibold transition-all",
-								thirdRowMode === "annotation"
-									? "bg-[#B4A046]/20 text-[#B4A046] border border-[#B4A046]/30"
-									: "text-slate-500 hover:text-slate-300 hover:bg-white/[0.06]",
-							)}
-						>
-							Overlay
-						</button>
-						{BLUR_REGIONS_ENABLED && (
-							<button
-								type="button"
-								onClick={() => setThirdRowMode("blur")}
-								className={cn(
-									"h-6 px-2.5 rounded-lg text-[11px] font-semibold transition-all",
-									thirdRowMode === "blur"
-										? "bg-[#7dd3fc]/20 text-[#7dd3fc] border border-[#7dd3fc]/30"
-										: "text-slate-500 hover:text-slate-300 hover:bg-white/[0.06]",
+					<div className="flex items-center gap-1.5 min-w-0 mx-1">
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button
+									variant="ghost"
+									size="sm"
+									className="h-7 px-2.5 rounded-lg text-[11px] font-semibold text-slate-300 hover:text-white border border-white/[0.06] bg-white/[0.025] hover:bg-white/[0.07] transition-all gap-1.5"
+								>
+									<span>
+										{thirdRowMode === "speed" ? "Speed" : thirdRowMode === "annotation" ? "Overlay" : "Blur"}
+									</span>
+									<ChevronDown className="w-3 h-3 text-slate-500" />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="center" className="bg-[#1a1a1a] border-white/10 min-w-[120px]">
+								<DropdownMenuItem
+									onClick={() => setThirdRowMode("speed")}
+									className="text-slate-300 hover:text-white hover:bg-white/10 cursor-pointer flex items-center justify-between gap-3 text-[11px] font-semibold"
+								>
+									<span>Speed</span>
+									{thirdRowMode === "speed" && <Check className="w-3 h-3 text-[#d97706]" />}
+								</DropdownMenuItem>
+								<DropdownMenuItem
+									onClick={() => setThirdRowMode("annotation")}
+									className="text-slate-300 hover:text-white hover:bg-white/10 cursor-pointer flex items-center justify-between gap-3 text-[11px] font-semibold"
+								>
+									<span>Overlay</span>
+									{thirdRowMode === "annotation" && <Check className="w-3 h-3 text-[#B4A046]" />}
+								</DropdownMenuItem>
+								{BLUR_REGIONS_ENABLED && (
+									<DropdownMenuItem
+										onClick={() => setThirdRowMode("blur")}
+										className="text-slate-300 hover:text-white hover:bg-white/10 cursor-pointer flex items-center justify-between gap-3 text-[11px] font-semibold"
+									>
+										<span>Blur</span>
+										{thirdRowMode === "blur" && <Check className="w-3 h-3 text-[#7dd3fc]" />}
+									</DropdownMenuItem>
 								)}
-							>
-								Blur
-							</button>
-						)}
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</div>
+					<div className="flex items-center gap-2 px-3 py-1 mx-1 rounded-full border border-white/[0.06] bg-white/[0.025]">
+						<button onClick={() => handleSliderZoom([Math.max(0, pixelsToValue(pixelsPerMs) - 10)])} className="text-slate-400 hover:text-white transition-colors cursor-pointer outline-none">
+							<Minus className="w-3.5 h-3.5" />
+						</button>
+						<Slider
+							value={[pixelsToValue(pixelsPerMs)]}
+							min={0}
+							max={100}
+							step={1}
+							onValueChange={handleSliderZoom}
+							className="w-[80px]"
+						/>
+						<button onClick={() => handleSliderZoom([Math.min(100, pixelsToValue(pixelsPerMs) + 10)])} className="text-slate-400 hover:text-white transition-colors cursor-pointer outline-none">
+							<Plus className="w-3.5 h-3.5" />
+						</button>
 					</div>
 					<div className="flex items-center gap-1.5 min-w-0">
 						<DropdownMenu>
@@ -1817,21 +1848,6 @@ export default function TimelineEditor({
 			</div>
 
 			<div className="flex-1 min-h-0 relative">
-				{/* Absolute Overlay Zoom Slider */}
-				<div className="absolute top-2 right-4 z-30 flex items-center gap-1.5 px-2.5 py-1 rounded-xl border border-white/[0.08] bg-[#0c0c0e]/90 shadow-lg backdrop-blur-md text-slate-400">
-					<ZoomIn className="w-3.5 h-3.5 text-slate-400" />
-					<Slider
-						value={[pixelsToValue(pixelsPerMs)]}
-						min={0}
-						max={100}
-						step={1}
-						onValueChange={handleSliderZoom}
-						className="w-20"
-					/>
-					<span className="text-[10px] w-8 text-right font-medium text-slate-400 tabular-nums">
-						{Math.round(pixelsToValue(pixelsPerMs))}%
-					</span>
-				</div>
 
 				<div
 					ref={timelineContainerRef}
