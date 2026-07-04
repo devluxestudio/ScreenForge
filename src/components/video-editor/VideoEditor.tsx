@@ -2735,6 +2735,7 @@ export default function VideoEditor() {
 										onTogglePlayPause={togglePlayPause}
 										isFullscreen={isFullscreen}
 										onToggleFullscreen={toggleFullscreen}
+										cursorTelemetry={cursorTelemetry}
 										onSeek={handleSeek}
 										zoomRegions={zoomRegions}
 										onZoomAdded={handleZoomAdded}

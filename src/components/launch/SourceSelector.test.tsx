@@ -36,6 +36,7 @@ describe("SourceSelector", () => {
 			...window.electronAPI,
 			getSources: vi.fn().mockResolvedValue([]),
 			selectSource: vi.fn(),
+			getPlatform: vi.fn().mockResolvedValue("darwin"),
 		} as typeof window.electronAPI;
 	});
 
@@ -63,6 +64,7 @@ describe("SourceSelector", () => {
 			...window.electronAPI,
 			getSources,
 			selectSource: vi.fn(),
+			getPlatform: vi.fn().mockResolvedValue("darwin"),
 		} as typeof window.electronAPI;
 
 		render(<SourceSelector />);

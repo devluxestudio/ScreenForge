@@ -39,17 +39,21 @@ import { ASPECT_RATIOS, type AspectRatio, getAspectRatioLabel } from "@/utils/as
 import { BLUR_REGIONS_ENABLED } from "../featureFlags";
 import type { AnnotationRegion, SpeedRegion, TrimRegion, ZoomRegion } from "../types";
 import BackgroundWaveform from "./BackgroundWaveform";
+import CursorTelemetryRow from "./CursorTelemetryRow";
 import Item from "./Item";
 import KeyframeMarkers from "./KeyframeMarkers";
 import Row from "./Row";
 import TimelineWrapper from "./TimelineWrapper";
 
-const TRIM_ROW_ID = "row-trim";
+const VIDEO_ROW_ID = "row-video";
+const TRIM_ROW_ID = "row-video"; // Trim items stay on the video track
+const CURSOR_ROW_ID = "row-cursor"; // Zoom items and cursor telemetry go here
 const ANNOTATION_ROW_ID = "row-annotation";
 const BLUR_ROW_ID = "row-blur";
 const SPEED_ROW_ID = "row-speed";
-const AUDIO_ROW_ID = "row-audio";
 const FALLBACK_RANGE_MS = 1000;
+
+type ThirdRowMode = "speed" | "annotation" | "blur";
 const TARGET_MARKER_COUNT = 12;
 
 interface TimelineEditorProps {
@@ -106,6 +110,7 @@ interface TimelineEditorProps {
 	captionsLabel?: string;
 	isFullscreen?: boolean;
 	onToggleFullscreen?: () => void;
+	cursorTelemetry?: import("@/components/video-editor/types").CursorTelemetryPoint[];
 }
 
 interface TimelineScaleConfig {
@@ -588,7 +593,8 @@ function Timeline({
 	selectedSpeedId,
 	keyframes = [],
 	videoUrl,
-	showTrimWaveform = false,
+	thirdRowMode,
+	cursorTelemetry = [],
 }: {
 	items: TimelineRenderItem[];
 	videoDurationMs: number;
@@ -608,6 +614,8 @@ function Timeline({
 	keyframes?: { id: string; time: number }[];
 	videoUrl?: string;
 	showTrimWaveform?: boolean;
+	thirdRowMode?: ThirdRowMode;
+	cursorTelemetry?: import("@/components/video-editor/types").CursorTelemetryPoint[];
 }) {
 	const t = useScopedT("timeline");
 	const { setTimelineRef, style, sidebarWidth, range, pixelsToValue } = useTimelineContext();
@@ -762,10 +770,32 @@ function Timeline({
 		[onRangeChange, videoDurationMs, range.end, range.start, sidebarWidth, pixelsToValue],
 	);
 
+	const videoItems = items.filter((item) => item.rowId === VIDEO_ROW_ID);
 	const trimItems = items.filter((item) => item.rowId === TRIM_ROW_ID);
+	const zoomItems = items.filter((item) => item.rowId === CURSOR_ROW_ID);
 	const annotationItems = items.filter((item) => item.rowId === ANNOTATION_ROW_ID);
 	const blurItems = items.filter((item) => item.rowId === BLUR_ROW_ID);
 	const speedItems = items.filter((item) => item.rowId === SPEED_ROW_ID);
+
+	// Active items for the third switchable row
+	const thirdRowItems =
+		thirdRowMode === "annotation"
+			? annotationItems
+			: thirdRowMode === "blur"
+				? blurItems
+				: speedItems;
+	const thirdRowId =
+		thirdRowMode === "annotation"
+			? ANNOTATION_ROW_ID
+			: thirdRowMode === "blur"
+				? BLUR_ROW_ID
+				: SPEED_ROW_ID;
+	const thirdRowHint =
+		thirdRowMode === "annotation"
+			? t("hints.pressAnnotation")
+			: thirdRowMode === "blur"
+				? t("hints.pressBlur")
+				: t("hints.pressSpeed");
 
 	return (
 		<div
@@ -792,19 +822,19 @@ function Timeline({
 				keyframes={keyframes}
 			/>
 
+			{/* Row 1: Video track — full video bar + waveform + trim items */}
 			<Row
-				id={TRIM_ROW_ID}
+				id={VIDEO_ROW_ID}
 				isEmpty={trimItems.length === 0}
-				hint={t("hints.pressTrim")}
+				hint="Trim video"
+				minHeight={48}
 				background={
-					showTrimWaveform ? (
-						<BackgroundWaveform
-							peaks={peaks}
-							videoDurationMs={videoDurationMs}
-							topInset={3}
-							bottomInset={3}
-						/>
-					) : undefined
+					<BackgroundWaveform
+						peaks={peaks}
+						videoDurationMs={videoDurationMs}
+						topInset={4}
+						bottomInset={4}
+					/>
 				}
 			>
 				{trimItems.map((item) => (
@@ -813,13 +843,31 @@ function Timeline({
 						key={item.id}
 						rowId={item.rowId}
 						span={item.span}
-						isSelected={
-							item.variant === "zoom" ? item.id === selectedZoomId : item.id === selectedTrimId
-						}
-						onSelect={() =>
-							item.variant === "zoom" ? onSelectZoom?.(item.id) : onSelectTrim?.(item.id)
-						}
-						variant={item.variant}
+						isSelected={item.id === selectedTrimId}
+						onSelect={() => onSelectTrim?.(item.id)}
+						variant="trim"
+					>
+						{item.label}
+					</Item>
+				))}
+			</Row>
+
+			{/* Row 2: Cursor telemetry track — Zoom items only */}
+			<Row
+				id={CURSOR_ROW_ID}
+				isEmpty={zoomItems.length === 0}
+				hint="Cursor & Zoom"
+				minHeight={40}
+			>
+				{zoomItems.map((item) => (
+					<Item
+						id={item.id}
+						key={item.id}
+						rowId={item.rowId}
+						span={item.span}
+						isSelected={item.id === selectedZoomId}
+						onSelect={() => onSelectZoom?.(item.id)}
+						variant="zoom"
 						zoomDepth={item.zoomDepth}
 						zoomCustomScale={item.zoomCustomScale}
 						isAutoFocus={item.isAutoFocus}
@@ -829,78 +877,51 @@ function Timeline({
 				))}
 			</Row>
 
-			<Row
-				id={ANNOTATION_ROW_ID}
-				isEmpty={annotationItems.length === 0}
-				hint={t("hints.pressAnnotation")}
-			>
-				{annotationItems.map((item) => (
-					<Item
-						id={item.id}
-						key={item.id}
-						rowId={item.rowId}
-						span={item.span}
-						isSelected={item.id === selectedAnnotationId}
-						onSelect={() => onSelectAnnotation?.(item.id)}
-						variant="annotation"
-					>
-						{item.label}
-					</Item>
-				))}
+			{/* Row 3: Switchable overlay row — speed / annotation / blur */}
+			<Row id={thirdRowId} isEmpty={thirdRowItems.length === 0} hint={thirdRowHint}>
+				{thirdRowMode === "annotation"
+					? annotationItems.map((item) => (
+							<Item
+								id={item.id}
+								key={item.id}
+								rowId={item.rowId}
+								span={item.span}
+								isSelected={item.id === selectedAnnotationId}
+								onSelect={() => onSelectAnnotation?.(item.id)}
+								variant="annotation"
+							>
+								{item.label}
+							</Item>
+						))
+					: thirdRowMode === "blur" && BLUR_REGIONS_ENABLED
+						? blurItems.map((item) => (
+								<Item
+									id={item.id}
+									key={item.id}
+									rowId={item.rowId}
+									span={item.span}
+									isSelected={item.id === selectedBlurId}
+									onSelect={() => onSelectBlur?.(item.id)}
+									variant={item.variant}
+								>
+									{item.label}
+								</Item>
+							))
+						: speedItems.map((item) => (
+								<Item
+									id={item.id}
+									key={item.id}
+									rowId={item.rowId}
+									span={item.span}
+									isSelected={item.id === selectedSpeedId}
+									onSelect={() => onSelectSpeed?.(item.id)}
+									variant="speed"
+									speedValue={item.speedValue}
+								>
+									{item.label}
+								</Item>
+							))}
 			</Row>
-
-			{BLUR_REGIONS_ENABLED && (
-				<Row id={BLUR_ROW_ID} isEmpty={blurItems.length === 0} hint={t("hints.pressBlur")}>
-					{blurItems.map((item) => (
-						<Item
-							id={item.id}
-							key={item.id}
-							rowId={item.rowId}
-							span={item.span}
-							isSelected={item.id === selectedBlurId}
-							onSelect={() => onSelectBlur?.(item.id)}
-							variant={item.variant}
-						>
-							{item.label}
-						</Item>
-					))}
-				</Row>
-			)}
-
-			<Row id={SPEED_ROW_ID} isEmpty={speedItems.length === 0} hint={t("hints.pressSpeed")}>
-				{speedItems.map((item) => (
-					<Item
-						id={item.id}
-						key={item.id}
-						rowId={item.rowId}
-						span={item.span}
-						isSelected={item.id === selectedSpeedId}
-						onSelect={() => onSelectSpeed?.(item.id)}
-						variant="speed"
-						speedValue={item.speedValue}
-					>
-						{item.label}
-					</Item>
-				))}
-			</Row>
-
-			{videoUrl && (
-				<Row
-					id={AUDIO_ROW_ID}
-					isEmpty={false}
-					minHeight={48}
-					background={
-						<BackgroundWaveform
-							peaks={peaks}
-							videoDurationMs={videoDurationMs}
-							topInset={2}
-							bottomInset={2}
-						/>
-					}
-				>
-					{null}
-				</Row>
-			)}
 		</div>
 	);
 }
@@ -955,8 +976,10 @@ export default function TimelineEditor({
 	captionsLabel,
 	isFullscreen,
 	onToggleFullscreen,
+	cursorTelemetry = [],
 }: TimelineEditorProps) {
 	const t = useScopedT("timeline");
+	const [thirdRowMode, setThirdRowMode] = useState<ThirdRowMode>("speed");
 	const totalMs = useMemo(() => Math.max(0, Math.round(videoDuration * 1000)), [videoDuration]);
 	const currentTimeMs = useMemo(() => Math.round(currentTime * 1000), [currentTime]);
 	const timelineScale = useMemo(() => calculateTimelineScale(videoDuration), [videoDuration]);
@@ -1362,7 +1385,7 @@ export default function TimelineEditor({
 	const timelineItems = useMemo<TimelineRenderItem[]>(() => {
 		const zooms: TimelineRenderItem[] = zoomRegions.map((region, index) => ({
 			id: region.id,
-			rowId: TRIM_ROW_ID,
+			rowId: CURSOR_ROW_ID,
 			span: { start: region.startMs, end: region.endMs },
 			label: t("labels.zoomItem", { index: String(index + 1) }),
 			zoomDepth: region.depth,
@@ -1723,6 +1746,47 @@ export default function TimelineEditor({
 							</Button>
 						)}
 					</div>
+					{/* Row mode switcher — controls which overlay row (Row 3) is shown */}
+					<div className="flex items-center gap-0.5 rounded-xl border border-white/[0.06] bg-white/[0.025] p-0.5 mx-1">
+						<button
+							type="button"
+							onClick={() => setThirdRowMode("speed")}
+							className={cn(
+								"h-6 px-2.5 rounded-lg text-[11px] font-semibold transition-all",
+								thirdRowMode === "speed"
+									? "bg-[#d97706]/20 text-[#d97706] border border-[#d97706]/30"
+									: "text-slate-500 hover:text-slate-300 hover:bg-white/[0.06]",
+							)}
+						>
+							Speed
+						</button>
+						<button
+							type="button"
+							onClick={() => setThirdRowMode("annotation")}
+							className={cn(
+								"h-6 px-2.5 rounded-lg text-[11px] font-semibold transition-all",
+								thirdRowMode === "annotation"
+									? "bg-[#B4A046]/20 text-[#B4A046] border border-[#B4A046]/30"
+									: "text-slate-500 hover:text-slate-300 hover:bg-white/[0.06]",
+							)}
+						>
+							Overlay
+						</button>
+						{BLUR_REGIONS_ENABLED && (
+							<button
+								type="button"
+								onClick={() => setThirdRowMode("blur")}
+								className={cn(
+									"h-6 px-2.5 rounded-lg text-[11px] font-semibold transition-all",
+									thirdRowMode === "blur"
+										? "bg-[#7dd3fc]/20 text-[#7dd3fc] border border-[#7dd3fc]/30"
+										: "text-slate-500 hover:text-slate-300 hover:bg-white/[0.06]",
+								)}
+							>
+								Blur
+							</button>
+						)}
+					</div>
 					<div className="flex items-center gap-1.5 min-w-0">
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
@@ -1814,6 +1878,8 @@ export default function TimelineEditor({
 							keyframes={keyframes}
 							videoUrl={videoUrl}
 							showTrimWaveform={showTrimWaveform}
+							thirdRowMode={thirdRowMode}
+							cursorTelemetry={cursorTelemetry}
 						/>
 					</TimelineWrapper>
 				</div>

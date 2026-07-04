@@ -72,15 +72,45 @@ export default function BackgroundWaveform({
 		if (!ctx) return;
 
 		ctx.scale(dpr, dpr);
-		ctx.fillStyle = "#181920";
-		ctx.fillRect(0, 0, canvasSize.w, canvasSize.h);
-
-		if (!peaks || peaks.length === 0 || normFactor === 0) return;
+		// Clear canvas to transparent (CSS handles the background color)
+		ctx.clearRect(0, 0, canvasSize.w, canvasSize.h);
 
 		const W = canvasSize.w;
 		const H = canvasSize.h;
 		const rangeMs = range.end - range.start;
 		if (rangeMs <= 0 || videoDurationMs <= 0) return;
+
+		// Calculate the visible portion of the video duration (0 to videoDurationMs)
+		const startX = Math.max(0, ((0 - range.start) / rangeMs) * W);
+		const endX = Math.min(W, ((videoDurationMs - range.start) / rangeMs) * W);
+		const barWidth = endX - startX;
+
+		// Draw the faint blue video bar background
+		if (barWidth > 0) {
+			const topY = topInset;
+			const bottomY = H - bottomInset;
+			ctx.fillStyle = "rgba(0, 10, 242, 0.08)"; // Faint brand blue
+			ctx.fillRect(startX, topY, barWidth, bottomY - topY);
+
+			// Top and bottom borders for the bar
+			ctx.strokeStyle = "rgba(0, 10, 242, 0.2)";
+			ctx.lineWidth = 1;
+			ctx.beginPath();
+			ctx.moveTo(startX, topY);
+			ctx.lineTo(startX + barWidth, topY);
+			ctx.moveTo(startX, bottomY);
+			ctx.lineTo(startX + barWidth, bottomY);
+			ctx.stroke();
+
+			// Draw "VIDEO" text in the center
+			ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
+			ctx.font = "bold 10px sans-serif";
+			ctx.textAlign = "center";
+			ctx.textBaseline = "middle";
+			ctx.fillText("VIDEO", startX + barWidth / 2, topY + (bottomY - topY) / 2);
+		}
+
+		if (!peaks || peaks.length === 0 || normFactor === 0) return;
 
 		// Draw within [topY, bottomY] so the waveform aligns with item bounds
 		// regardless of sub-pixel rounding on the canvas element.
@@ -124,7 +154,7 @@ export default function BackgroundWaveform({
 			ctx.lineTo(x, centerY + colY[x]);
 		}
 		ctx.closePath();
-		ctx.fillStyle = "rgba(34, 197, 94, 0.55)";
+		ctx.fillStyle = "rgba(0, 10, 242, 0.45)"; // Brand Blue fill
 		ctx.fill();
 
 		// Crisp top and bottom edges.
@@ -137,7 +167,7 @@ export default function BackgroundWaveform({
 		for (let x = 1; x < W; x++) {
 			ctx.lineTo(x, centerY + colY[x]);
 		}
-		ctx.strokeStyle = "rgba(34, 197, 94, 0.85)";
+		ctx.strokeStyle = "rgba(0, 10, 242, 0.85)"; // Brand Blue stroke
 		ctx.lineWidth = 1;
 		ctx.stroke();
 	}, [peaks, normFactor, range, canvasSize, videoDurationMs, topInset, bottomInset]);

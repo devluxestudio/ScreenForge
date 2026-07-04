@@ -72,7 +72,7 @@ export default function Item({
 				? glassStyles.glassAmber
 				: glassStyles.glassYellow;
 
-	const endCapColor = isZoom ? "#21916A" : isTrim ? "#ef4444" : isSpeed ? "#d97706" : "#B4A046";
+	const endCapColor = isZoom ? "#10b981" : isTrim ? "#ef4444" : isSpeed ? "#d97706" : "#B4A046";
 
 	const timeLabel = useMemo(
 		() => `${formatMs(span.start)} – ${formatMs(span.end)}`,
