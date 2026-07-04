@@ -3,8 +3,8 @@ import { MacNativeCursorRecordingSession } from "./macNativeCursorRecordingSessi
 import type { CursorRecordingSession } from "./session";
 import { TelemetryRecordingSession } from "./telemetryRecordingSession";
 import {
-	WindowsNativeRecordingSession,
 	hasWindowsCursorSampler,
+	WindowsNativeRecordingSession,
 } from "./windowsNativeRecordingSession";
 
 interface CreateCursorRecordingSessionOptions {

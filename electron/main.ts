@@ -19,8 +19,8 @@ import {
 } from "./globalShortcut";
 import { mainT, setMainLocale } from "./i18n";
 import {
-	getSelectedDesktopSource,
 	getPendingCursorCaptureMode,
+	getSelectedDesktopSource,
 	registerIpcHandlers,
 } from "./ipc/handlers";
 import { acquireStableInstanceLock } from "./singleInstanceLock";

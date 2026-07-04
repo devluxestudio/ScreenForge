@@ -6,9 +6,14 @@ import {
 	ChevronDown,
 	Gauge,
 	MessageSquare,
+	Pause,
+	Play,
 	Plus,
 	ScanEye,
 	Scissors,
+	SkipBack,
+	SkipForward,
+	Trash2,
 	WandSparkles,
 	ZoomIn,
 } from "lucide-react";
@@ -16,14 +21,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
-import PlaybackControls from "../PlaybackControls";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Slider } from "@/components/ui/slider";
 import { useScopedT } from "@/contexts/I18nContext";
 import { useShortcuts } from "@/contexts/ShortcutsContext";
 import { useAudioPeaks } from "@/hooks/useAudioPeaks";
@@ -242,6 +246,13 @@ function formatPlayheadTime(ms: number): string {
 	const sec = s % 60;
 	if (min > 0) return `${min}:${sec.toFixed(1).padStart(4, "0")}`;
 	return `${sec.toFixed(1)}s`;
+}
+
+function formatMMSS(seconds: number): string {
+	if (!isFinite(seconds) || isNaN(seconds) || seconds < 0) return "00:00";
+	const mins = Math.floor(seconds / 60);
+	const secs = Math.floor(seconds % 60);
+	return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
 }
 
 function shouldStartTimelineScrub(target: EventTarget | null, timelineElement: HTMLElement) {
@@ -599,7 +610,7 @@ function Timeline({
 	const localTimelineRef = useRef<HTMLDivElement | null>(null);
 	const isScrubbingTimelineRef = useRef(false);
 	const scrubPointerIdRef = useRef<number | null>(null);
-	const peaks = useAudioPeaks(showTrimWaveform ? videoUrl : undefined);
+	const peaks = useAudioPeaks(videoUrl);
 
 	const setRefs = useCallback(
 		(node: HTMLDivElement | null) => {
@@ -798,8 +809,12 @@ function Timeline({
 						key={item.id}
 						rowId={item.rowId}
 						span={item.span}
-						isSelected={item.variant === "zoom" ? item.id === selectedZoomId : item.id === selectedTrimId}
-						onSelect={() => (item.variant === "zoom" ? onSelectZoom?.(item.id) : onSelectTrim?.(item.id))}
+						isSelected={
+							item.variant === "zoom" ? item.id === selectedZoomId : item.id === selectedTrimId
+						}
+						onSelect={() =>
+							item.variant === "zoom" ? onSelectZoom?.(item.id) : onSelectTrim?.(item.id)
+						}
 						variant={item.variant}
 						zoomDepth={item.zoomDepth}
 						zoomCustomScale={item.zoomCustomScale}
@@ -869,7 +884,7 @@ function Timeline({
 				<Row
 					id={AUDIO_ROW_ID}
 					isEmpty={false}
-					minHeight={32}
+					minHeight={48}
 					background={
 						<BackgroundWaveform
 							peaks={peaks}
@@ -1512,29 +1527,95 @@ export default function TimelineEditor({
 	return (
 		<div className="flex-1 min-h-0 flex flex-col bg-[#09090b] overflow-hidden">
 			<div className="flex items-center justify-between px-3 py-1.5 border-b border-white/[0.06] bg-[#08090b]/95">
-				{/* Left: Playback Controls */}
-				<div className="flex items-center gap-2">
-					<PlaybackControls
-						isPlaying={isPlaying ?? false}
-						onTogglePlayPause={onTogglePlayPause ?? (() => {})}
-						currentTime={currentTime}
-						duration={videoDuration}
-						onSeek={onSeek ?? (() => {})}
-					/>
+				{/* Left Group: Playback Controls (⏮ ▶/|| ⏭) */}
+				<div className="flex items-center gap-1.5">
+					<Button
+						onClick={() => onSeek?.(0)}
+						variant="ghost"
+						size="icon"
+						className="h-7 w-7 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.07] transition-all"
+						title="Seek to Start"
+					>
+						<SkipBack className="w-4 h-4" />
+					</Button>
+					<Button
+						onClick={
+							onTogglePlayPause ??
+							(() => {
+								/* noop */
+							})
+						}
+						variant="ghost"
+						size="icon"
+						className="h-7 w-7 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.07] transition-all"
+						title={isPlaying ? "Pause" : "Play"}
+					>
+						{isPlaying ? (
+							<Pause className="w-4 h-4 fill-current" />
+						) : (
+							<Play className="w-4 h-4 fill-current ml-0.5" />
+						)}
+					</Button>
+					<Button
+						onClick={() => onSeek?.(videoDuration)}
+						variant="ghost"
+						size="icon"
+						className="h-7 w-7 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.07] transition-all"
+						title="Seek to End"
+					>
+						<SkipForward className="w-4 h-4" />
+					</Button>
 				</div>
 
-				{/* Center/Right: Action Buttons */}
+				{/* Center Group: Timecode Display */}
+				<div className="flex items-center justify-center">
+					<span className="text-xs font-semibold tabular-nums text-slate-300">
+						{formatMMSS(currentTime)} / {formatMMSS(videoDuration)}
+					</span>
+				</div>
+
+				{/* Right Group: Action Buttons */}
 				<div className="flex items-center gap-2">
 					<div className="flex items-center gap-0.5 rounded-xl border border-white/[0.06] bg-white/[0.025] p-0.5">
 						<Button
 							onClick={handleAddZoom}
 							variant="ghost"
-							size="icon"
-							className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#34B27B] hover:bg-[#34B27B]/10 transition-all"
+							size="sm"
+							className="h-7 px-2.5 rounded-lg text-xs font-medium text-slate-400 hover:text-[#34B27B] hover:bg-[#34B27B]/10 transition-all flex items-center gap-1"
 							title={t("buttons.addZoom")}
 						>
-							<ZoomIn className="w-4 h-4" />
+							<ZoomIn className="w-3.5 h-3.5" />
+							<span>Add Zoom</span>
 						</Button>
+
+						{selectedZoomId && (
+							<Button
+								onClick={deleteSelectedZoom}
+								variant="ghost"
+								size="sm"
+								className="h-7 px-2.5 rounded-lg text-xs font-medium text-red-400 hover:bg-red-500/10 transition-all flex items-center gap-1"
+								title="Delete Zoom"
+							>
+								<Trash2 className="w-3.5 h-3.5" />
+								<span>Delete Zoom</span>
+							</Button>
+						)}
+
+						{selectedTrimId && (
+							<Button
+								onClick={deleteSelectedTrim}
+								variant="ghost"
+								size="sm"
+								className="h-7 px-2.5 rounded-lg text-xs font-medium text-red-400 hover:bg-red-500/10 transition-all flex items-center gap-1"
+								title="Remove Clip"
+							>
+								<Trash2 className="w-3.5 h-3.5" />
+								<span>Remove Clip</span>
+							</Button>
+						)}
+
+						<div className="w-[1px] h-4 bg-white/10 mx-1" />
+
 						<Button
 							onClick={() => onToggleAutoZoom?.(!autoZoomEnabled)}
 							variant="ghost"
@@ -1648,70 +1729,74 @@ export default function TimelineEditor({
 							</DropdownMenuContent>
 						</DropdownMenu>
 					</div>
-
-					<div className="flex items-center gap-2 px-2 text-slate-400">
-						<ZoomIn className="w-4 h-4" />
-						<Slider
-							value={[pixelsToValue(pixelsPerMs)]}
-							min={0}
-							max={100}
-							step={1}
-							onValueChange={handleSliderZoom}
-							className="w-24"
-						/>
-						<span className="text-[10px] w-8 text-right font-medium">
-							{Math.round(pixelsToValue(pixelsPerMs))}%
-						</span>
-					</div>
 				</div>
 			</div>
-			<div
-				ref={timelineContainerRef}
-				className="flex-1 min-h-0 overflow-auto custom-scrollbar bg-[#09090b] relative"
-				onClick={() => setSelectedKeyframeId(null)}
-			>
-				<TimelineWrapper
-					range={clampedRange}
-					videoDuration={videoDuration}
-					hasOverlap={hasOverlap}
-					onRangeChange={setRange}
-					minItemDurationMs={timelineScale.minItemDurationMs}
-					minVisibleRangeMs={timelineScale.minVisibleRangeMs}
-					onItemSpanChange={handleItemSpanChange}
-					allRegionSpans={allRegionSpans}
-					softSnapSpans={softSnapSpans}
-					currentTimeMs={currentTimeMs}
-					keyframeTimesMs={keyframeTimesMs}
+
+			<div className="flex-1 min-h-0 relative">
+				{/* Absolute Overlay Zoom Slider */}
+				<div className="absolute top-2 right-4 z-30 flex items-center gap-1.5 px-2.5 py-1 rounded-xl border border-white/[0.08] bg-[#0c0c0e]/90 shadow-lg backdrop-blur-md text-slate-400">
+					<ZoomIn className="w-3.5 h-3.5 text-slate-400" />
+					<Slider
+						value={[pixelsToValue(pixelsPerMs)]}
+						min={0}
+						max={100}
+						step={1}
+						onValueChange={handleSliderZoom}
+						className="w-20"
+					/>
+					<span className="text-[10px] w-8 text-right font-medium text-slate-400 tabular-nums">
+						{Math.round(pixelsToValue(pixelsPerMs))}%
+					</span>
+				</div>
+
+				<div
+					ref={timelineContainerRef}
+					className="w-full h-full overflow-auto custom-scrollbar bg-[#09090b]"
+					onClick={() => setSelectedKeyframeId(null)}
 				>
-					<KeyframeMarkers
-						keyframes={keyframes}
-						selectedKeyframeId={selectedKeyframeId}
-						setSelectedKeyframeId={setSelectedKeyframeId}
-						onKeyframeMove={handleKeyframeMove}
-						videoDurationMs={totalMs}
-						timelineRef={timelineContainerRef}
-					/>
-					<Timeline
-						items={timelineItems}
-						videoDurationMs={totalMs}
-						currentTimeMs={currentTimeMs}
-						onSeek={onSeek}
+					<TimelineWrapper
+						range={clampedRange}
+						videoDuration={videoDuration}
+						hasOverlap={hasOverlap}
 						onRangeChange={setRange}
-						onSelectZoom={onSelectZoom}
-						onSelectTrim={onSelectTrim}
-						onSelectAnnotation={onSelectAnnotation}
-						onSelectBlur={onSelectBlur}
-						onSelectSpeed={onSelectSpeed}
-						selectedZoomId={selectedZoomId}
-						selectedTrimId={selectedTrimId}
-						selectedAnnotationId={selectedAnnotationId}
-						selectedBlurId={selectedBlurId}
-						selectedSpeedId={selectedSpeedId}
-						keyframes={keyframes}
-						videoUrl={videoUrl}
-						showTrimWaveform={showTrimWaveform}
-					/>
-				</TimelineWrapper>
+						minItemDurationMs={timelineScale.minItemDurationMs}
+						minVisibleRangeMs={timelineScale.minVisibleRangeMs}
+						onItemSpanChange={handleItemSpanChange}
+						allRegionSpans={allRegionSpans}
+						softSnapSpans={softSnapSpans}
+						currentTimeMs={currentTimeMs}
+						keyframeTimesMs={keyframeTimesMs}
+					>
+						<KeyframeMarkers
+							keyframes={keyframes}
+							selectedKeyframeId={selectedKeyframeId}
+							setSelectedKeyframeId={setSelectedKeyframeId}
+							onKeyframeMove={handleKeyframeMove}
+							videoDurationMs={totalMs}
+							timelineRef={timelineContainerRef}
+						/>
+						<Timeline
+							items={timelineItems}
+							videoDurationMs={totalMs}
+							currentTimeMs={currentTimeMs}
+							onSeek={onSeek}
+							onRangeChange={setRange}
+							onSelectZoom={onSelectZoom}
+							onSelectTrim={onSelectTrim}
+							onSelectAnnotation={onSelectAnnotation}
+							onSelectBlur={onSelectBlur}
+							onSelectSpeed={onSelectSpeed}
+							selectedZoomId={selectedZoomId}
+							selectedTrimId={selectedTrimId}
+							selectedAnnotationId={selectedAnnotationId}
+							selectedBlurId={selectedBlurId}
+							selectedSpeedId={selectedSpeedId}
+							keyframes={keyframes}
+							videoUrl={videoUrl}
+							showTrimWaveform={showTrimWaveform}
+						/>
+					</TimelineWrapper>
+				</div>
 			</div>
 		</div>
 	);

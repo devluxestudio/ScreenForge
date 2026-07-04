@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type { KeystrokeEvent } from "../contracts";
 import { nativeBridgeClient } from "../client";
+import type { KeystrokeEvent } from "../contracts";
 
 interface UseKeystrokeTelemetryResult {
 	events: KeystrokeEvent[];

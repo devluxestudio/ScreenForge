@@ -1,6 +1,6 @@
 import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process";
 import { EventEmitter } from "node:events";
-import { constants as fsConstants, existsSync, mkdirSync } from "node:fs";
+import { existsSync, constants as fsConstants, mkdirSync } from "node:fs";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";

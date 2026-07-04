@@ -72,7 +72,8 @@ export default function BackgroundWaveform({
 		if (!ctx) return;
 
 		ctx.scale(dpr, dpr);
-		ctx.clearRect(0, 0, canvasSize.w, canvasSize.h);
+		ctx.fillStyle = "#181920";
+		ctx.fillRect(0, 0, canvasSize.w, canvasSize.h);
 
 		if (!peaks || peaks.length === 0 || normFactor === 0) return;
 

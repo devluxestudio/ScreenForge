@@ -1,8 +1,8 @@
 import { ipcMain } from "electron";
 import {
+	type KeystrokeRecordingData,
 	NATIVE_BRIDGE_CHANNEL,
 	NATIVE_BRIDGE_VERSION,
-	type KeystrokeRecordingData,
 	type NativeBridgeErrorCode,
 	type NativeBridgeRequest,
 	type NativeBridgeResponse,

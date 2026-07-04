@@ -129,10 +129,14 @@ export default function Item({
 						title="Resize right"
 					/>
 					{/* Content */}
-					<div className={cn(
-						"relative z-10 flex min-w-0 items-center justify-center text-white/90 select-none overflow-hidden",
-						isZoom ? "gap-1 px-2 opacity-100" : "flex-col opacity-85 group-hover:opacity-100 transition-opacity px-3"
-					)}>
+					<div
+						className={cn(
+							"relative z-10 flex min-w-0 items-center justify-center text-white/90 select-none overflow-hidden",
+							isZoom
+								? "gap-1 px-2 opacity-100"
+								: "flex-col opacity-85 group-hover:opacity-100 transition-opacity px-3",
+						)}
+					>
 						<div className={cn("flex items-center", isZoom ? "gap-1" : "gap-1.5")}>
 							{isZoom ? (
 								<>

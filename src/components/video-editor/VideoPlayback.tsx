@@ -48,13 +48,13 @@ import {
 	getNativeAspectRatioValue,
 } from "@/utils/aspectRatioUtils";
 import { AnnotationOverlay } from "./AnnotationOverlay";
-import { KeystrokeOverlay } from "./KeystrokeOverlay";
 import {
 	DEFAULT_CURSOR_SETTINGS,
 	DEFAULT_EDITOR_LAYOUT_SETTINGS,
-	DEFAULT_SOURCE_DIMENSIONS,
 	DEFAULT_KEYSTROKE_SETTINGS,
+	DEFAULT_SOURCE_DIMENSIONS,
 } from "./editorDefaults";
+import { KeystrokeOverlay } from "./KeystrokeOverlay";
 import {
 	type AnnotationRegion,
 	type BlurData,

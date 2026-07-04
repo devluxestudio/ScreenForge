@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { KeystrokeEvent } from "@/native/contracts";
-import type { KeystrokePosition, KeystrokeDesign } from "./types";
+import type { KeystrokeDesign, KeystrokePosition } from "./types";
 
 interface KeystrokeOverlayProps {
 	events: KeystrokeEvent[];
