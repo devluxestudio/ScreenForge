@@ -89,11 +89,11 @@ export default function BackgroundWaveform({
 		if (barWidth > 0) {
 			const topY = topInset;
 			const bottomY = H - bottomInset;
-			ctx.fillStyle = "rgba(0, 10, 242, 0.08)"; // Faint brand blue
+			ctx.fillStyle = "#0034F5"; // Solid brand blue
 			ctx.fillRect(startX, topY, barWidth, bottomY - topY);
 
 			// Top and bottom borders for the bar
-			ctx.strokeStyle = "rgba(0, 10, 242, 0.2)";
+			ctx.strokeStyle = "#0028C2"; // Slightly darker blue for borders
 			ctx.lineWidth = 1;
 			ctx.beginPath();
 			ctx.moveTo(startX, topY);
@@ -103,7 +103,7 @@ export default function BackgroundWaveform({
 			ctx.stroke();
 
 			// Draw "VIDEO" text in the center
-			ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
+			ctx.fillStyle = "rgba(255, 255, 255, 0.6)"; // White text for contrast
 			ctx.font = "bold 10px sans-serif";
 			ctx.textAlign = "center";
 			ctx.textBaseline = "middle";
@@ -154,7 +154,7 @@ export default function BackgroundWaveform({
 			ctx.lineTo(x, centerY + colY[x]);
 		}
 		ctx.closePath();
-		ctx.fillStyle = "rgba(0, 10, 242, 0.45)"; // Brand Blue fill
+		ctx.fillStyle = "rgba(255, 255, 255, 0.35)"; // White waveform for contrast against solid blue
 		ctx.fill();
 
 		// Crisp top and bottom edges.
