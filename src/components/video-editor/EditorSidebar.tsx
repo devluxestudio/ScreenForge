@@ -16,9 +16,9 @@ interface EditorSidebarProps {
 
 export function EditorSidebar({ modes, activeMode, onModeChange }: EditorSidebarProps) {
 	return (
-		<div className="w-[48px] h-full flex-shrink-0 flex flex-col items-center bg-[#111827] border-r border-white/5 py-4 z-50">
+		<div className="w-[48px] h-full flex-shrink-0 flex flex-col items-center bg-[#0A0D0F] border-r border-white/5 py-4 z-50">
 			{/* Logo */}
-			<div className="w-8 h-8 rounded-lg bg-[#3b82f6] flex items-center justify-center mb-6 shadow-sm">
+			<div className="w-8 h-8 rounded-lg bg-[#000AF2] flex items-center justify-center mb-6 shadow-sm">
 				<span className="text-white font-bold text-sm tracking-tighter">SF</span>
 			</div>
 
@@ -39,7 +39,7 @@ export function EditorSidebar({ modes, activeMode, onModeChange }: EditorSidebar
 								mode.disabled
 									? "cursor-not-allowed opacity-30"
 									: isActive
-										? "bg-[#1e40af] text-white opacity-100"
+										? "bg-[#000AF2] text-white opacity-100"
 										: "text-white opacity-50 hover:opacity-100 hover:bg-white/[0.04]",
 							)}
 						>
@@ -51,7 +51,7 @@ export function EditorSidebar({ modes, activeMode, onModeChange }: EditorSidebar
 
 			{/* Bottom Profile / Settings */}
 			<div className="flex flex-col gap-3 mt-auto w-full items-center">
-				<button className="flex h-8 w-8 items-center justify-center rounded-full bg-[#3b82f6] text-white font-semibold text-xs transition-transform hover:scale-105 shadow-sm">
+				<button className="flex h-8 w-8 items-center justify-center rounded-full bg-[#000AF2] text-white font-semibold text-xs transition-transform hover:scale-105 shadow-sm">
 					OL
 				</button>
 			</div>

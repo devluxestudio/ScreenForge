@@ -5,7 +5,9 @@ import {
 	Check,
 	ChevronDown,
 	Gauge,
+	Maximize,
 	MessageSquare,
+	Minimize,
 	Pause,
 	Play,
 	Plus,
@@ -102,6 +104,8 @@ interface TimelineEditorProps {
 	isGeneratingCaptions?: boolean;
 	/** Localized label for the auto-captions button (lives in the `editor` namespace). */
 	captionsLabel?: string;
+	isFullscreen?: boolean;
+	onToggleFullscreen?: () => void;
 }
 
 interface TimelineScaleConfig {
@@ -949,6 +953,8 @@ export default function TimelineEditor({
 	onGenerateCaptions,
 	isGeneratingCaptions = false,
 	captionsLabel,
+	isFullscreen,
+	onToggleFullscreen,
 }: TimelineEditorProps) {
 	const t = useScopedT("timeline");
 	const totalMs = useMemo(() => Math.max(0, Math.round(videoDuration * 1000)), [videoDuration]);
@@ -1506,7 +1512,7 @@ export default function TimelineEditor({
 
 	if (!videoDuration || videoDuration === 0) {
 		return (
-			<div className="flex-1 flex flex-col items-center justify-center rounded-lg bg-[#09090b] gap-3">
+			<div className="flex-1 flex flex-col items-center justify-center bg-[#0A0D0F] gap-3">
 				<div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center">
 					<Plus className="w-6 h-6 text-slate-600" />
 				</div>
@@ -1525,8 +1531,8 @@ export default function TimelineEditor({
 	}
 
 	return (
-		<div className="flex-1 min-h-0 flex flex-col bg-[#09090b] overflow-hidden">
-			<div className="flex items-center justify-between px-3 py-1.5 border-b border-white/[0.06] bg-[#08090b]/95">
+		<div className="flex-1 min-h-0 flex flex-col bg-[#0A0D0F] overflow-hidden">
+			<div className="flex items-center justify-between px-3 py-1.5 border-b border-white/[0.06] bg-[#0A0D0F]/95">
 				{/* Left Group: Playback Controls (⏮ ▶/|| ⏭) */}
 				<div className="flex items-center gap-1.5">
 					<Button
@@ -1564,6 +1570,20 @@ export default function TimelineEditor({
 						title="Seek to End"
 					>
 						<SkipForward className="w-4 h-4" />
+					</Button>
+					<Button
+						onClick={
+							onToggleFullscreen ??
+							(() => {
+								/* noop */
+							})
+						}
+						variant="ghost"
+						size="icon"
+						className="h-7 w-7 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.07] transition-all ml-1"
+						title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+					>
+						{isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
 					</Button>
 				</div>
 
@@ -1751,7 +1771,7 @@ export default function TimelineEditor({
 
 				<div
 					ref={timelineContainerRef}
-					className="w-full h-full overflow-auto custom-scrollbar bg-[#09090b]"
+					className="w-full h-full overflow-auto custom-scrollbar bg-[#0A0D0F]"
 					onClick={() => setSelectedKeyframeId(null)}
 				>
 					<TimelineWrapper

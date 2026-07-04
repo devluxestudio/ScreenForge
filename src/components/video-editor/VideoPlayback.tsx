@@ -1991,7 +1991,7 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 						>
 							<div
 								ref={focusIndicatorRef}
-								className="absolute rounded-md border border-[#3b82f6]/80 bg-[#3b82f6]/20 shadow-[0_0_0_1px_rgba(52,178,123,0.35)]"
+								className="absolute rounded-md border border-[#000AF2]/80 bg-[#000AF2]/20 shadow-[0_0_0_1px_rgba(52,178,123,0.35)]"
 								style={{ display: "none", pointerEvents: "none" }}
 							/>
 							{(() => {

@@ -80,8 +80,8 @@
 		flex-direction: column;
 		padding: 14px;
 		background:
-			radial-gradient(circle at 18% 0%, rgba(52, 178, 123, 0.08), transparent 30%),
-			linear-gradient(180deg, #08090b 0%, #050606 100%);
+			radial-gradient(circle at 18% 0%, rgba(0, 10, 242, 0.08), transparent 30%),
+			linear-gradient(180deg, #0A0D0F 0%, #050606 100%);
 	}
 
 	.editor-main-deck {
@@ -100,21 +100,17 @@
 	.editor-preview-panel,
 	.editor-timeline-panel,
 	.editor-inspector-shell {
-		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-			#090a0c;
+		background: #0A0D0F;
 		border: 1px solid rgba(255, 255, 255, 0.075);
-		border-radius: 18px;
+		border-radius: 0px;
 		box-shadow:
 			0 24px 70px rgba(0, 0, 0, 0.42),
 			inset 0 1px 0 rgba(255, 255, 255, 0.045);
 	}
 
 	.editor-timeline-panel {
-		border-radius: 16px;
-		background:
-			linear-gradient(180deg, rgba(18, 20, 24, 0.96), rgba(8, 9, 11, 0.98)),
-			#090a0c;
+		border-radius: 0px;
+		background: #0A0D0F;
 	}
 
 	.editor-resize-handle {
@@ -245,7 +241,7 @@
 	}
 
 	.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-		background: rgba(52, 178, 123, 0.55);
+		background: rgba(0, 10, 242, 0.55);
 		border: 3px solid transparent;
 		background-clip: content-box;
 	}
@@ -277,7 +273,7 @@
 		background: #fff;
 		transform: scale(1.15);
 		box-shadow: 0 3px 10px rgba(255, 255, 255, 0.5);
-		border-color: #3b82f6;
+		border-color: #000AF2;
 	}
 
 	input[type="range"]::-webkit-slider-thumb:active {
@@ -299,7 +295,7 @@
 		background: #fff;
 		transform: scale(1.15);
 		box-shadow: 0 3px 10px rgba(255, 255, 255, 0.5);
-		border-color: #3b82f6;
+		border-color: #000AF2;
 	}
 
 	input[type="range"]::-moz-range-thumb:active {

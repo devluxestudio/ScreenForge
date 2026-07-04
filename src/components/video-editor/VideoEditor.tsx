@@ -94,7 +94,6 @@ import {
 	DEFAULT_KEYSTROKE_SETTINGS,
 	DEFAULT_SOURCE_DIMENSIONS,
 } from "./editorDefaults";
-import PlaybackControls from "./PlaybackControls";
 import {
 	createProjectData,
 	createProjectSnapshot,
@@ -2379,19 +2378,6 @@ export default function VideoEditor() {
 		[videoPath, trimRegions, pushState, t],
 	);
 
-	const handleSaveDiagnostic = useCallback(async () => {
-		const result = await window.electronAPI.saveDiagnostic({
-			error: exportError ?? "Manual diagnostic export",
-			projectState: editorState,
-			logs: [],
-		});
-		if (result.success) {
-			toast.success("Diagnostic file saved");
-		} else if (!result.canceled) {
-			toast.error("Failed to save diagnostic file");
-		}
-	}, [exportError, editorState]);
-
 	if (loading) {
 		return (
 			<div className="flex items-center justify-center h-screen bg-background">
@@ -2417,7 +2403,7 @@ export default function VideoEditor() {
 	}
 
 	return (
-		<div className="flex flex-col h-screen bg-[#09090b] text-slate-200 overflow-hidden selection:bg-[#34B27B]/30">
+		<div className="flex flex-col h-screen bg-[#0A0D0F] text-slate-200 overflow-hidden selection:bg-[#34B27B]/30">
 			<Dialog open={showNewRecordingDialog} onOpenChange={setShowNewRecordingDialog}>
 				<DialogContent
 					className="sm:max-w-[425px]"
@@ -2600,7 +2586,7 @@ export default function VideoEditor() {
 			{videoPath && (
 				<div className="flex flex-1 min-h-0 overflow-hidden">
 					{/* ── Left icon rail ── */}
-					<div className="w-12 flex-shrink-0 bg-[#0c0c0e] border-r border-white/[0.06] flex flex-col items-center pt-2 pb-3 gap-0.5">
+					<div className="w-12 flex-shrink-0 bg-[#0A0D0F] border-r border-white/[0.06] flex flex-col items-center pt-2 pb-3 gap-0.5">
 						{(
 							[
 								{ id: "background" as const, icon: Palette, label: "Background" },
@@ -2623,7 +2609,7 @@ export default function VideoEditor() {
 								onClick={() => setActivePanelMode(id)}
 								className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-150 ${
 									activePanelMode === id
-										? "bg-[#1e40af] text-white"
+										? "bg-[#000AF2] text-white"
 										: "text-white/50 hover:text-white hover:bg-white/[0.07]"
 								}`}
 							>
@@ -2642,7 +2628,7 @@ export default function VideoEditor() {
 										ref={playerContainerRef}
 										className={
 											isFullscreen
-												? "fixed inset-0 z-[99999] w-full h-full flex flex-col items-center justify-center bg-[#09090b]"
+												? "fixed inset-0 z-[99999] w-full h-full flex flex-col items-center justify-center bg-[#0A0D0F]"
 												: "editor-preview-panel w-full h-full flex flex-col items-center justify-center overflow-hidden relative"
 										}
 									>
@@ -2662,7 +2648,7 @@ export default function VideoEditor() {
 																)
 															: getAspectRatioValue(aspectRatio),
 													border: "2px solid rgba(239, 68, 68, 0.6)",
-													borderRadius: "4px",
+													borderRadius: "0px",
 													boxShadow:
 														"0 0 0 1px rgba(239, 68, 68, 0.2), 0 4px 24px rgba(0, 0, 0, 0.5)",
 												}}
@@ -2731,20 +2717,6 @@ export default function VideoEditor() {
 												/>
 											</div>
 										</div>
-										{/* Playback controls */}
-										<div className="w-full flex justify-center items-center h-14 flex-shrink-0 px-4 py-2">
-											<div className="w-full max-w-[760px]">
-												<PlaybackControls
-													isPlaying={isPlaying}
-													currentTime={currentTime}
-													duration={duration}
-													isFullscreen={isFullscreen}
-													onToggleFullscreen={toggleFullscreen}
-													onTogglePlayPause={togglePlayPause}
-													onSeek={handleSeek}
-												/>
-											</div>
-										</div>
 									</div>
 								</div>
 							</Panel>
@@ -2759,6 +2731,10 @@ export default function VideoEditor() {
 									<TimelineEditor
 										videoDuration={duration}
 										currentTime={currentTime}
+										isPlaying={isPlaying}
+										onTogglePlayPause={togglePlayPause}
+										isFullscreen={isFullscreen}
+										onToggleFullscreen={toggleFullscreen}
 										onSeek={handleSeek}
 										zoomRegions={zoomRegions}
 										onZoomAdded={handleZoomAdded}
@@ -2966,7 +2942,6 @@ export default function VideoEditor() {
 							onSpeedDelete={handleSpeedDelete}
 							unsavedExport={unsavedExport}
 							onSaveUnsavedExport={handleSaveUnsavedExport}
-							onSaveDiagnostic={handleSaveDiagnostic}
 							showCursor={showCursor}
 							onShowCursorChange={setShowCursor}
 							cursorSize={cursorSize}

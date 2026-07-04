@@ -96,8 +96,8 @@ export function ExportDialog({
 					<div className="flex items-center gap-4">
 						{showSuccess ? (
 							<>
-								<div className="w-12 h-12 rounded-full bg-[#3b82f6]/20 flex items-center justify-center ring-1 ring-[#3b82f6]/50">
-									<Download className="w-6 h-6 text-[#3b82f6]" />
+								<div className="w-12 h-12 rounded-full bg-[#000AF2]/20 flex items-center justify-center ring-1 ring-[#000AF2]/50">
+									<Download className="w-6 h-6 text-[#000AF2]" />
 								</div>
 								<div className="flex flex-col gap-2">
 									<span className="text-xl font-bold text-slate-200 block">
@@ -125,8 +125,8 @@ export function ExportDialog({
 						) : (
 							<>
 								{isExporting ? (
-									<div className="w-12 h-12 rounded-full bg-[#3b82f6]/10 flex items-center justify-center">
-										<Loader2 className="w-6 h-6 text-[#3b82f6] animate-spin" />
+									<div className="w-12 h-12 rounded-full bg-[#000AF2]/10 flex items-center justify-center">
+										<Loader2 className="w-6 h-6 text-[#000AF2] animate-spin" />
 									</div>
 								) : (
 									<div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
@@ -194,13 +194,13 @@ export function ExportDialog({
 									// Real progress if we have it, otherwise an indeterminate bar.
 									renderProgress !== undefined && renderProgress > 0 ? (
 										<div
-											className="h-full bg-[#3b82f6] shadow-[0_0_10px_rgba(52,178,123,0.3)] transition-all duration-300 ease-out"
+											className="h-full bg-[#000AF2] shadow-[0_0_10px_rgba(52,178,123,0.3)] transition-all duration-300 ease-out"
 											style={{ width: `${renderProgress}%` }}
 										/>
 									) : (
 										<div className="h-full w-full relative overflow-hidden">
 											<div
-												className="absolute h-full w-1/3 bg-[#3b82f6] shadow-[0_0_10px_rgba(52,178,123,0.3)]"
+												className="absolute h-full w-1/3 bg-[#000AF2] shadow-[0_0_10px_rgba(52,178,123,0.3)]"
 												style={{
 													animation: "indeterminate 1.5s ease-in-out infinite",
 												}}
@@ -215,7 +215,7 @@ export function ExportDialog({
 									)
 								) : (
 									<div
-										className="h-full bg-[#3b82f6] shadow-[0_0_10px_rgba(52,178,123,0.3)] transition-all duration-300 ease-out"
+										className="h-full bg-[#000AF2] shadow-[0_0_10px_rgba(52,178,123,0.3)] transition-all duration-300 ease-out"
 										style={{ width: `${Math.min(progress.percentage, 100)}%` }}
 									/>
 								)}
