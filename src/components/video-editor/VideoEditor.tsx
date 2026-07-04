@@ -5,12 +5,17 @@ import {
 	FolderOpen,
 	Keyboard,
 	Languages,
+	Layers,
 	LayoutPanelTop,
 	MousePointerClick,
 	Palette,
+	PenLine,
 	Save,
+	Scissors,
 	SlidersHorizontal,
+	Stamp,
 	Video,
+	Wand2,
 } from "lucide-react";
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
@@ -344,7 +349,21 @@ export default function VideoEditor() {
 	const [captionWordsMin, setCaptionWordsMin] = useState(2);
 	const [captionWordsMax, setCaptionWordsMax] = useState(7);
 	const exporterRef = useRef<VideoExporter | null>(null);
-	const [activePanelMode, setActivePanelMode] = useState<SettingsPanelMode>("background");
+	const [activePanelMode, setActivePanelMode] = useState<SettingsPanelMode>("canvas");
+
+	useEffect(() => {
+		if (selectedZoomId) {
+			setActivePanelMode("tools");
+		} else if (selectedTrimId) {
+			setActivePanelMode("trim");
+		} else if (selectedAnnotationId) {
+			setActivePanelMode("annotation");
+		} else if (selectedBlurId) {
+			setActivePanelMode("overlay");
+		} else if (selectedSpeedId) {
+			setActivePanelMode("tools");
+		}
+	}, [selectedZoomId, selectedTrimId, selectedAnnotationId, selectedBlurId, selectedSpeedId]);
 
 	const annotationOnlyRegions = useMemo(
 		() => annotationRegions.filter((region) => region.type !== "blur"),
@@ -2589,13 +2608,13 @@ export default function VideoEditor() {
 					<div className="w-12 flex-shrink-0 bg-[#0A0D0F] border-r border-white/[0.06] flex flex-col items-center pt-2 pb-3 gap-0.5">
 						{(
 							[
-								{ id: "background" as const, icon: Palette, label: "Background" },
-								{ id: "effects" as const, icon: SlidersHorizontal, label: "Effects" },
-								{ id: "layout" as const, icon: LayoutPanelTop, label: "Layout" },
-								{ id: "cursor" as const, icon: MousePointerClick, label: "Cursor" },
-								{ id: "timeline" as const, icon: Brackets, label: "Timeline" },
-								{ id: "keystrokes" as const, icon: Keyboard, label: "Keystrokes" },
-								{ id: "export" as const, icon: Download, label: "Export" },
+								{ id: "canvas" as const, icon: Palette, label: "Canvas" },
+								{ id: "overlay" as const, icon: Layers, label: "Overlay" },
+								{ id: "trim" as const, icon: Scissors, label: "Trim" },
+								{ id: "webcam" as const, icon: Video, label: "Webcam" },
+								{ id: "watermark" as const, icon: Stamp, label: "Watermark" },
+								{ id: "annotation" as const, icon: PenLine, label: "Annotation" },
+								{ id: "tools" as const, icon: Wand2, label: "Tools" },
 							] as Array<{
 								id: SettingsPanelMode;
 								icon: React.ComponentType<{ size?: number; className?: string }>;
@@ -2621,17 +2640,17 @@ export default function VideoEditor() {
 					{/* Main center area (Video + Timeline) */}
 					<div className="flex-1 min-w-0 bg-[#0A0D0F] flex flex-col overflow-hidden">
 						{/* Video preview panel */}
-						<div className="flex-1 relative flex flex-col items-center justify-center p-8 min-h-0">
+						<div className="flex-1 relative flex flex-col items-center justify-center p-4 min-h-0">
 							<div
 								ref={playerContainerRef}
 								className={
 									isFullscreen
 										? "fixed inset-0 z-[99999] w-full h-full flex flex-col items-center justify-center bg-[#0A0D0F]"
-										: "editor-preview-panel w-full h-full flex flex-col items-center justify-center overflow-hidden relative"
+										: "w-full h-full flex flex-col items-center justify-center overflow-hidden relative"
 								}
 							>
 								{/* Video preview */}
-								<div className="w-full min-h-0 flex justify-center items-center flex-auto px-4 pt-4">
+								<div className="w-full min-h-0 flex justify-center items-center flex-auto p-2">
 									<div
 										className="relative flex justify-center items-center w-auto h-full max-w-full box-border"
 										style={{

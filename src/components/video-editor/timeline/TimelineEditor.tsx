@@ -8,10 +8,10 @@ import {
 	Maximize,
 	MessageSquare,
 	Minimize,
+	Minus,
 	Pause,
 	Play,
 	Plus,
-	Minus,
 	ScanEye,
 	Scissors,
 	SkipBack,
@@ -854,12 +854,7 @@ function Timeline({
 			</Row>
 
 			{/* Row 2: Cursor telemetry track — Zoom items only */}
-			<Row
-				id={CURSOR_ROW_ID}
-				isEmpty={zoomItems.length === 0}
-				hint="Cursor & Zoom"
-				minHeight={40}
-			>
+			<Row id={CURSOR_ROW_ID} isEmpty={zoomItems.length === 0} hint="Cursor & Zoom" minHeight={40}>
 				{zoomItems.map((item) => (
 					<Item
 						id={item.id}
@@ -1527,7 +1522,7 @@ export default function TimelineEditor({
 			const px = valueToPixels(val);
 			const newDuration = getContainerWidth() / px;
 			const centerMs = range.start + (range.end - range.start) / 2;
-			
+
 			let start = centerMs - newDuration / 2;
 			let end = start + newDuration;
 
@@ -1620,7 +1615,7 @@ export default function TimelineEditor({
 					>
 						{isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
 					</Button>
-					
+
 					{/* Duration display moved to left controls */}
 					<div className="ml-2 flex items-center justify-center bg-white/[0.03] px-2 py-0.5 rounded-md border border-white/5">
 						<span className="text-[11px] font-semibold tabular-nums text-slate-300">
@@ -1770,12 +1765,19 @@ export default function TimelineEditor({
 									className="h-7 px-2.5 rounded-lg text-[11px] font-semibold text-slate-300 hover:text-white border border-white/[0.06] bg-white/[0.025] hover:bg-white/[0.07] transition-all gap-1.5"
 								>
 									<span>
-										{thirdRowMode === "speed" ? "Speed" : thirdRowMode === "annotation" ? "Overlay" : "Blur"}
+										{thirdRowMode === "speed"
+											? "Speed"
+											: thirdRowMode === "annotation"
+												? "Overlay"
+												: "Blur"}
 									</span>
 									<ChevronDown className="w-3 h-3 text-slate-500" />
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent align="center" className="bg-[#1a1a1a] border-white/10 min-w-[120px]">
+							<DropdownMenuContent
+								align="center"
+								className="bg-[#1a1a1a] border-white/10 min-w-[120px]"
+							>
 								<DropdownMenuItem
 									onClick={() => setThirdRowMode("speed")}
 									className="text-slate-300 hover:text-white hover:bg-white/10 cursor-pointer flex items-center justify-between gap-3 text-[11px] font-semibold"
@@ -1803,7 +1805,10 @@ export default function TimelineEditor({
 						</DropdownMenu>
 					</div>
 					<div className="flex items-center gap-2 px-3 py-1 mx-1 rounded-full border border-white/[0.06] bg-white/[0.025]">
-						<button onClick={() => handleSliderZoom([Math.max(0, pixelsToValue(pixelsPerMs) - 10)])} className="text-slate-400 hover:text-white transition-colors cursor-pointer outline-none">
+						<button
+							onClick={() => handleSliderZoom([Math.max(0, pixelsToValue(pixelsPerMs) - 10)])}
+							className="text-slate-400 hover:text-white transition-colors cursor-pointer outline-none"
+						>
 							<Minus className="w-3.5 h-3.5" />
 						</button>
 						<Slider
@@ -1814,7 +1819,10 @@ export default function TimelineEditor({
 							onValueChange={handleSliderZoom}
 							className="w-[80px]"
 						/>
-						<button onClick={() => handleSliderZoom([Math.min(100, pixelsToValue(pixelsPerMs) + 10)])} className="text-slate-400 hover:text-white transition-colors cursor-pointer outline-none">
+						<button
+							onClick={() => handleSliderZoom([Math.min(100, pixelsToValue(pixelsPerMs) + 10)])}
+							className="text-slate-400 hover:text-white transition-colors cursor-pointer outline-none"
+						>
 							<Plus className="w-3.5 h-3.5" />
 						</button>
 					</div>
@@ -1848,7 +1856,6 @@ export default function TimelineEditor({
 			</div>
 
 			<div className="flex-1 min-h-0 relative">
-
 				<div
 					ref={timelineContainerRef}
 					className="w-full h-full overflow-auto custom-scrollbar bg-[#0A0D0F]"
