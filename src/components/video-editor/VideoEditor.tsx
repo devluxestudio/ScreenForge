@@ -1,24 +1,19 @@
 import type { Span } from "dnd-timeline";
 import {
-	Brackets,
 	Download,
 	FolderOpen,
-	Keyboard,
 	Languages,
 	Layers,
-	LayoutPanelTop,
-	MousePointerClick,
 	Palette,
 	PenLine,
 	Save,
 	Scissors,
-	SlidersHorizontal,
 	Stamp,
 	Video,
 	Wand2,
 } from "lucide-react";
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -90,7 +85,9 @@ import {
 	getNativeAspectRatioValue,
 	isPortraitAspectRatio,
 } from "@/utils/aspectRatioUtils";
+
 import { EditorEmptyState } from "./EditorEmptyState";
+import { ExportConfigDialog } from "./ExportConfigDialog";
 import { ExportDialog } from "./ExportDialog";
 import {
 	DEFAULT_CURSOR_SETTINGS,
@@ -259,7 +256,9 @@ export default function VideoEditor() {
 	const [exportProgress, setExportProgress] = useState<ExportProgress | null>(null);
 	const [exportError, setExportError] = useState<string | null>(null);
 	const [showExportDialog, setShowExportDialog] = useState(false);
+	const [showExportConfigDialog, setShowExportConfigDialog] = useState(false);
 	const [showNewRecordingDialog, setShowNewRecordingDialog] = useState(false);
+
 	const [exportQuality, setExportQuality] = useState<ExportQuality>(
 		DEFAULT_EXPORT_SETTINGS.quality,
 	);
@@ -2265,6 +2264,29 @@ export default function VideoEditor() {
 		}
 	}, []);
 
+	const handleStartExport = useCallback(
+		(settings: ExportSettings) => {
+			setShowExportDialog(true);
+			setExportError(null);
+			setExportedFilePath(null);
+
+			if (settings.format) {
+				setExportFormat(settings.format);
+			}
+			if (settings.quality) {
+				setExportQuality(settings.quality);
+			}
+			if (settings.gifConfig) {
+				setGifFrameRate(settings.gifConfig.frameRate);
+				setGifSizePreset(settings.gifConfig.sizePreset);
+				setGifLoop(settings.gifConfig.loop);
+			}
+
+			void handleExport(settings);
+		},
+		[handleExport],
+	);
+
 	const generateAutoCaptions = useCallback(
 		async (minWords: number, maxWords: number) => {
 			if (!videoPath) {
@@ -2579,6 +2601,16 @@ export default function VideoEditor() {
 						<Save size={14} />
 						{ts("project.save")}
 					</button>
+					{videoPath && (
+						<button
+							type="button"
+							onClick={() => setShowExportConfigDialog(true)}
+							className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#000AF2] text-white hover:bg-[#000AF2]/90 shadow-md shadow-[#000AF2]/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 text-[11px] font-bold"
+						>
+							<Download size={13} />
+							Export
+						</button>
+					)}
 				</div>
 			</div>
 
@@ -2974,6 +3006,18 @@ export default function VideoEditor() {
 					</div>
 				</div>
 			)}
+
+			<ExportConfigDialog
+				isOpen={showExportConfigDialog}
+				onClose={() => setShowExportConfigDialog(false)}
+				videoPath={videoPath}
+				duration={duration}
+				videoWidth={videoPlaybackRef.current?.video?.videoWidth || 1920}
+				videoHeight={videoPlaybackRef.current?.video?.videoHeight || 1080}
+				cropRegion={cropRegion}
+				aspectRatio={aspectRatio}
+				onExport={handleStartExport}
+			/>
 
 			<ExportDialog
 				isOpen={showExportDialog}

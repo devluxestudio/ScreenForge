@@ -1,6 +1,5 @@
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import {
-	Download,
 	Film,
 	Info,
 	Keyboard,
@@ -39,15 +38,9 @@ import { getAssetPath } from "@/lib/assetPath";
 import { WEBCAM_LAYOUT_PRESETS } from "@/lib/compositeLayout";
 import { CURSOR_THEMES, DEFAULT_CURSOR_THEME_ID } from "@/lib/cursor/cursorThemes";
 import type { ExportFormat, ExportQuality, GifFrameRate, GifSizePreset } from "@/lib/exporter";
-import {
-	calculateEffectiveSourceDimensions,
-	GIF_FRAME_RATES,
-	GIF_SIZE_PRESETS,
-} from "@/lib/exporter";
 import { cn } from "@/lib/utils";
 import { resolveImageWallpaperUrl, WALLPAPER_PATHS } from "@/lib/wallpaper";
 import { type AspectRatio, isPortraitAspectRatio } from "@/utils/aspectRatioUtils";
-import { getTestId } from "@/utils/getTestId";
 import ColorPicker from "../ui/color-picker";
 import { AnnotationSettingsPanel } from "./AnnotationSettingsPanel";
 import { BlurSettingsPanel } from "./BlurSettingsPanel";
@@ -57,8 +50,6 @@ import { parseCustomPlaybackSpeedInput } from "./customPlaybackSpeed";
 import {
 	DEFAULT_CURSOR_SETTINGS,
 	DEFAULT_EDITOR_LAYOUT_SETTINGS,
-	DEFAULT_EXPORT_SETTINGS,
-	DEFAULT_GIF_SETTINGS,
 	DEFAULT_KEYSTROKE_SETTINGS,
 	DEFAULT_SOURCE_DIMENSIONS,
 	DEFAULT_WEBCAM_SETTINGS,
@@ -372,18 +363,6 @@ export type SettingsPanelMode =
 // 	good: 1080,
 // } as const;
 
-function formatSourceDimensions(videoElement?: HTMLVideoElement | null, cropRegion?: CropRegion) {
-	const width = videoElement?.videoWidth ?? 0;
-	const height = videoElement?.videoHeight ?? 0;
-
-	if (width <= 0 || height <= 0) {
-		return null;
-	}
-
-	const dimensions = calculateEffectiveSourceDimensions(width, height, cropRegion);
-	return { ...dimensions, shortSide: Math.min(dimensions.width, dimensions.height) };
-}
-
 export function SettingsPanel({
 	selected,
 	onWallpaperChange,
@@ -427,20 +406,6 @@ export function SettingsPanel({
 	onCropChange,
 	aspectRatio,
 	videoElement,
-	exportQuality = DEFAULT_EXPORT_SETTINGS.quality,
-	onExportQualityChange,
-	exportFormat = DEFAULT_EXPORT_SETTINGS.format,
-	onExportFormatChange,
-	gifFrameRate = DEFAULT_GIF_SETTINGS.frameRate,
-	onGifFrameRateChange,
-	gifLoop = DEFAULT_GIF_SETTINGS.loop,
-	onGifLoopChange,
-	gifSizePreset = DEFAULT_GIF_SETTINGS.sizePreset,
-	onGifSizePresetChange,
-	gifOutputDimensions = DEFAULT_GIF_SETTINGS.outputDimensions,
-	onExport,
-	unsavedExport,
-	onSaveUnsavedExport,
 	selectedAnnotationId,
 	annotationRegions = [],
 	onAnnotationContentChange,
@@ -495,7 +460,6 @@ export function SettingsPanel({
 	const t = useScopedT("settings");
 
 	const activePanelMode = externalActivePanelMode ?? "canvas";
-	const sourceDimensions = formatSourceDimensions(videoElement, cropRegion);
 	// Resolved URLs are for DOM rendering only. We persist the canonical
 	// `/wallpapers/wallpaperN.jpg` form from WALLPAPER_PATHS, never the file:// URL.
 	const wallpaperPreviewUrls = useMemo(() => WALLPAPER_PATHS.map(resolveImageWallpaperUrl), []);
@@ -1966,165 +1930,6 @@ export function SettingsPanel({
 							</div>
 						</div>
 					)}
-				</div>
-
-				{/* ── FOOTER: EXPORT PANEL ── */}
-				<div className="p-3 bg-[#080B0D] border-t border-white/[0.05] mt-auto">
-					<div className="mb-3">
-						<span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500 mb-1.5 block">
-							Export Format Settings
-						</span>
-						<div className="flex bg-black/40 p-0.5 rounded-lg border border-white/5 gap-0.5 mb-2.5">
-							{(["mp4", "gif"] as const).map((format) => (
-								<button
-									key={format}
-									type="button"
-									onClick={() => onExportFormatChange?.(format)}
-									className={cn(
-										"h-7 text-[10px] rounded-md transition-all duration-200 flex-1 font-semibold capitalize cursor-pointer",
-										exportFormat === format
-											? "bg-[#000AF2] text-white shadow-sm"
-											: "text-slate-400 hover:text-slate-200",
-									)}
-								>
-									{format.toUpperCase()}
-								</button>
-							))}
-						</div>
-
-						{exportFormat === "mp4" && onExportQualityChange && (
-							<div className="space-y-1.5">
-								<div className="text-[9px] font-medium text-slate-400">
-									{t("exportQuality.title")}
-								</div>
-								<div className="grid grid-cols-3 gap-1">
-									{(
-										[
-											{ value: "medium", labelKey: "low" },
-											{ value: "good", labelKey: "medium" },
-											{ value: "source", labelKey: "high" },
-										] as const
-									).map(({ value, labelKey }) => {
-										const isActive = exportQuality === value;
-										const formatted = sourceDimensions
-											? value === "medium"
-												? "720p"
-												: value === "good"
-													? `${sourceDimensions.shortSide >= 1080 ? 1080 : 720}p`
-													: `${sourceDimensions.width}×${sourceDimensions.height}`
-											: t(`exportQuality.${labelKey}`);
-										return (
-											<button
-												key={value}
-												type="button"
-												onClick={() => onExportQualityChange(value)}
-												className={cn(
-													"h-7 text-[10px] rounded-md border transition-all cursor-pointer",
-													isActive
-														? "border-[#000AF2] bg-[#000AF2]/10 text-white"
-														: "border-white/5 bg-white/[0.02] text-slate-400 hover:text-slate-200",
-												)}
-											>
-												{formatted}
-											</button>
-										);
-									})}
-								</div>
-							</div>
-						)}
-
-						{exportFormat === "gif" &&
-							onGifFrameRateChange &&
-							onGifSizePresetChange &&
-							onGifLoopChange && (
-								<div className="space-y-2 pt-1">
-									<div className="grid grid-cols-2 gap-2">
-										<div className="space-y-1">
-											<label className="text-[9px] font-medium text-slate-400">
-												{t("gifSettings.frameRate")}
-											</label>
-											<Select
-												value={String(gifFrameRate)}
-												onValueChange={(val) => onGifFrameRateChange(Number(val) as GifFrameRate)}
-											>
-												<SelectTrigger className="h-7 bg-black/20 border-white/10 text-[10px] px-2 py-0">
-													<SelectValue />
-												</SelectTrigger>
-												<SelectContent>
-													{GIF_FRAME_RATES.map((rate) => (
-														<SelectItem
-															key={rate.value}
-															value={String(rate.value)}
-															className="text-xs"
-														>
-															{rate.label}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-										</div>
-										<div className="space-y-1">
-											<label className="text-[9px] font-medium text-slate-400">
-												{t("gifSettings.size")}
-											</label>
-											<Select
-												value={gifSizePreset}
-												onValueChange={(val) => onGifSizePresetChange(val as GifSizePreset)}
-											>
-												<SelectTrigger className="h-7 bg-black/20 border-white/10 text-[10px] px-2 py-0">
-													<SelectValue />
-												</SelectTrigger>
-												<SelectContent>
-													{Object.entries(GIF_SIZE_PRESETS).map(([key, preset]) => (
-														<SelectItem key={key} value={key} className="text-xs">
-															{key === "original"
-																? "Original"
-																: key.charAt(0).toUpperCase() + key.slice(1)}{" "}
-															({preset.maxHeight}p)
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-										</div>
-									</div>
-									<div className="flex items-center justify-between">
-										<span className="text-[9px] text-slate-500">
-											{gifOutputDimensions.width} × {gifOutputDimensions.height}px
-										</span>
-										<div className="flex items-center gap-2">
-											<span className="text-[9px] text-slate-400">{t("gifSettings.loop")}</span>
-											<Switch
-												checked={gifLoop}
-												onCheckedChange={onGifLoopChange}
-												className="data-[state=checked]:bg-[#000AF2] scale-75"
-											/>
-										</div>
-									</div>
-								</div>
-							)}
-					</div>
-
-					{unsavedExport && (
-						<Button
-							type="button"
-							size="lg"
-							onClick={onSaveUnsavedExport}
-							className="w-full mb-2 py-5 text-sm font-semibold flex items-center justify-center gap-2 bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-500/20 hover:bg-indigo-500/90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
-						>
-							<Download className="w-4 h-4" />
-							{t("export.chooseSaveLocation")}
-						</Button>
-					)}
-					<Button
-						data-testid={getTestId("export-button")}
-						type="button"
-						size="lg"
-						onClick={onExport}
-						className="w-full py-5 text-sm font-semibold flex items-center justify-center gap-2 bg-[#000AF2] text-white rounded-xl shadow-lg shadow-[#000AF2]/20 hover:bg-[#3fc98d] hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 cursor-pointer"
-					>
-						<Download className="w-4 h-4" />
-						{exportFormat === "gif" ? t("export.gifButton") : t("export.videoButton")}
-					</Button>
 				</div>
 			</div>
 
