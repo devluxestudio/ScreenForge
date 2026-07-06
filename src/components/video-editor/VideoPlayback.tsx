@@ -149,6 +149,7 @@ interface VideoPlaybackProps {
 	cursorTheme?: string;
 	keystrokePosition?: import("./types").KeystrokePosition;
 	keystrokeDesign?: import("./types").KeystrokeDesign;
+	keystrokeSize?: number;
 	keystrokeEvents?: import("@/native/contracts").KeystrokeEvent[];
 	// Render the selected zoom at the playhead even while paused, so the editor can
 	// preview the effect without leaving the focus-edit view.
@@ -279,6 +280,7 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 			cursorTheme = DEFAULT_CURSOR_SETTINGS.theme,
 			keystrokePosition = DEFAULT_KEYSTROKE_SETTINGS.position,
 			keystrokeDesign = DEFAULT_KEYSTROKE_SETTINGS.design,
+			keystrokeSize = DEFAULT_KEYSTROKE_SETTINGS.size,
 			keystrokeEvents = [],
 			isPreviewingZoom = false,
 		},
@@ -2121,6 +2123,7 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 					currentTime={currentTime}
 					position={keystrokePosition}
 					design={keystrokeDesign}
+					size={keystrokeSize}
 				/>
 				{/* Native cursor clip. Lives outside composite3DRef (preserve-3d) so clip-path
 				    keeps working during 3D zoom rotations; bounds are set dynamically. */}

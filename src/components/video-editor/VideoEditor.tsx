@@ -315,6 +315,7 @@ export default function VideoEditor() {
 	const [cursorTheme, setCursorTheme] = useState(DEFAULT_CURSOR_SETTINGS.theme);
 	const [keystrokePosition, setKeystrokePosition] = useState(DEFAULT_KEYSTROKE_SETTINGS.position);
 	const [keystrokeDesign, setKeystrokeDesign] = useState(DEFAULT_KEYSTROKE_SETTINGS.design);
+	const [keystrokeSize, setKeystrokeSize] = useState(DEFAULT_KEYSTROKE_SETTINGS.size);
 	const [nativePlatform, setNativePlatform] = useState<NativePlatform | null>(null);
 	const [recordingCursorCaptureMode, setRecordingCursorCaptureMode] =
 		useState<CursorCaptureMode | null>(null);
@@ -471,6 +472,7 @@ export default function VideoEditor() {
 				normalizedEditor.keystrokePosition ?? DEFAULT_KEYSTROKE_SETTINGS.position,
 			);
 			setKeystrokeDesign(normalizedEditor.keystrokeDesign ?? DEFAULT_KEYSTROKE_SETTINGS.design);
+			setKeystrokeSize(normalizedEditor.keystrokeSize ?? DEFAULT_KEYSTROKE_SETTINGS.size);
 
 			setSelectedZoomId(null);
 			setSelectedTrimId(null);
@@ -549,12 +551,14 @@ export default function VideoEditor() {
 			cursorTheme,
 			keystrokePosition,
 			keystrokeDesign,
+			keystrokeSize,
 		});
 	}, [
 		currentProjectMedia,
 		cursorTheme,
 		keystrokePosition,
 		keystrokeDesign,
+		keystrokeSize,
 		wallpaper,
 		shadowIntensity,
 		showBlur,
@@ -1979,6 +1983,9 @@ export default function VideoEditor() {
 						previewHeight,
 						cursorTelemetry,
 						cursorClickTimestamps,
+						keystrokeEvents,
+						keystrokePosition,
+						keystrokeDesign,
 						onProgress: (progress: ExportProgress) => {
 							setExportProgress(progress);
 						},
@@ -2073,6 +2080,9 @@ export default function VideoEditor() {
 						previewHeight,
 						cursorTelemetry,
 						cursorClickTimestamps,
+						keystrokeEvents,
+						keystrokePosition,
+						keystrokeDesign,
 						onProgress: (progress: ExportProgress) => {
 							setExportProgress(progress);
 						},
@@ -2183,6 +2193,10 @@ export default function VideoEditor() {
 			cursorClickBounce,
 			cursorClipToBounds,
 			cursorTheme,
+			keystrokeEvents,
+			keystrokePosition,
+			keystrokeDesign,
+			keystrokeSize,
 			t,
 		],
 	);
@@ -2605,7 +2619,7 @@ export default function VideoEditor() {
 						<button
 							type="button"
 							onClick={() => setShowExportConfigDialog(true)}
-							className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#000AF2] text-white hover:bg-[#000AF2]/90 shadow-md shadow-[#000AF2]/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 text-[11px] font-bold"
+							className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#000AF2] text-white hover:bg-[#000AF2]/90 shadow-md shadow-[#000AF2]/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 text-[11px] font-bold"
 						>
 							<Download size={13} />
 							Export
@@ -2758,6 +2772,7 @@ export default function VideoEditor() {
 											cursorTheme={cursorTheme}
 											keystrokePosition={keystrokePosition}
 											keystrokeDesign={keystrokeDesign}
+											keystrokeSize={keystrokeSize}
 											isPreviewingZoom={isPreviewingZoom}
 										/>
 									</div>
@@ -2774,7 +2789,6 @@ export default function VideoEditor() {
 								onTogglePlayPause={togglePlayPause}
 								isFullscreen={isFullscreen}
 								onToggleFullscreen={toggleFullscreen}
-								cursorTelemetry={cursorTelemetry}
 								onSeek={handleSeek}
 								zoomRegions={zoomRegions}
 								onZoomAdded={handleZoomAdded}
@@ -2998,6 +3012,8 @@ export default function VideoEditor() {
 							onKeystrokePositionChange={setKeystrokePosition}
 							keystrokeDesign={keystrokeDesign}
 							onKeystrokeDesignChange={setKeystrokeDesign}
+							keystrokeSize={keystrokeSize}
+							onKeystrokeSizeChange={setKeystrokeSize}
 							hasCursorData={
 								cursorTelemetry.length > 0 || hasNativeCursorRecordingData(cursorRecordingData)
 							}

@@ -40,7 +40,6 @@ import { ASPECT_RATIOS, type AspectRatio, getAspectRatioLabel } from "@/utils/as
 import { BLUR_REGIONS_ENABLED } from "../featureFlags";
 import type { AnnotationRegion, SpeedRegion, TrimRegion, ZoomRegion } from "../types";
 import BackgroundWaveform from "./BackgroundWaveform";
-import CursorTelemetryRow from "./CursorTelemetryRow";
 import Item from "./Item";
 import KeyframeMarkers from "./KeyframeMarkers";
 import Row from "./Row";
@@ -111,7 +110,6 @@ interface TimelineEditorProps {
 	captionsLabel?: string;
 	isFullscreen?: boolean;
 	onToggleFullscreen?: () => void;
-	cursorTelemetry?: import("@/components/video-editor/types").CursorTelemetryPoint[];
 }
 
 interface TimelineScaleConfig {
@@ -595,7 +593,6 @@ function Timeline({
 	keyframes = [],
 	videoUrl,
 	thirdRowMode,
-	cursorTelemetry = [],
 }: {
 	items: TimelineRenderItem[];
 	videoDurationMs: number;
@@ -616,7 +613,6 @@ function Timeline({
 	videoUrl?: string;
 	showTrimWaveform?: boolean;
 	thirdRowMode?: ThirdRowMode;
-	cursorTelemetry?: import("@/components/video-editor/types").CursorTelemetryPoint[];
 }) {
 	const t = useScopedT("timeline");
 	const { setTimelineRef, style, sidebarWidth, range, pixelsToValue } = useTimelineContext();
@@ -771,7 +767,6 @@ function Timeline({
 		[onRangeChange, videoDurationMs, range.end, range.start, sidebarWidth, pixelsToValue],
 	);
 
-	const videoItems = items.filter((item) => item.rowId === VIDEO_ROW_ID);
 	const trimItems = items.filter((item) => item.rowId === TRIM_ROW_ID);
 	const zoomItems = items.filter((item) => item.rowId === CURSOR_ROW_ID);
 	const annotationItems = items.filter((item) => item.rowId === ANNOTATION_ROW_ID);
@@ -972,7 +967,6 @@ export default function TimelineEditor({
 	captionsLabel,
 	isFullscreen,
 	onToggleFullscreen,
-	cursorTelemetry = [],
 }: TimelineEditorProps) {
 	const t = useScopedT("timeline");
 	const [thirdRowMode, setThirdRowMode] = useState<ThirdRowMode>("speed");
@@ -1902,7 +1896,6 @@ export default function TimelineEditor({
 							videoUrl={videoUrl}
 							showTrimWaveform={showTrimWaveform}
 							thirdRowMode={thirdRowMode}
-							cursorTelemetry={cursorTelemetry}
 						/>
 					</TimelineWrapper>
 				</div>

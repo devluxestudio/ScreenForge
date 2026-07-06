@@ -142,8 +142,7 @@ export function ExportConfigDialog({
 		const durSec = Number.isFinite(duration) && duration > 0 ? duration : 5;
 		if (format === "gif") {
 			const fps = gifFrameRate as number;
-			const fpsMultiplier =
-				fps >= 30 ? 1.4 : fps >= 20 ? 1.1 : fps >= 15 ? 0.9 : 0.6;
+			const fpsMultiplier = fps >= 30 ? 1.4 : fps >= 20 ? 1.1 : fps >= 15 ? 0.9 : 0.6;
 			const sizeMultiplier =
 				gifSizePreset === "original"
 					? 1.5
@@ -270,7 +269,7 @@ export function ExportConfigDialog({
 											"flex-1 py-1.5 text-xs font-semibold rounded-md transition-all duration-150",
 											format === tab.id
 												? "bg-[#000AF2] text-white shadow-md shadow-[#000AF2]/10"
-												: "text-slate-400 hover:text-slate-200"
+												: "text-slate-400 hover:text-slate-200",
 										)}
 									>
 										{tab.label}
@@ -305,7 +304,7 @@ export function ExportConfigDialog({
 													"flex-1 py-1.5 text-xs rounded-md transition-all duration-150 font-semibold flex items-center justify-center gap-1",
 													quality === q.value
 														? "bg-[#000AF2]/25 text-blue-400 border border-[#000AF2]/30"
-														: "text-slate-400 hover:text-slate-200 border border-transparent"
+														: "text-slate-400 hover:text-slate-200 border border-transparent",
 												)}
 											>
 												{quality === q.value && <Check className="w-3.5 h-3.5" />}
@@ -325,9 +324,15 @@ export function ExportConfigDialog({
 											<SelectValue />
 										</SelectTrigger>
 										<SelectContent className="bg-[#0A0D0F] border-white/10">
-											<SelectItem value="720p" className="text-xs text-slate-200">720p (HD)</SelectItem>
-											<SelectItem value="1080p" className="text-xs text-slate-200">1080p (Full HD)</SelectItem>
-											<SelectItem value="source" className="text-xs text-slate-200">Original</SelectItem>
+											<SelectItem value="720p" className="text-xs text-slate-200">
+												720p (HD)
+											</SelectItem>
+											<SelectItem value="1080p" className="text-xs text-slate-200">
+												1080p (Full HD)
+											</SelectItem>
+											<SelectItem value="source" className="text-xs text-slate-200">
+												Original
+											</SelectItem>
 										</SelectContent>
 									</Select>
 								</div>
@@ -337,14 +342,23 @@ export function ExportConfigDialog({
 									<label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
 										Frame Rate
 									</label>
-									<Select value={String(frameRate)} onValueChange={(val) => setFrameRate(Number(val))}>
+									<Select
+										value={String(frameRate)}
+										onValueChange={(val) => setFrameRate(Number(val))}
+									>
 										<SelectTrigger className="h-9 bg-white/[0.04] border-white/10 text-xs text-white">
 											<SelectValue />
 										</SelectTrigger>
 										<SelectContent className="bg-[#0A0D0F] border-white/10">
-											<SelectItem value="24" className="text-xs text-slate-200">24 fps (Cinema)</SelectItem>
-											<SelectItem value="30" className="text-xs text-slate-200">30 fps (Standard)</SelectItem>
-											<SelectItem value="60" className="text-xs text-slate-200">60 fps (Smooth)</SelectItem>
+											<SelectItem value="24" className="text-xs text-slate-200">
+												24 fps (Cinema)
+											</SelectItem>
+											<SelectItem value="30" className="text-xs text-slate-200">
+												30 fps (Standard)
+											</SelectItem>
+											<SelectItem value="60" className="text-xs text-slate-200">
+												60 fps (Smooth)
+											</SelectItem>
 										</SelectContent>
 									</Select>
 								</div>
@@ -390,7 +404,11 @@ export function ExportConfigDialog({
 										</SelectTrigger>
 										<SelectContent className="bg-[#0A0D0F] border-white/10">
 											{GIF_FRAME_RATES.map((rate) => (
-												<SelectItem key={rate.value} value={String(rate.value)} className="text-xs text-slate-200">
+												<SelectItem
+													key={rate.value}
+													value={String(rate.value)}
+													className="text-xs text-slate-200"
+												>
 													{rate.label}
 												</SelectItem>
 											))}
@@ -418,7 +436,9 @@ export function ExportConfigDialog({
 				{/* Modal Footer */}
 				<div className="pt-4 border-t border-white/[0.06] flex items-center justify-between">
 					<div className="space-y-0.5">
-						<span className="text-[10px] text-slate-500 font-semibold block uppercase tracking-wider">Estimate</span>
+						<span className="text-[10px] text-slate-500 font-semibold block uppercase tracking-wider">
+							Estimate
+						</span>
 						<div className="text-xs text-slate-300 font-bold flex items-center gap-1.5">
 							<span>{formatDuration(duration).slice(3)}</span>
 							<span className="text-white/20">•</span>

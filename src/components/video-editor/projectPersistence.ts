@@ -94,6 +94,7 @@ export interface ProjectEditorState {
 	cursorTheme: string;
 	keystrokePosition?: import("./types").KeystrokePosition;
 	keystrokeDesign?: import("./types").KeystrokeDesign;
+	keystrokeSize?: number;
 }
 
 export interface EditorProjectData {
@@ -466,10 +467,16 @@ export function normalizeProjectEditor(editor: Partial<ProjectEditorState>): Pro
 		? editor.keystrokeDesign
 		: undefined;
 
+	const normalizedKeystrokeSize =
+		typeof editor.keystrokeSize === "number" && editor.keystrokeSize > 0
+			? editor.keystrokeSize
+			: undefined;
+
 	return {
 		cursorTheme: normalizedCursorTheme,
 		keystrokePosition: normalizedKeystrokePosition,
 		keystrokeDesign: normalizedKeystrokeDesign,
+		keystrokeSize: normalizedKeystrokeSize,
 		wallpaper:
 			typeof editor.wallpaper === "string"
 				? normalizeWallpaperValue(editor.wallpaper)

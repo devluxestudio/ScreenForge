@@ -7,6 +7,7 @@ interface KeystrokeOverlayProps {
 	currentTime: number;
 	position?: KeystrokePosition;
 	design?: KeystrokeDesign;
+	size?: number;
 }
 
 /** Duration (ms) a keystroke combo bubble stays on screen */
@@ -19,6 +20,7 @@ export function KeystrokeOverlay({
 	currentTime,
 	position = "bottom-center",
 	design = "modern",
+	size = 1,
 }: KeystrokeOverlayProps) {
 	const currentMs = currentTime * 1000;
 
@@ -67,30 +69,40 @@ export function KeystrokeOverlay({
 	};
 
 	if (position === "bottom-center") {
-		positionStyle.bottom = "10%";
+		positionStyle.bottom = "12px";
 		positionStyle.left = "50%";
-		positionStyle.transform = "translateX(-50%)";
+		positionStyle.transform = `translateX(-50%) scale(${size})`;
+		positionStyle.transformOrigin = "bottom center";
 		positionStyle.alignItems = "center";
 	} else if (position === "bottom-left") {
-		positionStyle.bottom = "10%";
-		positionStyle.left = "5%";
+		positionStyle.bottom = "12px";
+		positionStyle.left = "12px";
+		positionStyle.transform = `scale(${size})`;
+		positionStyle.transformOrigin = "bottom left";
 		positionStyle.alignItems = "flex-start";
 	} else if (position === "bottom-right") {
-		positionStyle.bottom = "10%";
-		positionStyle.right = "5%";
+		positionStyle.bottom = "12px";
+		positionStyle.right = "12px";
+		positionStyle.transform = `scale(${size})`;
+		positionStyle.transformOrigin = "bottom right";
 		positionStyle.alignItems = "flex-end";
 	} else if (position === "top-center") {
-		positionStyle.top = "10%";
+		positionStyle.top = "12px";
 		positionStyle.left = "50%";
-		positionStyle.transform = "translateX(-50%)";
+		positionStyle.transform = `translateX(-50%) scale(${size})`;
+		positionStyle.transformOrigin = "top center";
 		positionStyle.alignItems = "center";
 	} else if (position === "top-left") {
-		positionStyle.top = "10%";
-		positionStyle.left = "5%";
+		positionStyle.top = "12px";
+		positionStyle.left = "12px";
+		positionStyle.transform = `scale(${size})`;
+		positionStyle.transformOrigin = "top left";
 		positionStyle.alignItems = "flex-start";
 	} else if (position === "top-right") {
-		positionStyle.top = "10%";
-		positionStyle.right = "5%";
+		positionStyle.top = "12px";
+		positionStyle.right = "12px";
+		positionStyle.transform = `scale(${size})`;
+		positionStyle.transformOrigin = "top right";
 		positionStyle.alignItems = "flex-end";
 	}
 

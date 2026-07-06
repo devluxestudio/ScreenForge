@@ -64,6 +64,7 @@ import { BackgroundLoadError, classifyWallpaper, resolveImageWallpaperUrl } from
 import { drawCanvasClipPath } from "@/lib/webcamMaskShapes";
 import type { CursorRecordingData } from "@/native/contracts";
 import { renderAnnotations } from "./annotationRenderer";
+import { renderKeystrokes } from "./keystrokeRenderer";
 import {
 	getLinearGradientPoints,
 	getRadialGradientShape,
@@ -107,6 +108,10 @@ interface FrameRenderConfig {
 	previewHeight?: number;
 	cursorTelemetry?: import("@/components/video-editor/types").CursorTelemetryPoint[];
 	cursorClickTimestamps?: number[];
+	keystrokeEvents?: import("@/native/contracts").KeystrokeEvent[];
+	keystrokePosition?: import("@/components/video-editor/types").KeystrokePosition;
+	keystrokeDesign?: import("@/components/video-editor/types").KeystrokeDesign;
+	keystrokeSize?: number;
 	platform: string;
 }
 
@@ -519,6 +524,30 @@ export class FrameRenderer {
 		} else if (this.compositeCtx && this.foregroundCanvas) {
 			// Flat path or 3D-without-shadow: stamp foreground directly
 			this.compositeCtx.drawImage(this.foregroundCanvas, 0, 0);
+		}
+
+		if (
+			this.config.keystrokeEvents &&
+			this.config.keystrokeEvents.length > 0 &&
+			this.compositeCtx
+		) {
+			const previewWidth = this.config.previewWidth ?? this.config.width;
+			const previewHeight = this.config.previewHeight ?? this.config.height;
+			const scaleX = this.config.width / previewWidth;
+			const scaleY = this.config.height / previewHeight;
+			const scaleFactor = (scaleX + scaleY) / 2;
+
+			renderKeystrokes(
+				this.compositeCtx,
+				this.config.keystrokeEvents,
+				timeMs,
+				this.config.width,
+				this.config.height,
+				scaleFactor,
+				this.config.keystrokePosition,
+				this.config.keystrokeDesign,
+				this.config.keystrokeSize,
+			);
 		}
 	}
 

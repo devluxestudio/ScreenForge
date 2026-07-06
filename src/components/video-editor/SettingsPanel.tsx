@@ -333,6 +333,8 @@ interface SettingsPanelProps {
 	onKeystrokePositionChange?: (pos: import("./types").KeystrokePosition) => void;
 	keystrokeDesign?: import("./types").KeystrokeDesign;
 	onKeystrokeDesignChange?: (design: import("./types").KeystrokeDesign) => void;
+	keystrokeSize?: number;
+	onKeystrokeSizeChange?: (size: number) => void;
 	hasCursorData?: boolean;
 	showCursorSettings?: boolean;
 	activePanelMode?: SettingsPanelMode;
@@ -453,6 +455,8 @@ export function SettingsPanel({
 	onKeystrokePositionChange,
 	keystrokeDesign = DEFAULT_KEYSTROKE_SETTINGS.design,
 	onKeystrokeDesignChange,
+	keystrokeSize = DEFAULT_KEYSTROKE_SETTINGS.size,
+	onKeystrokeSizeChange,
 	hasCursorData = false,
 	showCursorSettings = true,
 	activePanelMode: externalActivePanelMode,
@@ -1152,35 +1156,63 @@ export function SettingsPanel({
 
 								<div className="space-y-3">
 									<div className="space-y-1.5">
+										<div className="text-[10px] font-medium text-slate-400">Size</div>
+										<div className="flex items-center justify-between">
+											<div className="flex items-center gap-3 w-full">
+												<Slider
+													value={[keystrokeSize * 100]}
+													min={50}
+													max={150}
+													step={1}
+													onValueChange={([val]) => onKeystrokeSizeChange?.(val / 100)}
+													className="flex-1"
+												/>
+												<div className="w-12 text-right text-[11px] font-medium text-slate-300 tabular-nums">
+													{Math.round(keystrokeSize * 100)}%
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div className="space-y-1.5">
 										<div className="text-[10px] font-medium text-slate-400">
 											{t("keystrokes.position")}
 										</div>
 										<div className="grid grid-cols-3 gap-1">
 											{(
 												[
-													{ value: "bottom-left", label: "B-Left" },
-													{ value: "bottom-center", label: "B-Center" },
-													{ value: "bottom-right", label: "B-Right" },
-													{ value: "top-left", label: "T-Left" },
-													{ value: "top-center", label: "T-Center" },
-													{ value: "top-right", label: "T-Right" },
-												] as Array<{
-													value: import("./types").KeystrokePosition;
-													label: string;
-												}>
+													{ value: "top-left" },
+													{ value: "top-center" },
+													{ value: "top-right" },
+													{ value: "bottom-left" },
+													{ value: "bottom-center" },
+													{ value: "bottom-right" },
+												] as Array<{ value: import("./types").KeystrokePosition }>
 											).map((pos) => (
 												<button
 													key={pos.value}
 													type="button"
 													onClick={() => onKeystrokePositionChange?.(pos.value)}
 													className={cn(
-														"h-7 text-[10px] rounded-lg border transition-all duration-150 flex items-center justify-center font-medium",
+														"h-8 text-[10px] rounded-lg border transition-all duration-150 relative flex items-center justify-center font-medium",
 														keystrokePosition === pos.value
-															? "bg-[#000AF2] text-white border-[#000AF2] shadow-sm"
-															: "bg-black/20 border-white/10 hover:bg-white/10 text-slate-300 hover:text-white",
+															? "bg-[#000AF2] border-[#000AF2] shadow-sm"
+															: "bg-black/20 border-white/10 hover:bg-white/10",
 													)}
 												>
-													{pos.label}
+													<div className="absolute inset-1 border border-white/20 rounded-[4px] pointer-events-none" />
+													<div
+														className={cn(
+															"absolute w-2 h-2 rounded-full",
+															keystrokePosition === pos.value ? "bg-white" : "bg-slate-400",
+															pos.value.includes("top") ? "top-1.5" : "bottom-1.5",
+															pos.value.includes("left")
+																? "left-1.5"
+																: pos.value.includes("right")
+																	? "right-1.5"
+																	: "left-1/2 -translate-x-1/2",
+														)}
+													/>
 												</button>
 											))}
 										</div>

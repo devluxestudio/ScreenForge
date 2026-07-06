@@ -101,7 +101,9 @@ export const DEFAULT_GIF_SETTINGS: {
 export const DEFAULT_KEYSTROKE_SETTINGS: {
 	position: import("./types").KeystrokePosition;
 	design: import("./types").KeystrokeDesign;
+	size: number;
 } = {
 	position: "bottom-center",
 	design: "modern",
+	size: 1,
 };
