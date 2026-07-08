@@ -65,6 +65,7 @@ import { drawCanvasClipPath } from "@/lib/webcamMaskShapes";
 import type { CursorRecordingData } from "@/native/contracts";
 import { renderAnnotations } from "./annotationRenderer";
 import { renderKeystrokes } from "./keystrokeRenderer";
+import { renderWatermark } from "./watermarkRenderer";
 import {
 	getLinearGradientPoints,
 	getRadialGradientShape,
@@ -112,6 +113,7 @@ interface FrameRenderConfig {
 	keystrokePosition?: import("@/components/video-editor/types").KeystrokePosition;
 	keystrokeDesign?: import("@/components/video-editor/types").KeystrokeDesign;
 	keystrokeSize?: number;
+	watermarkSettings?: import("@/components/video-editor/types").WatermarkSettings;
 	platform: string;
 }
 
@@ -547,6 +549,19 @@ export class FrameRenderer {
 				this.config.keystrokePosition,
 				this.config.keystrokeDesign,
 				this.config.keystrokeSize,
+			);
+		}
+
+		if (
+			this.config.watermarkSettings &&
+			this.config.watermarkSettings.imageUrl &&
+			this.compositeCtx
+		) {
+			await renderWatermark(
+				this.compositeCtx,
+				this.config.watermarkSettings,
+				this.config.width,
+				this.config.height,
 			);
 		}
 	}

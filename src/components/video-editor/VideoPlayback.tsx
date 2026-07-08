@@ -55,6 +55,7 @@ import {
 	DEFAULT_SOURCE_DIMENSIONS,
 } from "./editorDefaults";
 import { KeystrokeOverlay } from "./KeystrokeOverlay";
+import { WatermarkOverlay } from "./WatermarkOverlay";
 import {
 	type AnnotationRegion,
 	type BlurData,
@@ -154,6 +155,7 @@ interface VideoPlaybackProps {
 	// Render the selected zoom at the playhead even while paused, so the editor can
 	// preview the effect without leaving the focus-edit view.
 	isPreviewingZoom?: boolean;
+	watermarkSettings?: import("./types").WatermarkSettings;
 }
 
 export interface VideoPlaybackRef {
@@ -283,6 +285,7 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 			keystrokeSize = DEFAULT_KEYSTROKE_SETTINGS.size,
 			keystrokeEvents = [],
 			isPreviewingZoom = false,
+			watermarkSettings,
 		},
 		ref,
 	) => {
@@ -2125,6 +2128,7 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 					design={keystrokeDesign}
 					size={keystrokeSize}
 				/>
+				{watermarkSettings && <WatermarkOverlay settings={watermarkSettings} />}
 				{/* Native cursor clip. Lives outside composite3DRef (preserve-3d) so clip-path
 				    keeps working during 3D zoom rotations; bounds are set dynamically. */}
 				<div

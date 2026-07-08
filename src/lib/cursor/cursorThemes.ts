@@ -40,69 +40,6 @@ export const DEFAULT_CURSOR_THEME_ID = "default";
  */
 export const CURSOR_THEMES: readonly CursorTheme[] = [
 	{
-		id: "hello-kitty-watermelon",
-		name: "Hello Kitty & Watermelon",
-		source: "sweezy-cursors.com",
-		assets: {
-			arrow: {
-				assetPath: "cursors/hello-kitty-watermelon/arrow.png",
-				width: 32,
-				height: 32,
-				hotspotX: 1.5,
-				hotspotY: 0.5,
-			},
-			pointer: {
-				assetPath: "cursors/hello-kitty-watermelon/pointer.png",
-				width: 32,
-				height: 32,
-				hotspotX: 4,
-				hotspotY: 2,
-			},
-		},
-	},
-	{
-		id: "among-us-sus-knife-and-red-animated",
-		name: "Among Us Sus Knife & Red Animated",
-		source: "sweezy-cursors.com",
-		assets: {
-			arrow: {
-				assetPath: "cursors/among-us-sus-knife-and-red-animated/arrow.png",
-				width: 32,
-				height: 32,
-				hotspotX: 1.6,
-				hotspotY: 0.96,
-			},
-			pointer: {
-				assetPath: "cursors/among-us-sus-knife-and-red-animated/pointer.png",
-				width: 32,
-				height: 32,
-				hotspotX: 12,
-				hotspotY: 2,
-			},
-		},
-	},
-	{
-		id: "black-and-rainbow-stroke-gradient-animated",
-		name: "Black & Rainbow Stroke Gradient Animated",
-		source: "sweezy-cursors.com",
-		assets: {
-			arrow: {
-				assetPath: "cursors/black-and-rainbow-stroke-gradient-animated/arrow.png",
-				width: 32,
-				height: 32,
-				hotspotX: 1.6,
-				hotspotY: 0.96,
-			},
-			pointer: {
-				assetPath: "cursors/black-and-rainbow-stroke-gradient-animated/pointer.png",
-				width: 32,
-				height: 32,
-				hotspotX: 8,
-				hotspotY: 1.5,
-			},
-		},
-	},
-	{
 		id: "black-pixel",
 		name: "Black Pixel",
 		source: "sweezy-cursors.com",
@@ -120,90 +57,6 @@ export const CURSOR_THEMES: readonly CursorTheme[] = [
 				height: 32,
 				hotspotX: 8,
 				hotspotY: 1.5,
-			},
-		},
-	},
-	{
-		id: "christmas-miles-morales",
-		name: "Christmas Miles Morales",
-		source: "sweezy-cursors.com",
-		assets: {
-			arrow: {
-				assetPath: "cursors/christmas-miles-morales/arrow.png",
-				width: 32,
-				height: 32,
-				hotspotX: 1,
-				hotspotY: 0.5,
-			},
-			pointer: {
-				assetPath: "cursors/christmas-miles-morales/pointer.png",
-				width: 32,
-				height: 32,
-				hotspotX: 5.5,
-				hotspotY: 3,
-			},
-		},
-	},
-	{
-		id: "hollow-knight-and-game-arrow",
-		name: "Hollow Knight & Game Arrow",
-		source: "sweezy-cursors.com",
-		assets: {
-			arrow: {
-				assetPath: "cursors/hollow-knight-and-game-arrow/arrow.png",
-				width: 32,
-				height: 32,
-				hotspotX: 0.5,
-				hotspotY: 0.5,
-			},
-			pointer: {
-				assetPath: "cursors/hollow-knight-and-game-arrow/pointer.png",
-				width: 32,
-				height: 32,
-				hotspotX: 5,
-				hotspotY: 0.5,
-			},
-		},
-	},
-	{
-		id: "hollow-knight-nail-sword-and-mask",
-		name: "Hollow Knight Nail Sword & Mask",
-		source: "sweezy-cursors.com",
-		assets: {
-			arrow: {
-				assetPath: "cursors/hollow-knight-nail-sword-and-mask/arrow.png",
-				width: 32,
-				height: 32,
-				hotspotX: 0.5,
-				hotspotY: 0.5,
-			},
-			pointer: {
-				assetPath: "cursors/hollow-knight-nail-sword-and-mask/pointer.png",
-				width: 32,
-				height: 32,
-				hotspotX: 3.5,
-				hotspotY: 2,
-			},
-		},
-	},
-	{
-		id: "naruto-akatsuki-cloud-arrow",
-		name: "Naruto Akatsuki Cloud Arrow",
-		source: "sweezy-cursors.com",
-		assets: {
-			arrow: {
-				assetPath: "cursors/naruto-akatsuki-cloud-arrow/arrow.png",
-				width: 32,
-				height: 32,
-				hotspotX: 0.5,
-				hotspotY: 0.5,
-			},
-			pointer: {
-				assetPath: "cursors/naruto-akatsuki-cloud-arrow/pointer.png",
-				width: 32,
-				height: 32,
-				hotspotX: 1,
-				hotspotY: 1,
 			},
 		},
 	},
@@ -271,48 +124,6 @@ export const CURSOR_THEMES: readonly CursorTheme[] = [
 		},
 	},
 	{
-		id: "pokemon-neon-gengar",
-		name: "Pokemon Neon Gengar",
-		source: "sweezy-cursors.com",
-		assets: {
-			arrow: {
-				assetPath: "cursors/pokemon-neon-gengar/arrow.png",
-				width: 32,
-				height: 32,
-				hotspotX: 1,
-				hotspotY: 0.5,
-			},
-			pointer: {
-				assetPath: "cursors/pokemon-neon-gengar/pointer.png",
-				width: 32,
-				height: 32,
-				hotspotX: 2,
-				hotspotY: 2.5,
-			},
-		},
-	},
-	{
-		id: "sanrio-gudetama-and-arrow-kawaii",
-		name: "Sanrio Gudetama & Arrow Kawaii",
-		source: "sweezy-cursors.com",
-		assets: {
-			arrow: {
-				assetPath: "cursors/sanrio-gudetama-and-arrow-kawaii/arrow.png",
-				width: 32,
-				height: 32,
-				hotspotX: 0.5,
-				hotspotY: 0.5,
-			},
-			pointer: {
-				assetPath: "cursors/sanrio-gudetama-and-arrow-kawaii/pointer.png",
-				width: 32,
-				height: 32,
-				hotspotX: 8,
-				hotspotY: 4,
-			},
-		},
-	},
-	{
 		id: "spring-gradient",
 		name: "Spring Gradient",
 		source: "sweezy-cursors.com",
@@ -351,48 +162,6 @@ export const CURSOR_THEMES: readonly CursorTheme[] = [
 				height: 32,
 				hotspotX: 10,
 				hotspotY: 0.5,
-			},
-		},
-	},
-	{
-		id: "sanrio-kuromi-skull-arrow",
-		name: "Sanrio Kuromi Skull Arrow",
-		source: "sweezy-cursors.com",
-		assets: {
-			arrow: {
-				assetPath: "cursors/sanrio-kuromi-skull-arrow/arrow.png",
-				width: 32,
-				height: 32,
-				hotspotX: 1.5,
-				hotspotY: 0.5,
-			},
-			pointer: {
-				assetPath: "cursors/sanrio-kuromi-skull-arrow/pointer.png",
-				width: 32,
-				height: 32,
-				hotspotX: 9.5,
-				hotspotY: 1,
-			},
-		},
-	},
-	{
-		id: "solo-leveling-sung-jinwoo-dark-flames",
-		name: "Solo Leveling Sung Jinwoo Dark Flames",
-		source: "sweezy-cursors.com",
-		assets: {
-			arrow: {
-				assetPath: "cursors/solo-leveling-sung-jinwoo-dark-flames/arrow.png",
-				width: 32,
-				height: 32,
-				hotspotX: 2,
-				hotspotY: 1,
-			},
-			pointer: {
-				assetPath: "cursors/solo-leveling-sung-jinwoo-dark-flames/pointer.png",
-				width: 32,
-				height: 32,
-				hotspotX: 7,
-				hotspotY: 4.5,
 			},
 		},
 	},

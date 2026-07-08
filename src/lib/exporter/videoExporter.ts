@@ -88,6 +88,7 @@ export interface VideoExporterConfig extends ExportConfig {
 	keystrokePosition?: import("@/components/video-editor/types").KeystrokePosition;
 	keystrokeDesign?: import("@/components/video-editor/types").KeystrokeDesign;
 	keystrokeSize?: number;
+	watermarkSettings?: import("@/components/video-editor/types").WatermarkSettings;
 	onProgress?: (progress: ExportProgress) => void;
 }
 
@@ -147,6 +148,8 @@ export function getSourceCopyFastPathBlockers(
 	if (hasNativeCursorOverlay(config)) blockers.push("editable cursor overlay is enabled");
 	if (config.keystrokeEvents && config.keystrokeEvents.length > 0)
 		blockers.push("keystroke overlay is present");
+	if (config.watermarkSettings && config.watermarkSettings.imageUrl)
+		blockers.push("watermark overlay is present");
 	if (!isDefaultCrop(config.cropRegion)) blockers.push("crop is not default");
 	if ((config.padding ?? 0) > SOURCE_COPY_EPSILON) blockers.push("padding is not zero");
 	if ((config.videoPadding ?? 0) > SOURCE_COPY_EPSILON) blockers.push("video padding is not zero");
@@ -302,6 +305,7 @@ export class VideoExporter {
 				keystrokePosition: this.config.keystrokePosition,
 				keystrokeDesign: this.config.keystrokeDesign,
 				keystrokeSize: this.config.keystrokeSize,
+				watermarkSettings: this.config.watermarkSettings,
 				platform,
 			});
 			this.renderer = renderer;

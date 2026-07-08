@@ -107,3 +107,10 @@ export const DEFAULT_KEYSTROKE_SETTINGS: {
 	design: "modern",
 	size: 1,
 };
+
+export const DEFAULT_WATERMARK_SETTINGS: import("./types").WatermarkSettings = {
+	imageUrl: null,
+	position: "bottom-right",
+	size: 20,
+	opacity: 100,
+};

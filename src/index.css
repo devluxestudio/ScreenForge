@@ -137,10 +137,10 @@
 	}
 
 	.editor-control-surface {
-		border: 1px solid rgba(255, 255, 255, 0.055);
+		border: 1px solid rgba(255, 255, 255, 0.03);
 		border-radius: 10px;
-		background: rgba(255, 255, 255, 0.032);
-		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+		background: rgba(255, 255, 255, 0.015);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.01);
 	}
 
 	.editor-inspector-shell {
@@ -165,7 +165,7 @@
 	}
 
 	.editor-inspector-shell [role="slider"] {
-		box-shadow: 0 0 0 4px rgba(52, 178, 123, 0.12);
+		/* removed conflicting box-shadow */
 	}
 
 	.editor-inspector-shell .editor-panel-section > h3 {
@@ -247,6 +247,14 @@
 
 	.squircle {
 		corner-shape: squircle;
+	}
+
+	.hide-scrollbar {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+	.hide-scrollbar::-webkit-scrollbar {
+		display: none;
 	}
 
 	/* Smooth playback scrubber */

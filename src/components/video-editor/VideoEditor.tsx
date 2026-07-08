@@ -229,6 +229,7 @@ export default function VideoEditor() {
 		webcamReactiveZoom,
 		webcamSizePreset,
 		webcamPosition,
+		watermarkSettings,
 	} = editorState;
 
 	// Non-undoable state
@@ -1986,6 +1987,7 @@ export default function VideoEditor() {
 						keystrokeEvents,
 						keystrokePosition,
 						keystrokeDesign,
+						watermarkSettings,
 						onProgress: (progress: ExportProgress) => {
 							setExportProgress(progress);
 						},
@@ -2083,6 +2085,7 @@ export default function VideoEditor() {
 						keystrokeEvents,
 						keystrokePosition,
 						keystrokeDesign,
+						watermarkSettings,
 						onProgress: (progress: ExportProgress) => {
 							setExportProgress(progress);
 						},
@@ -2774,6 +2777,7 @@ export default function VideoEditor() {
 											keystrokeDesign={keystrokeDesign}
 											keystrokeSize={keystrokeSize}
 											isPreviewingZoom={isPreviewingZoom}
+											watermarkSettings={watermarkSettings}
 										/>
 									</div>
 								</div>
@@ -2855,7 +2859,7 @@ export default function VideoEditor() {
 					</div>
 
 					{/* ── Right: settings panel ── */}
-					<div className="w-[280px] flex-shrink-0 border-l border-white/[0.06] bg-[#111827] overflow-y-auto">
+					<div className="w-[320px] flex-shrink-0 border-l border-white/[0.06] bg-[#0A0D0F] overflow-y-auto hide-scrollbar">
 						<SettingsPanel
 							activePanelMode={activePanelMode}
 							selected={wallpaper}
@@ -2873,6 +2877,9 @@ export default function VideoEditor() {
 							onZoomCustomScaleCommit={handleZoomCustomScaleCommit}
 							onZoomPreviewStart={() => setIsPreviewingZoom(true)}
 							onZoomPreviewEnd={() => setIsPreviewingZoom(false)}
+							watermarkSettings={watermarkSettings}
+							onWatermarkSettingsChange={(settings) => updateState({ watermarkSettings: settings })}
+							onWatermarkSettingsCommit={commitState}
 							selectedZoomFocusMode={
 								selectedZoomId
 									? (zoomRegions.find((z) => z.id === selectedZoomId)?.focusMode ?? "manual")

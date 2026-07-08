@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from "react";
 import {
 	DEFAULT_EDITOR_APPEARANCE_SETTINGS,
 	DEFAULT_EDITOR_LAYOUT_SETTINGS,
+	DEFAULT_WATERMARK_SETTINGS,
 	DEFAULT_WEBCAM_SETTINGS,
 } from "@/components/video-editor/editorDefaults";
 import type {
@@ -14,6 +15,7 @@ import type {
 	WebcamPosition,
 	WebcamSizePreset,
 	ZoomRegion,
+	WatermarkSettings,
 } from "@/components/video-editor/types";
 import {
 	DEFAULT_CROP_REGION,
@@ -49,6 +51,7 @@ export interface EditorState {
 	webcamReactiveZoom: boolean;
 	webcamSizePreset: WebcamSizePreset;
 	webcamPosition: WebcamPosition | null;
+	watermarkSettings: WatermarkSettings;
 }
 
 export const INITIAL_EDITOR_STATE: EditorState = {
@@ -73,6 +76,7 @@ export const INITIAL_EDITOR_STATE: EditorState = {
 	webcamReactiveZoom: DEFAULT_WEBCAM_REACTIVE_ZOOM,
 	webcamSizePreset: DEFAULT_WEBCAM_SETTINGS.sizePreset,
 	webcamPosition: DEFAULT_WEBCAM_SETTINGS.position,
+	watermarkSettings: DEFAULT_WATERMARK_SETTINGS,
 };
 
 type StateUpdate = Partial<EditorState> | ((prev: EditorState) => Partial<EditorState>);

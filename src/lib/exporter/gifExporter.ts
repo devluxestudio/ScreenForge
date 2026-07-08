@@ -66,6 +66,7 @@ interface GifExporterConfig {
 	keystrokePosition?: import("@/components/video-editor/types").KeystrokePosition;
 	keystrokeDesign?: import("@/components/video-editor/types").KeystrokeDesign;
 	keystrokeSize?: number;
+	watermarkSettings?: import("@/components/video-editor/types").WatermarkSettings;
 	onProgress?: (progress: ExportProgress) => void;
 }
 
@@ -188,6 +189,7 @@ export class GifExporter {
 				keystrokePosition: this.config.keystrokePosition,
 				keystrokeDesign: this.config.keystrokeDesign,
 				keystrokeSize: this.config.keystrokeSize,
+				watermarkSettings: this.config.watermarkSettings,
 				platform,
 			});
 			await this.renderer.initialize();

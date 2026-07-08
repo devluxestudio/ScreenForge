@@ -1,11 +1,23 @@
 import { getAssetPath } from "@/lib/assetPath";
 
-export const WALLPAPER_COUNT = 18;
+export const WALLPAPER_PATHS: readonly string[] = [
+	"/wallpapers/12-Dark-thumbnail.jpg",
+	"/wallpapers/12-Light-thumbnail.jpg",
+	"/wallpapers/13-Ventura-Dark-thumb.jpg",
+	"/wallpapers/13-Ventura-Light-thumb.jpg",
+	"/wallpapers/14-Sonoma-Dark-thumb.jpg",
+	"/wallpapers/14-Sonoma-Light-thumb.jpg",
+	"/wallpapers/15-Sequoia-Dark-thumbnail.jpg",
+	"/wallpapers/15-Sequoia-Light-thumbnail.jpg",
+	"/wallpapers/15-Sequoia-Sunrise.png",
+	"/wallpapers/26-Tahoe-Beach-Day-thumb.jpeg",
+	"/wallpapers/26-Tahoe-Dark-6K-thumb.jpeg",
+	"/wallpapers/26-Tahoe-Light-6K-thumb.jpeg",
+	"/wallpapers/27-Golden-Gate-thumb-dark.png",
+	"/wallpapers/27-Golden-Gate-thumb.jpg",
+];
 
-export const WALLPAPER_PATHS: readonly string[] = Array.from(
-	{ length: WALLPAPER_COUNT },
-	(_, i) => `/wallpapers/wallpaper${i + 1}.jpg`,
-);
+export const WALLPAPER_COUNT = WALLPAPER_PATHS.length;
 
 export const DEFAULT_WALLPAPER = WALLPAPER_PATHS[0];
 

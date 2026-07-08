@@ -338,6 +338,9 @@ interface SettingsPanelProps {
 	hasCursorData?: boolean;
 	showCursorSettings?: boolean;
 	activePanelMode?: SettingsPanelMode;
+	watermarkSettings?: import("./types").WatermarkSettings;
+	onWatermarkSettingsChange?: (settings: import("./types").WatermarkSettings) => void;
+	onWatermarkSettingsCommit?: () => void;
 }
 
 export default SettingsPanel;
@@ -460,6 +463,9 @@ export function SettingsPanel({
 	hasCursorData = false,
 	showCursorSettings = true,
 	activePanelMode: externalActivePanelMode,
+	watermarkSettings,
+	onWatermarkSettingsChange,
+	onWatermarkSettingsCommit,
 }: SettingsPanelProps) {
 	const t = useScopedT("settings");
 
@@ -704,7 +710,7 @@ export function SettingsPanel({
 	return (
 		<div className="editor-inspector-shell flex min-w-0 flex-col h-full overflow-hidden bg-[#0A0D0F]">
 			<div className="flex flex-col min-h-0 flex-1">
-				<div className="flex-1 overflow-y-auto custom-scrollbar p-3 pb-0">
+				<div className="flex-1 overflow-y-auto custom-scrollbar p-2 pb-0">
 					<div className="mb-3 flex items-center justify-between px-1 uppercase tracking-[0.1em] text-[11px]">
 						<span className="text-[11px] font-semibold text-slate-400">
 							{getTabLabel(activePanelMode)}
@@ -715,157 +721,10 @@ export function SettingsPanel({
 					{/* ── CANVAS TAB ── */}
 					{activePanelMode === "canvas" && (
 						<div className="space-y-4">
-							{/* Background Section */}
-							<div className="editor-panel-section p-3 rounded-2xl border border-white/[0.05] bg-white/[0.02]">
-								<div className="flex items-center gap-2 mb-3">
-									<Palette className="w-4 h-4 text-[#000AF2]" />
-									<span className="text-xs font-semibold text-slate-200">
-										{t("background.title")}
-									</span>
-								</div>
-
-								<Tabs defaultValue="image" className="w-full">
-									<TabsList className="mb-2 grid h-7 w-full grid-cols-3 rounded-lg border border-white/5 bg-white/5 p-0.5">
-										<TabsTrigger
-											value="image"
-											className="h-full min-w-0 rounded-md px-1 py-0 text-[10px] leading-none text-slate-400 transition-colors data-[state=active]:bg-[#000AF2] data-[state=active]:text-white data-[state=active]:shadow-none"
-										>
-											{t("background.image")}
-										</TabsTrigger>
-										<TabsTrigger
-											value="color"
-											className="h-full min-w-0 rounded-md px-1 py-0 text-[10px] leading-none text-slate-400 transition-colors data-[state=active]:bg-[#000AF2] data-[state=active]:text-white data-[state=active]:shadow-none"
-										>
-											{t("background.color")}
-										</TabsTrigger>
-										<TabsTrigger
-											value="gradient"
-											className="h-full min-w-0 rounded-md px-1 py-0 text-[10px] leading-none text-slate-400 transition-colors data-[state=active]:bg-[#000AF2] data-[state=active]:text-white data-[state=active]:shadow-none"
-										>
-											{t("background.gradient")}
-										</TabsTrigger>
-									</TabsList>
-
-									<div className="overflow-y-auto custom-scrollbar">
-										<TabsContent value="image" className="mt-0 space-y-2">
-											<input
-												type="file"
-												ref={fileInputRef}
-												onChange={handleImageUpload}
-												accept={BACKGROUND_IMAGE_ACCEPT}
-												className="hidden"
-											/>
-											<Button
-												onClick={() => fileInputRef.current?.click()}
-												variant="outline"
-												className="w-full gap-2 bg-white/5 text-slate-200 border-white/10 hover:bg-[#000AF2] hover:text-white hover:border-[#000AF2] transition-all h-7 text-[10px]"
-											>
-												<Upload className="w-3 h-3" />
-												{t("background.uploadCustom")}
-											</Button>
-
-											<div className="grid grid-cols-6 gap-2">
-												{customImages.map((imageUrl, idx) => {
-													const isSelected = selected === imageUrl;
-													return (
-														<div
-															key={`custom-${idx}`}
-															className={cn(
-																"aspect-square w-8 h-8 rounded-lg border overflow-hidden cursor-pointer transition-all duration-150 relative group shadow-sm",
-																isSelected
-																	? "border-[#000AF2] ring-1 ring-[#000AF2]/30"
-																	: "border-white/10 hover:border-[#000AF2]/40 opacity-80 hover:opacity-100 bg-white/5",
-															)}
-															style={{
-																backgroundImage: `url(${imageUrl})`,
-																backgroundSize: "cover",
-																backgroundPosition: "center",
-															}}
-															onClick={() => onWallpaperChange(imageUrl)}
-															role="button"
-														>
-															<button
-																onClick={(e) => handleRemoveCustomImage(imageUrl, e)}
-																className="absolute top-0.5 right-0.5 w-3 h-3 bg-red-500/90 hover:bg-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
-															>
-																<X className="w-2 h-2 text-white" />
-															</button>
-														</div>
-													);
-												})}
-
-												{WALLPAPER_PATHS.map((canonicalPath, i) => {
-													const previewUrl = wallpaperPreviewUrls[i] ?? canonicalPath;
-													const isSelected = selected === canonicalPath;
-													return (
-														<div
-															key={canonicalPath}
-															className={cn(
-																"aspect-square w-8 h-8 rounded-lg border overflow-hidden cursor-pointer transition-all duration-150 shadow-sm",
-																isSelected
-																	? "border-[#000AF2] ring-1 ring-[#000AF2]/30"
-																	: "border-white/10 hover:border-[#000AF2]/40 opacity-80 hover:opacity-100 bg-white/5",
-															)}
-															style={{
-																backgroundImage: `url(${previewUrl})`,
-																backgroundSize: "cover",
-																backgroundPosition: "center",
-															}}
-															onClick={() => onWallpaperChange(canonicalPath)}
-															role="button"
-														/>
-													);
-												})}
-											</div>
-										</TabsContent>
-
-										<TabsContent value="color" className="mt-0">
-											<ColorPicker
-												selectedColor={selectedColor}
-												colorPalette={colorPalette}
-												translations={{
-													colorWheel: t("background.colorWheel"),
-													colorPalette: t("background.colorPalette"),
-												}}
-												onUpdateColor={(color) => {
-													setSelectedColor(color);
-													onWallpaperChange(color);
-												}}
-											/>
-										</TabsContent>
-
-										<TabsContent value="gradient" className="mt-0">
-											<div className="grid grid-cols-6 gap-2">
-												{GRADIENTS.map((g, idx) => (
-													<div
-														key={g}
-														className={cn(
-															"aspect-square w-8 h-8 rounded-lg border overflow-hidden cursor-pointer transition-all duration-150 shadow-sm",
-															gradient === g
-																? "border-[#000AF2] ring-1 ring-[#000AF2]/30"
-																: "border-white/10 hover:border-[#000AF2]/40 opacity-80 hover:opacity-100 bg-white/5",
-														)}
-														style={{ background: g }}
-														aria-label={t("background.gradientLabel", {
-															index: idx + 1,
-														})}
-														onClick={() => {
-															setGradient(g);
-															onWallpaperChange(g);
-														}}
-														role="button"
-													/>
-												))}
-											</div>
-										</TabsContent>
-									</div>
-								</Tabs>
-							</div>
-
 							{/* Video Styling / Effects Section */}
-							<div className="editor-panel-section p-3 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3">
+							<div className="editor-panel-section p-2 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3">
 								<div className="flex items-center gap-2 mb-1">
-									<SlidersHorizontal className="w-4 h-4 text-[#000AF2]" />
+									<SlidersHorizontal className="w-4 h-4 text-slate-200" />
 									<span className="text-xs font-semibold text-slate-200">{t("effects.title")}</span>
 								</div>
 
@@ -959,18 +818,169 @@ export function SettingsPanel({
 										/>
 									</div>
 								</div>
+							</div>
 
-								{/* Crop Button */}
-								{cropRegion && onCropChange && (
+							{/* Crop Button Section */}
+							{cropRegion && onCropChange && (
+								<div className="flex px-1">
 									<Button
 										onClick={() => setShowCropDropdown(true)}
 										variant="outline"
-										className="w-full gap-2 mt-2 bg-white/5 text-slate-200 border-white/10 hover:bg-[#000AF2] hover:text-white hover:border-[#000AF2] transition-all h-8 text-[11px]"
+										className="gap-2 bg-white/5 text-slate-200 border-white/10 hover:bg-[#000AF2] hover:text-white hover:border-[#000AF2] transition-all h-8 text-[11px]"
 									>
 										<Film className="w-3.5 h-3.5" />
 										{t("crop.cropVideo")}
 									</Button>
-								)}
+								</div>
+							)}
+
+							{/* Background Section */}
+							<div className="editor-panel-section p-2 rounded-2xl border border-white/[0.05] bg-white/[0.02]">
+								<div className="flex items-center gap-2 mb-3">
+									<Palette className="w-4 h-4 text-slate-200" />
+									<span className="text-xs font-semibold text-slate-200">
+										{t("background.title")}
+									</span>
+								</div>
+
+								<Tabs defaultValue="image" className="w-full">
+									<TabsList className="mb-2 grid h-7 w-full grid-cols-3 rounded-lg border border-white/5 bg-white/5 p-0.5">
+										<TabsTrigger
+											value="image"
+											className="h-full min-w-0 rounded-md px-1 py-0 text-[10px] leading-none text-slate-400 transition-colors data-[state=active]:bg-[#000AF2] data-[state=active]:text-white data-[state=active]:shadow-none"
+										>
+											{t("background.image")}
+										</TabsTrigger>
+										<TabsTrigger
+											value="color"
+											className="h-full min-w-0 rounded-md px-1 py-0 text-[10px] leading-none text-slate-400 transition-colors data-[state=active]:bg-[#000AF2] data-[state=active]:text-white data-[state=active]:shadow-none"
+										>
+											{t("background.color")}
+										</TabsTrigger>
+										<TabsTrigger
+											value="gradient"
+											className="h-full min-w-0 rounded-md px-1 py-0 text-[10px] leading-none text-slate-400 transition-colors data-[state=active]:bg-[#000AF2] data-[state=active]:text-white data-[state=active]:shadow-none"
+										>
+											{t("background.gradient")}
+										</TabsTrigger>
+									</TabsList>
+
+									<div className="overflow-y-auto custom-scrollbar">
+										<TabsContent value="image" className="mt-0 space-y-2">
+											<input
+												type="file"
+												ref={fileInputRef}
+												onChange={handleImageUpload}
+												accept={BACKGROUND_IMAGE_ACCEPT}
+												className="hidden"
+											/>
+											<div className="flex">
+												<Button
+													onClick={() => fileInputRef.current?.click()}
+													variant="outline"
+													className="gap-2 bg-white/5 text-slate-200 border-white/10 hover:bg-[#000AF2] hover:text-white hover:border-[#000AF2] transition-all h-8 text-[11px]"
+												>
+													<Upload className="w-3 h-3" />
+													{t("background.uploadCustom")}
+												</Button>
+											</div>
+
+											<div className="grid grid-cols-4 gap-2 mt-2">
+												{customImages.map((imageUrl, idx) => {
+													const isSelected = selected === imageUrl;
+													return (
+														<div
+															key={`custom-${idx}`}
+															className={cn(
+																"aspect-[16/9] w-full h-auto rounded-lg border overflow-hidden cursor-pointer transition-all duration-150 relative group shadow-sm",
+																isSelected
+																	? "border-[#000AF2] ring-1 ring-[#000AF2]/30"
+																	: "border-white/10 hover:border-[#000AF2]/40 opacity-80 hover:opacity-100 bg-white/5",
+															)}
+															style={{
+																backgroundImage: `url(${imageUrl})`,
+																backgroundSize: "cover",
+																backgroundPosition: "center",
+															}}
+															onClick={() => onWallpaperChange(imageUrl)}
+															role="button"
+														>
+															<button
+																onClick={(e) => handleRemoveCustomImage(imageUrl, e)}
+																className="absolute top-0.5 right-0.5 w-3 h-3 bg-red-500/90 hover:bg-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+															>
+																<X className="w-2 h-2 text-white" />
+															</button>
+														</div>
+													);
+												})}
+
+												{WALLPAPER_PATHS.map((canonicalPath, i) => {
+													const previewUrl = wallpaperPreviewUrls[i] ?? canonicalPath;
+													const isSelected = selected === canonicalPath;
+													return (
+														<div
+															key={canonicalPath}
+															className={cn(
+																"aspect-[16/9] w-full h-auto rounded-lg border overflow-hidden cursor-pointer transition-all duration-150 shadow-sm",
+																isSelected
+																	? "border-[#000AF2] ring-1 ring-[#000AF2]/30"
+																	: "border-white/10 hover:border-[#000AF2]/40 opacity-80 hover:opacity-100 bg-white/5",
+															)}
+															style={{
+																backgroundImage: `url(${previewUrl})`,
+																backgroundSize: "cover",
+																backgroundPosition: "center",
+															}}
+															onClick={() => onWallpaperChange(canonicalPath)}
+															role="button"
+														/>
+													);
+												})}
+											</div>
+										</TabsContent>
+
+										<TabsContent value="color" className="mt-0">
+											<ColorPicker
+												selectedColor={selectedColor}
+												colorPalette={colorPalette}
+												translations={{
+													colorWheel: t("background.colorWheel"),
+													colorPalette: t("background.colorPalette"),
+												}}
+												onUpdateColor={(color) => {
+													setSelectedColor(color);
+													onWallpaperChange(color);
+												}}
+											/>
+										</TabsContent>
+
+										<TabsContent value="gradient" className="mt-0">
+											<div className="grid grid-cols-4 gap-2 mt-2">
+												{GRADIENTS.map((g, idx) => (
+													<div
+														key={g}
+														className={cn(
+															"aspect-[16/9] w-full h-auto rounded-lg border overflow-hidden cursor-pointer transition-all duration-150 shadow-sm",
+															gradient === g
+																? "border-[#000AF2] ring-1 ring-[#000AF2]/30"
+																: "border-white/10 hover:border-[#000AF2]/40 opacity-80 hover:opacity-100 bg-white/5",
+														)}
+														style={{ background: g }}
+														aria-label={t("background.gradientLabel", {
+															index: idx + 1,
+														})}
+														onClick={() => {
+															setGradient(g);
+															onWallpaperChange(g);
+														}}
+														role="button"
+													/>
+												))}
+											</div>
+										</TabsContent>
+									</div>
+								</Tabs>
 							</div>
 						</div>
 					)}
@@ -981,14 +991,14 @@ export function SettingsPanel({
 							{/* Cursor Settings */}
 							<div
 								className={cn(
-									"editor-panel-section p-3 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3",
+									"editor-panel-section p-2 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3",
 									(!showCursorSettings || !hasCursorData) &&
 										"opacity-40 pointer-events-none select-none",
 								)}
 							>
 								<div className="flex items-center justify-between mb-1">
 									<div className="flex items-center gap-2">
-										<MousePointerClick className="w-4 h-4 text-[#000AF2]" />
+										<MousePointerClick className="w-4 h-4 text-slate-200" />
 										<span className="text-xs font-semibold text-slate-200">{t("cursor.show")}</span>
 									</div>
 									<Switch
@@ -1146,9 +1156,9 @@ export function SettingsPanel({
 							</div>
 
 							{/* Keystrokes Section */}
-							<div className="editor-panel-section p-3 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3">
+							<div className="editor-panel-section p-2 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3">
 								<div className="flex items-center gap-2 mb-1">
-									<Keyboard className="w-4 h-4 text-[#000AF2]" />
+									<Keyboard className="w-4 h-4 text-slate-200" />
 									<span className="text-xs font-semibold text-slate-200">
 										{t("keystrokes.title")}
 									</span>
@@ -1251,9 +1261,9 @@ export function SettingsPanel({
 
 							{/* Blur Regions Section */}
 							{BLUR_REGIONS_ENABLED && (
-								<div className="editor-panel-section p-3 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3">
+								<div className="editor-panel-section p-2 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3">
 									<div className="flex items-center gap-2 mb-1">
-										<Layers className="w-4 h-4 text-[#000AF2]" />
+										<Layers className="w-4 h-4 text-slate-200" />
 										<span className="text-xs font-semibold text-slate-200">
 											Blur Region Settings
 										</span>
@@ -1282,9 +1292,9 @@ export function SettingsPanel({
 					{/* ── TRIM TAB ── */}
 					{activePanelMode === "trim" && (
 						<div className="space-y-4">
-							<div className="editor-panel-section p-3 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3">
+							<div className="editor-panel-section p-2 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3">
 								<div className="flex items-center gap-2 mb-1">
-									<Scissors className="w-4 h-4 text-[#000AF2]" />
+									<Scissors className="w-4 h-4 text-slate-200" />
 									<span className="text-xs font-semibold text-slate-200">
 										{t("timeline.title")}
 									</span>
@@ -1333,12 +1343,12 @@ export function SettingsPanel({
 						<div className="space-y-4">
 							<div
 								className={cn(
-									"editor-panel-section p-3 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3",
+									"editor-panel-section p-2 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3",
 									!hasWebcam && "opacity-40 pointer-events-none select-none",
 								)}
 							>
 								<div className="flex items-center gap-2 mb-1">
-									<Video className="w-4 h-4 text-[#000AF2]" />
+									<Video className="w-4 h-4 text-slate-200" />
 									<span className="text-xs font-semibold text-slate-200">{t("layout.title")}</span>
 								</div>
 
@@ -1535,23 +1545,176 @@ export function SettingsPanel({
 					)}
 
 					{/* ── WATERMARK TAB ── */}
-					{activePanelMode === "watermark" && (
-						<div className="flex flex-col items-center justify-center p-8 text-center text-slate-500 h-64 bg-white/[0.01] rounded-2xl border border-white/[0.04]">
-							<Stamp className="w-12 h-12 mb-3 text-[#000AF2] opacity-80 animate-pulse" />
-							<span className="text-sm font-semibold text-slate-200">Watermark Features</span>
-							<span className="text-[10px] text-slate-500 mt-1 max-w-[200px] leading-normal">
-								Custom image watermarks, dynamic brand overlays, and preset placement configurations
-								are coming in a future version.
-							</span>
+					{activePanelMode === "watermark" && watermarkSettings && onWatermarkSettingsChange && (
+						<div className="space-y-4">
+							<div className="editor-panel-section p-3 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-4">
+								<div className="flex items-center justify-between mb-2">
+									<div className="flex items-center gap-2">
+										<Stamp className="w-4 h-4 text-slate-200" />
+										<span className="text-xs font-semibold text-slate-200">Watermark</span>
+									</div>
+									{watermarkSettings.imageUrl && (
+										<Button
+											variant="ghost"
+											size="icon"
+											className="h-6 w-6 text-slate-400 hover:text-white"
+											onClick={() =>
+												onWatermarkSettingsChange({ ...watermarkSettings, imageUrl: null })
+											}
+										>
+											<Trash2 className="w-3.5 h-3.5" />
+										</Button>
+									)}
+								</div>
+
+								{!watermarkSettings.imageUrl ? (
+									<label className="flex flex-col items-center justify-center h-24 rounded-lg border-2 border-dashed border-white/10 hover:border-white/20 hover:bg-white/[0.02] transition-colors cursor-pointer group">
+										<input
+											type="file"
+											accept="image/png,image/jpeg,image/webp"
+											className="hidden"
+											onChange={(e) => {
+												const file = e.target.files?.[0];
+												if (file) {
+													const url = URL.createObjectURL(file);
+													onWatermarkSettingsChange({ ...watermarkSettings, imageUrl: url });
+												}
+											}}
+										/>
+										<Upload className="w-5 h-5 mb-2 text-slate-500 group-hover:text-slate-300" />
+										<span className="text-xs font-medium text-slate-400 group-hover:text-slate-300">
+											Upload Image
+										</span>
+									</label>
+								) : (
+									<div className="relative flex items-center justify-center h-24 rounded-lg border border-white/10 bg-black/20 overflow-hidden">
+										<img
+											src={watermarkSettings.imageUrl}
+											alt="Watermark preview"
+											className="max-h-full max-w-full object-contain"
+										/>
+									</div>
+								)}
+							</div>
+
+							{watermarkSettings.imageUrl && (
+								<>
+									<div className="editor-panel-section p-3 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-4">
+										<div className="space-y-3">
+											<div className="space-y-1.5">
+												<div className="text-[10px] font-medium text-slate-400">Position</div>
+												<div className="grid grid-cols-3 gap-1">
+													{(
+														[
+															{ value: "top-left" },
+															{ value: "top-center" },
+															{ value: "top-right" },
+															{ value: "center-left" },
+															{ value: "center" },
+															{ value: "center-right" },
+															{ value: "bottom-left" },
+															{ value: "bottom-center" },
+															{ value: "bottom-right" },
+														] as Array<{
+															value: import("./types").WatermarkPosition | string;
+															disabled?: boolean;
+														}>
+													).map((pos, i) => {
+														if (pos.disabled) {
+															return <div key={i} className="h-8" />;
+														}
+														return (
+															<button
+																key={pos.value}
+																type="button"
+																onClick={() =>
+																	onWatermarkSettingsChange({
+																		...watermarkSettings,
+																		position: pos.value as import("./types").WatermarkPosition,
+																	})
+																}
+																className={cn(
+																	"h-8 text-[10px] rounded-lg border transition-all duration-150 relative flex items-center justify-center font-medium",
+																	watermarkSettings.position === pos.value
+																		? "bg-[#000AF2] border-[#000AF2] shadow-sm"
+																		: "bg-black/20 border-white/10 hover:bg-white/10",
+																)}
+															>
+																<div className="absolute inset-1 border border-white/20 rounded-[4px] pointer-events-none" />
+																<div
+																	className={cn(
+																		"absolute w-2 h-2 rounded-full",
+																		watermarkSettings.position === pos.value
+																			? "bg-white"
+																			: "bg-slate-400",
+																		pos.value.includes("top")
+																			? "top-1.5"
+																			: pos.value.includes("bottom")
+																				? "bottom-1.5"
+																				: "top-1/2 -translate-y-1/2",
+																		pos.value.includes("left")
+																			? "left-1.5"
+																			: pos.value.includes("right")
+																				? "right-1.5"
+																				: "left-1/2 -translate-x-1/2",
+																	)}
+																/>
+															</button>
+														);
+													})}
+												</div>
+											</div>
+
+											<div className="space-y-1.5">
+												<div className="flex justify-between">
+													<span className="text-[11px] font-medium text-slate-400">Size</span>
+													<span className="text-[11px] font-medium text-slate-200 tabular-nums">
+														{watermarkSettings.size}%
+													</span>
+												</div>
+												<Slider
+													value={[watermarkSettings.size]}
+													min={5}
+													max={100}
+													step={1}
+													onValueChange={([val]) =>
+														onWatermarkSettingsChange({ ...watermarkSettings, size: val })
+													}
+													onValueCommit={onWatermarkSettingsCommit}
+												/>
+											</div>
+
+											<div className="space-y-1.5">
+												<div className="flex justify-between">
+													<span className="text-[11px] font-medium text-slate-400">Opacity</span>
+													<span className="text-[11px] font-medium text-slate-200 tabular-nums">
+														{watermarkSettings.opacity}%
+													</span>
+												</div>
+												<Slider
+													value={[watermarkSettings.opacity]}
+													min={0}
+													max={100}
+													step={1}
+													onValueChange={([val]) =>
+														onWatermarkSettingsChange({ ...watermarkSettings, opacity: val })
+													}
+													onValueCommit={onWatermarkSettingsCommit}
+												/>
+											</div>
+										</div>
+									</div>
+								</>
+							)}
 						</div>
 					)}
 
 					{/* ── ANNOTATION TAB ── */}
 					{activePanelMode === "annotation" && (
 						<div className="space-y-4">
-							<div className="editor-panel-section p-3 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3">
+							<div className="editor-panel-section p-2 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3">
 								<div className="flex items-center gap-2 mb-1">
-									<PenLine className="w-4 h-4 text-[#000AF2]" />
+									<PenLine className="w-4 h-4 text-slate-200" />
 									<span className="text-xs font-semibold text-slate-200">
 										{t("annotation.title")}
 									</span>
@@ -1602,12 +1765,12 @@ export function SettingsPanel({
 							{/* Zoom Settings */}
 							<div
 								className={cn(
-									"editor-panel-section p-3 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3",
+									"editor-panel-section p-2 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3",
 									!zoomEnabled && "opacity-40 pointer-events-none select-none",
 								)}
 							>
 								<div className="flex items-center gap-2 mb-1">
-									<Wand2 className="w-4 h-4 text-[#000AF2]" />
+									<Wand2 className="w-4 h-4 text-slate-200" />
 									<span className="text-xs font-semibold text-slate-200">Zoom Properties</span>
 								</div>
 
@@ -1880,7 +2043,7 @@ export function SettingsPanel({
 							{/* Speed Settings */}
 							<div
 								className={cn(
-									"editor-panel-section p-3 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3",
+									"editor-panel-section p-2 rounded-2xl border border-white/[0.05] bg-white/[0.02] space-y-3",
 									!selectedSpeedId && "opacity-40 pointer-events-none select-none",
 								)}
 							>
@@ -1971,8 +2134,8 @@ export function SettingsPanel({
 						className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 animate-in fade-in duration-200"
 						onClick={() => setShowCropDropdown(false)}
 					/>
-					<div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[60] bg-[#09090b] rounded-2xl shadow-2xl border border-white/10 p-8 w-[90vw] max-w-5xl max-h-[90vh] overflow-auto animate-in zoom-in-95 duration-200">
-						<div className="flex items-center justify-between mb-6">
+					<div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[60] bg-[#09090b] rounded-2xl shadow-2xl border border-white/10 p-8 w-[95vw] max-w-6xl max-h-[90vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200">
+						<div className="flex items-center justify-between mb-6 flex-shrink-0">
 							<div>
 								<span className="text-xl font-bold text-slate-200">{t("crop.cropVideo")}</span>
 								<p className="text-sm text-slate-400 mt-2">{t("crop.dragInstruction")}</p>
@@ -1986,102 +2149,115 @@ export function SettingsPanel({
 								<X className="w-5 h-5" />
 							</Button>
 						</div>
-						<CropControl
-							videoElement={videoElement || null}
-							cropRegion={cropRegion!}
-							onCropChange={onCropChange!}
-							aspectRatio={aspectRatio}
-						/>
-						<div className="mt-6 space-y-4">
-							<div className="flex flex-wrap items-end gap-3">
-								{[
-									{ label: "X", field: "x" as const, max: videoWidth },
-									{ label: "Y", field: "y" as const, max: videoHeight },
-									{ label: "W", field: "width" as const, max: videoWidth },
-									{ label: "H", field: "height" as const, max: videoHeight },
-								].map(({ label, field, max }) => (
-									<div key={field} className="flex flex-col gap-1">
-										<label className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">
-											{label}
-										</label>
-										<input
-											type="number"
-											min={0}
-											max={max}
-											value={getCropPixelValue(field)}
-											onChange={(e) => handleCropNumericChange(field, Number(e.target.value))}
-											className="w-[90px] h-8 rounded-md border border-white/10 bg-white/5 px-2 text-xs text-slate-200 outline-none focus:border-[#000AF2]/50 focus:ring-1 focus:ring-[#000AF2]/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-										/>
-									</div>
-								))}
 
-								<div className="flex flex-col gap-1">
-									<label className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">
-										{t("crop.ratio")}
-									</label>
-									<div className="flex items-center gap-1.5">
-										<select
-											value={cropAspectRatio}
-											onChange={(e) => applyCropAspectPreset(e.target.value)}
-											className="h-8 rounded-md border border-white/10 bg-[#1a1a1f] px-2 text-xs text-slate-200 outline-none focus:border-[#000AF2]/50 cursor-pointer"
-										>
-											<option value="" className="bg-[#1a1a1f] text-slate-200">
-												{t("crop.free")}
-											</option>
-											<option value="16:9" className="bg-[#1a1a1f] text-slate-200">
-												16:9
-											</option>
-											<option value="9:16" className="bg-[#1a1a1f] text-slate-200">
-												9:16
-											</option>
-											<option value="4:3" className="bg-[#1a1a1f] text-slate-200">
-												4:3
-											</option>
-											<option value="3:4" className="bg-[#1a1a1f] text-slate-200">
-												3:4
-											</option>
-											<option value="1:1" className="bg-[#1a1a1f] text-slate-200">
-												1:1
-											</option>
-											<option value="21:9" className="bg-[#1a1a1f] text-slate-200">
-												21:9
-											</option>
-										</select>
-										<button
-											type="button"
-											onClick={() => setCropAspectLocked((prev) => !prev)}
-											className={cn(
-												"h-8 w-8 flex items-center justify-center rounded-md border transition-all",
-												cropAspectLocked
-													? "border-[#000AF2]/50 bg-[#000AF2]/10 text-[#000AF2]"
-													: "border-white/10 bg-white/5 text-slate-400 hover:text-slate-200",
-											)}
-											title={
-												cropAspectLocked ? t("crop.unlockAspectRatio") : t("crop.lockAspectRatio")
-											}
-										>
-											{cropAspectLocked ? (
-												<Lock className="w-3.5 h-3.5" />
-											) : (
-												<Unlock className="w-3.5 h-3.5" />
-											)}
-										</button>
+						<div className="flex flex-row gap-8 overflow-hidden min-h-0 h-full">
+							{/* Left Column: Canvas */}
+							<div className="flex-1 overflow-hidden flex items-center justify-center bg-black/20 rounded-xl border border-white/5">
+								<CropControl
+									videoElement={videoElement || null}
+									cropRegion={cropRegion!}
+									onCropChange={onCropChange!}
+									aspectRatio={aspectRatio}
+								/>
+							</div>
+
+							{/* Right Column: Settings */}
+							<div className="w-[280px] flex-shrink-0 flex flex-col justify-between">
+								<div className="space-y-6">
+									<div className="grid grid-cols-2 gap-4">
+										{[
+											{ label: "X", field: "x" as const, max: videoWidth },
+											{ label: "Y", field: "y" as const, max: videoHeight },
+											{ label: "W", field: "width" as const, max: videoWidth },
+											{ label: "H", field: "height" as const, max: videoHeight },
+										].map(({ label, field, max }) => (
+											<div key={field} className="flex flex-col gap-1">
+												<label className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">
+													{label}
+												</label>
+												<input
+													type="number"
+													min={0}
+													max={max}
+													value={getCropPixelValue(field)}
+													onChange={(e) => handleCropNumericChange(field, Number(e.target.value))}
+													className="w-full h-9 rounded-md border border-white/10 bg-white/5 px-3 text-xs text-slate-200 outline-none focus:border-[#000AF2]/50 focus:ring-1 focus:ring-[#000AF2]/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+												/>
+											</div>
+										))}
+									</div>
+
+									<div className="flex flex-col gap-1">
+										<label className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">
+											{t("crop.ratio")}
+										</label>
+										<div className="flex items-center gap-2">
+											<select
+												value={cropAspectRatio}
+												onChange={(e) => applyCropAspectPreset(e.target.value)}
+												className="flex-1 h-9 rounded-md border border-white/10 bg-[#1a1a1f] px-3 text-xs text-slate-200 outline-none focus:border-[#000AF2]/50 cursor-pointer"
+											>
+												<option value="" className="bg-[#1a1a1f] text-slate-200">
+													{t("crop.free")}
+												</option>
+												<option value="16:9" className="bg-[#1a1a1f] text-slate-200">
+													16:9
+												</option>
+												<option value="9:16" className="bg-[#1a1a1f] text-slate-200">
+													9:16
+												</option>
+												<option value="4:3" className="bg-[#1a1a1f] text-slate-200">
+													4:3
+												</option>
+												<option value="3:4" className="bg-[#1a1a1f] text-slate-200">
+													3:4
+												</option>
+												<option value="1:1" className="bg-[#1a1a1f] text-slate-200">
+													1:1
+												</option>
+												<option value="21:9" className="bg-[#1a1a1f] text-slate-200">
+													21:9
+												</option>
+											</select>
+											<button
+												type="button"
+												onClick={() => setCropAspectLocked((prev) => !prev)}
+												className={cn(
+													"h-9 w-10 flex items-center justify-center rounded-md border transition-all flex-shrink-0",
+													cropAspectLocked
+														? "border-[#000AF2]/50 bg-[#000AF2]/10 text-[#000AF2]"
+														: "border-white/10 bg-white/5 text-slate-400 hover:text-slate-200",
+												)}
+												title={
+													cropAspectLocked ? t("crop.unlockAspectRatio") : t("crop.lockAspectRatio")
+												}
+											>
+												{cropAspectLocked ? (
+													<Lock className="w-4 h-4" />
+												) : (
+													<Unlock className="w-4 h-4" />
+												)}
+											</button>
+										</div>
+									</div>
+
+									<div className="p-3 bg-white/[0.02] border border-white/[0.05] rounded-lg flex items-center justify-between">
+										<span className="text-xs text-slate-400">Resolution</span>
+										<span className="text-xs font-mono text-slate-200">
+											{videoWidth} × {videoHeight} px
+										</span>
 									</div>
 								</div>
 
-								<p className="text-[10px] text-slate-500 self-center ml-2">
-									{videoWidth} × {videoHeight}px
-								</p>
-							</div>
-
-							<div className="flex justify-end">
-								<Button
-									onClick={() => setShowCropDropdown(false)}
-									size="lg"
-									className="bg-[#000AF2] hover:bg-[#000AF2]/90 text-white"
-								>
-									{t("crop.done")}
-								</Button>
+								<div className="pt-6 mt-auto">
+									<Button
+										onClick={() => setShowCropDropdown(false)}
+										size="lg"
+										className="w-full bg-[#000AF2] hover:bg-[#000AF2]/90 text-white font-semibold"
+									>
+										{t("crop.done")}
+									</Button>
+								</div>
 							</div>
 						</div>
 					</div>
