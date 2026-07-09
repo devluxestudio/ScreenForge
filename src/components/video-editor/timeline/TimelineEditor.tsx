@@ -1595,20 +1595,6 @@ export default function TimelineEditor({
 					>
 						<SkipForward className="w-4 h-4" />
 					</Button>
-					<Button
-						onClick={
-							onToggleFullscreen ??
-							(() => {
-								/* noop */
-							})
-						}
-						variant="ghost"
-						size="icon"
-						className="h-7 w-7 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.07] transition-all ml-1"
-						title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-					>
-						{isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
-					</Button>
 
 					{/* Duration display moved to left controls */}
 					<div className="ml-2 flex items-center justify-center bg-white/[0.03] px-2 py-0.5 rounded-md border border-white/5">
@@ -1628,7 +1614,7 @@ export default function TimelineEditor({
 							onClick={handleAddZoom}
 							variant="ghost"
 							size="icon"
-							className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#34B27B] hover:bg-[#34B27B]/10 transition-all"
+							className="h-7 w-7 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-all"
 							title={t("buttons.addZoom")}
 						>
 							<ZoomIn className="w-4 h-4" />
@@ -1668,8 +1654,8 @@ export default function TimelineEditor({
 							size="icon"
 							aria-pressed={autoZoomEnabled}
 							className={cn(
-								"h-7 w-7 rounded-lg transition-all hover:bg-[#34B27B]/10 hover:text-[#34B27B]",
-								autoZoomEnabled ? "bg-[#34B27B]/15 text-[#34B27B]" : "text-slate-400",
+								"h-7 w-7 rounded-lg transition-all hover:bg-white/10 hover:text-white",
+								autoZoomEnabled ? "bg-white/10 text-white" : "text-slate-400",
 							)}
 							title={autoZoomEnabled ? t("buttons.autoZoomOn") : t("buttons.autoZoomOff")}
 						>
@@ -1681,8 +1667,8 @@ export default function TimelineEditor({
 							size="icon"
 							aria-pressed={autoFocusAll}
 							className={cn(
-								"h-7 w-7 rounded-lg transition-all hover:bg-[#34B27B]/10 hover:text-[#34B27B]",
-								autoFocusAll ? "bg-[#34B27B]/15 text-[#34B27B]" : "text-slate-400",
+								"h-7 w-7 rounded-lg transition-all hover:bg-white/10 hover:text-white",
+								autoFocusAll ? "bg-white/10 text-white" : "text-slate-400",
 							)}
 							title={autoFocusAll ? t("buttons.autoFocusAllOn") : t("buttons.autoFocusAllOff")}
 						>
@@ -1692,7 +1678,7 @@ export default function TimelineEditor({
 							onClick={handleAddTrim}
 							variant="ghost"
 							size="icon"
-							className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#ef4444] hover:bg-[#ef4444]/10 transition-all"
+							className="h-7 w-7 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-all"
 							title={t("buttons.addTrim")}
 						>
 							<Scissors className="w-4 h-4" />
@@ -1701,7 +1687,7 @@ export default function TimelineEditor({
 							onClick={handleAddAnnotation}
 							variant="ghost"
 							size="icon"
-							className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#B4A046] hover:bg-[#B4A046]/10 transition-all"
+							className="h-7 w-7 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-all"
 							title={t("buttons.addAnnotation")}
 						>
 							<MessageSquare className="w-4 h-4" />
@@ -1711,7 +1697,7 @@ export default function TimelineEditor({
 								onClick={handleAddBlur}
 								variant="ghost"
 								size="icon"
-								className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#7dd3fc] hover:bg-[#7dd3fc]/10 transition-all"
+								className="h-7 w-7 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-all"
 								title={t("buttons.addBlur")}
 							>
 								<svg
@@ -1731,7 +1717,7 @@ export default function TimelineEditor({
 							onClick={handleAddSpeed}
 							variant="ghost"
 							size="icon"
-							className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#d97706] hover:bg-[#d97706]/10 transition-all"
+							className="h-7 w-7 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-all"
 							title={t("buttons.addSpeed")}
 						>
 							<Gauge className="w-4 h-4" />
@@ -1742,7 +1728,7 @@ export default function TimelineEditor({
 								disabled={isGeneratingCaptions || !videoUrl}
 								variant="ghost"
 								size="icon"
-								className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#a78bfa] hover:bg-[#a78bfa]/10 transition-all"
+								className="h-7 w-7 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-all"
 								title={captionsLabel}
 							>
 								<Captions className="w-4 h-4" />
@@ -1820,32 +1806,7 @@ export default function TimelineEditor({
 							<Plus className="w-3.5 h-3.5" />
 						</button>
 					</div>
-					<div className="flex items-center gap-1.5 min-w-0">
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button
-									variant="ghost"
-									size="sm"
-									className="h-7 px-2 rounded-lg text-[11px] text-slate-400 hover:text-slate-200 hover:bg-white/[0.07] transition-all gap-1"
-								>
-									<span className="font-medium">{getAspectRatioLabel(aspectRatio)}</span>
-									<ChevronDown className="w-3 h-3" />
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end" className="bg-[#1a1a1a] border-white/10">
-								{ASPECT_RATIOS.map((ratio) => (
-									<DropdownMenuItem
-										key={ratio}
-										onClick={() => onAspectRatioChange(ratio)}
-										className="text-slate-300 hover:text-white hover:bg-white/10 cursor-pointer flex items-center justify-between gap-3"
-									>
-										<span>{getAspectRatioLabel(ratio)}</span>
-										{aspectRatio === ratio && <Check className="w-3 h-3 text-[#34B27B]" />}
-									</DropdownMenuItem>
-								))}
-							</DropdownMenuContent>
-						</DropdownMenu>
-					</div>
+
 				</div>
 			</div>
 

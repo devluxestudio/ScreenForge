@@ -1,5 +1,5 @@
-import type { KeystrokeEvent } from "@/native/contracts";
 import type { KeystrokeDesign, KeystrokePosition } from "@/components/video-editor/types";
+import type { KeystrokeEvent } from "@/native/contracts";
 
 const DISPLAY_DURATION_MS = 2000;
 const COMBO_GAP_MS = 600;

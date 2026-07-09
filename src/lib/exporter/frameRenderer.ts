@@ -64,15 +64,15 @@ import { BackgroundLoadError, classifyWallpaper, resolveImageWallpaperUrl } from
 import { drawCanvasClipPath } from "@/lib/webcamMaskShapes";
 import type { CursorRecordingData } from "@/native/contracts";
 import { renderAnnotations } from "./annotationRenderer";
-import { renderKeystrokes } from "./keystrokeRenderer";
-import { renderWatermark } from "./watermarkRenderer";
 import {
 	getLinearGradientPoints,
 	getRadialGradientShape,
 	parseCssGradient,
 	resolveLinearGradientAngle,
 } from "./gradientParser";
+import { renderKeystrokes } from "./keystrokeRenderer";
 import { createThreeDPass, type ThreeDPass } from "./threeDPass";
+import { renderWatermark } from "./watermarkRenderer";
 import { drawWebcamFrameImage } from "./webcamFrameDrawing";
 
 interface FrameRenderConfig {

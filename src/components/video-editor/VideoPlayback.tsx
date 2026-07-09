@@ -55,7 +55,6 @@ import {
 	DEFAULT_SOURCE_DIMENSIONS,
 } from "./editorDefaults";
 import { KeystrokeOverlay } from "./KeystrokeOverlay";
-import { WatermarkOverlay } from "./WatermarkOverlay";
 import {
 	type AnnotationRegion,
 	type BlurData,
@@ -92,6 +91,7 @@ import {
 	createMotionBlurState,
 	type MotionBlurState,
 } from "./videoPlayback/zoomTransform";
+import { WatermarkOverlay } from "./WatermarkOverlay";
 
 interface VideoPlaybackProps {
 	videoPath: string;

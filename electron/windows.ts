@@ -190,6 +190,7 @@ export function createEditorWindow(): BrowserWindow {
 		skipTaskbar: false,
 		title: "OpenScreen",
 		backgroundColor: "#09090b",
+		autoHideMenuBar: true,
 		show: false, // shown via ready-to-show to avoid white flash on first load
 		webPreferences: {
 			preload: path.join(__dirname, "preload.mjs"),
@@ -201,6 +202,7 @@ export function createEditorWindow(): BrowserWindow {
 		},
 	});
 
+	win.setMenu(null); // Completely remove the native menu bar
 	win.maximize();
 
 	// Show only once painted to avoid a white flash on cold Vite start.

@@ -10,12 +10,12 @@ import type {
 	CropRegion,
 	SpeedRegion,
 	TrimRegion,
+	WatermarkSettings,
 	WebcamLayoutPreset,
 	WebcamMaskShape,
 	WebcamPosition,
 	WebcamSizePreset,
 	ZoomRegion,
-	WatermarkSettings,
 } from "@/components/video-editor/types";
 import {
 	DEFAULT_CROP_REGION,

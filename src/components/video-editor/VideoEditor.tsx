@@ -1,7 +1,7 @@
 import type { Span } from "dnd-timeline";
 import {
 	Download,
-	FolderOpen,
+	Folder,
 	Languages,
 	Layers,
 	Palette,
@@ -11,7 +11,26 @@ import {
 	Stamp,
 	Video,
 	Wand2,
+	Monitor,
+	Headphones,
+	Grid,
+	Gift,
+	Edit3,
+	Calendar,
+	Cloud,
+	ShoppingCart,
+	ChevronDown,
+	Settings,
+	Check,
 } from "lucide-react";
+import {
+	FolderIcon,
+	ScreenShareIcon,
+	SaveIcon,
+	FullscreenIcon,
+	AspectRatioIcon,
+	SettingsIcon,
+} from "@/components/ui/icons";
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { toast } from "sonner";
@@ -24,6 +43,12 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import { Label } from "@/components/ui/label";
 import {
@@ -84,6 +109,8 @@ import {
 	getAspectRatioValue,
 	getNativeAspectRatioValue,
 	isPortraitAspectRatio,
+	ASPECT_RATIOS,
+	getAspectRatioLabel,
 } from "@/utils/aspectRatioUtils";
 
 import { EditorEmptyState } from "./EditorEmptyState";
@@ -347,6 +374,9 @@ export default function VideoEditor() {
 	const isAutoCaptioningRef = useRef(false);
 	const [isAutoCaptioning, setIsAutoCaptioning] = useState(false);
 	const [showAutoCaptionsDialog, setShowAutoCaptionsDialog] = useState(false);
+	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
+	const [projectName, setProjectName] = useState("Untitled Project");
+	const [isEditingProjectName, setIsEditingProjectName] = useState(false);
 	const [captionWordsMin, setCaptionWordsMin] = useState(2);
 	const [captionWordsMax, setCaptionWordsMax] = useState(7);
 	const exporterRef = useRef<VideoExporter | null>(null);
@@ -2569,62 +2599,152 @@ export default function VideoEditor() {
 				</DialogContent>
 			</Dialog>
 
-			<div
-				className="h-11 flex-shrink-0 bg-[#070809]/85 backdrop-blur-xl border-b border-white/[0.07] flex items-center justify-between px-5 z-50 shadow-[0_1px_0_rgba(255,255,255,0.03)]"
-				style={{ WebkitAppRegion: "drag" } as CSSProperties}
-			>
-				<div
-					className="flex-1 flex items-center gap-1"
+			<Dialog open={showSettingsDialog} onOpenChange={setShowSettingsDialog}>
+				<DialogContent
+					className="sm:max-w-md"
 					style={{ WebkitAppRegion: "no-drag" } as CSSProperties}
 				>
-					<div
-						className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-white/50 hover:text-white/90 hover:bg-white/[0.08] transition-all duration-150 ${isMac ? "ml-14" : "ml-2"}`}
-					>
-						<Languages size={14} />
-						<select
-							value={locale}
-							onChange={(e) => setLocale(e.target.value as Locale)}
-							className="bg-transparent text-[11px] font-medium outline-none cursor-pointer appearance-none pr-1"
-							style={{ color: "inherit" }}
-						>
-							{availableLocales.map((loc) => (
-								<option key={loc} value={loc} className="bg-[#09090b] text-white">
-									{getLocaleName(loc)}
-								</option>
-							))}
-						</select>
+					<DialogHeader>
+						<DialogTitle>{ts("general.title") ?? "Settings"}</DialogTitle>
+						<DialogDescription>Configure application settings</DialogDescription>
+					</DialogHeader>
+					<div className="grid gap-4 py-4">
+						<div className="grid gap-2">
+							<Label htmlFor="language-select">{ts("general.language") ?? "Language"}</Label>
+							<select
+								id="language-select"
+								value={locale}
+								onChange={(e) => setLocale(e.target.value as Locale)}
+								className="w-full bg-[#1a1a1f] border border-white/10 rounded-md px-3 py-2 text-sm text-white outline-none focus:border-[#000AF2]/50"
+							>
+								{availableLocales.map((loc) => (
+									<option key={loc} value={loc}>
+										{getLocaleName(loc)}
+									</option>
+								))}
+							</select>
+						</div>
 					</div>
+					<DialogFooter>
+						<Button
+							type="button"
+							onClick={() => setShowSettingsDialog(false)}
+							className="bg-[#000AF2] text-white hover:bg-[#000AF2]/90"
+						>
+							{t("buttons.done")}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			<div
+				className="h-[60px] flex-shrink-0 bg-[#0A0D0F] border-b border-white/[0.06] flex items-center px-4 z-50 shadow-sm"
+				style={{ WebkitAppRegion: "drag" } as CSSProperties}
+			>
+				{/* LEFT SECTION */}
+				<div
+					className={`flex items-center gap-4 ${isMac ? "ml-14" : ""}`}
+					style={{ WebkitAppRegion: "no-drag" } as CSSProperties}
+				>
+					<div className="flex items-center gap-2">
+						<button
+							type="button"
+							onClick={handleLoadProject}
+							className="flex flex-col items-center justify-center gap-1 px-3 py-1 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.06] transition-all group min-w-[70px]"
+						>
+							<FolderIcon className="group-hover:scale-110 transition-transform text-slate-300 group-hover:text-white text-2xl" />
+							<span className="text-[10px] font-medium whitespace-nowrap leading-none">{ts("project.load")}</span>
+						</button>
+
+						<button
+							type="button"
+							onClick={() => setShowNewRecordingDialog(true)}
+							className="flex flex-col items-center justify-center gap-1 px-3 py-1 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.06] transition-all group min-w-[70px]"
+						>
+							<ScreenShareIcon className="group-hover:scale-110 transition-transform text-slate-300 group-hover:text-white text-2xl" />
+							<span className="text-[10px] font-medium whitespace-nowrap leading-none">Return to Recorder</span>
+						</button>
+
+						<div className="flex items-center justify-center px-1">
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<button className="flex flex-col items-center justify-center gap-1 px-3 py-1 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.06] transition-all group outline-none min-w-[60px]">
+										<AspectRatioIcon className="group-hover:scale-110 transition-transform text-slate-300 group-hover:text-white text-2xl" />
+										<span className="text-[10px] font-medium flex items-center gap-1 whitespace-nowrap leading-none">
+											Set Aspect Ratio <ChevronDown strokeWidth={3} size={10} className="text-slate-300 group-hover:text-white" />
+										</span>
+									</button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="start" className="bg-[#1a1a1a] border-white/10 z-[60]">
+									{ASPECT_RATIOS.map((ratio) => (
+										<DropdownMenuItem
+											key={ratio}
+											onClick={() => {
+												const ar = ratio;
+												pushState({
+													aspectRatio: ar,
+													webcamLayoutPreset:
+														(isPortraitAspectRatio(ar) && webcamLayoutPreset === "dual-frame") ||
+														(!isPortraitAspectRatio(ar) && webcamLayoutPreset === "vertical-stack")
+															? "picture-in-picture"
+															: webcamLayoutPreset,
+												});
+											}}
+											className="text-slate-300 hover:text-white hover:bg-white/10 cursor-pointer flex items-center justify-between gap-3 text-xs"
+										>
+											<span>{getAspectRatioLabel(ratio)}</span>
+											{aspectRatio === ratio && <Check className="w-3.5 h-3.5 text-[#34B27B]" />}
+										</DropdownMenuItem>
+									))}
+								</DropdownMenuContent>
+							</DropdownMenu>
+						</div>
+					</div>
+				</div>
+
+				{/* CENTER SECTION (Empty to push right content) */}
+				<div className="flex-1" />
+
+				{/* RIGHT SECTION */}
+				<div
+					className="flex items-center gap-2"
+					style={{ WebkitAppRegion: "no-drag" } as CSSProperties}
+				>
 					<button
 						type="button"
-						onClick={() => setShowNewRecordingDialog(true)}
-						className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-white/50 hover:text-white/90 hover:bg-white/[0.08] transition-all duration-150 text-[11px] font-medium"
+						onClick={toggleFullscreen}
+						className="flex items-center justify-center gap-2 px-3 py-1.5 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.06] transition-all group"
+						title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
 					>
-						<Video size={14} />
-						{t("newRecording.title")}
+						<FullscreenIcon className="group-hover:scale-110 transition-transform text-slate-300 group-hover:text-white text-2xl" />
+						<span className="text-xs font-medium whitespace-nowrap">Fullscreen</span>
 					</button>
+
 					<button
 						type="button"
-						onClick={handleLoadProject}
-						className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-white/50 hover:text-white/90 hover:bg-white/[0.08] transition-all duration-150 text-[11px] font-medium"
+						onClick={() => setShowSettingsDialog(true)}
+						className="flex items-center justify-center gap-2 px-3 py-1.5 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.06] transition-all group"
+						title={ts("general.title") ?? "Settings"}
 					>
-						<FolderOpen size={14} />
-						{ts("project.load")}
+						<SettingsIcon className="group-hover:rotate-45 transition-transform duration-300 text-slate-300 group-hover:text-white text-2xl" />
+						<span className="text-xs font-medium">Settings</span>
 					</button>
+
 					<button
 						type="button"
 						onClick={handleSaveProject}
-						className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-white/50 hover:text-white/90 hover:bg-white/[0.08] transition-all duration-150 text-[11px] font-medium"
+						className="flex items-center justify-center gap-2 px-3 py-1.5 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.06] transition-all group mr-2"
 					>
-						<Save size={14} />
-						{ts("project.save")}
+						<SaveIcon className="group-hover:scale-110 transition-transform text-slate-300 group-hover:text-white text-2xl" />
+						<span className="text-xs font-medium whitespace-nowrap">{ts("project.save")}</span>
 					</button>
+
 					{videoPath && (
 						<button
 							type="button"
 							onClick={() => setShowExportConfigDialog(true)}
-							className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#000AF2] text-white hover:bg-[#000AF2]/90 shadow-md shadow-[#000AF2]/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 text-[11px] font-bold"
+							className="bg-[#000AF2] hover:bg-[#1a1fff] text-white px-6 h-9 rounded-md font-bold text-xs tracking-wide transition-all shadow-md shadow-[#000AF2]/20 hover:scale-[1.02] active:scale-[0.98]"
 						>
-							<Download size={13} />
 							Export
 						</button>
 					)}
@@ -2654,7 +2774,7 @@ export default function VideoEditor() {
 			{videoPath && (
 				<div className="flex flex-1 min-h-0 overflow-hidden">
 					{/* ── Left icon rail ── */}
-					<div className="w-12 flex-shrink-0 bg-[#0A0D0F] border-r border-white/[0.06] flex flex-col items-center pt-2 pb-3 gap-0.5">
+					<div className="w-12 flex-shrink-0 bg-[#0A0D0F] border-r border-white/[0.06] flex flex-col items-center pt-2 pb-3 gap-3">
 						{(
 							[
 								{ id: "canvas" as const, icon: Palette, label: "Canvas" },

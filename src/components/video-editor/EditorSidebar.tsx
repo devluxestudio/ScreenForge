@@ -39,8 +39,8 @@ export function EditorSidebar({ modes, activeMode, onModeChange }: EditorSidebar
 								mode.disabled
 									? "cursor-not-allowed opacity-30"
 									: isActive
-										? "bg-[#000AF2] text-white opacity-100"
-										: "text-white opacity-50 hover:opacity-100 hover:bg-white/[0.04]",
+										? "border border-white text-white bg-white/[0.05]"
+										: "text-slate-400 hover:text-white hover:bg-white/[0.04]",
 							)}
 						>
 							<Icon className="h-[20px] w-[20px]" />
