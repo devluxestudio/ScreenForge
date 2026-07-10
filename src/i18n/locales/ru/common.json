@@ -31,9 +31,9 @@
 		"zoomOut": "Уменьшить",
 		"toggleFullScreen": "Полноэкранный режим",
 		"recordingStatus": "Запись: {{source}}",
-		"about": "О OpenScreen",
+		"about": "О ScreenForge",
 		"services": "Сервисы",
-		"hide": "Скрыть OpenScreen",
+		"hide": "Скрыть ScreenForge",
 		"hideOthers": "Скрыть остальные",
 		"unhide": "Показать все"
 	},

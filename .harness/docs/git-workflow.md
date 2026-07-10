@@ -1,4 +1,4 @@
-# Git Workflow for OpenScreen
+# Git Workflow for ScreenForge
 
 Conventions for the Mavis reins when working in this repo.
 
@@ -36,5 +36,5 @@ All five must be green before merge. Native helper code is NOT covered by CI —
 2. Implement + add tests in the same package.
 3. Run locally: `npm run lint && npx tsc --noEmit && npm run test`. For browser/e2e-touching changes, also run the relevant suite.
 4. Push and open the PR via `gh pr create`. Use `.github/pull_request_template.md`.
-5. Wait for the Mavis reviewer (`openscreen-reviewer`) PASS or address the requested changes.
+5. Wait for the Mavis reviewer (`screenforge-reviewer`) PASS or address the requested changes.
 6. Merge once CI is green and review is PASS.

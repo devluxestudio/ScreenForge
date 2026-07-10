@@ -1,38 +1,29 @@
 import type { Span } from "dnd-timeline";
 import {
+	Calendar,
+	Check,
+	ChevronDown,
+	Cloud,
 	Download,
+	Edit3,
 	Folder,
+	Gift,
+	Grid,
+	Headphones,
 	Languages,
 	Layers,
+	Monitor,
 	Palette,
 	PenLine,
 	Save,
 	Scissors,
+	Settings,
+	ShoppingCart,
 	Stamp,
 	Video,
 	Wand2,
-	Monitor,
-	Headphones,
-	Grid,
-	Gift,
-	Edit3,
-	Calendar,
-	Cloud,
-	ShoppingCart,
-	ChevronDown,
-	Settings,
-	Check,
 } from "lucide-react";
-import {
-	FolderIcon,
-	ScreenShareIcon,
-	SaveIcon,
-	FullscreenIcon,
-	AspectRatioIcon,
-	SettingsIcon,
-} from "@/components/ui/icons";
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
-
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -49,6 +40,14 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+	AspectRatioIcon,
+	FolderIcon,
+	FullscreenIcon,
+	SaveIcon,
+	ScreenShareIcon,
+	SettingsIcon,
+} from "@/components/ui/icons";
 
 import { Label } from "@/components/ui/label";
 import {
@@ -106,11 +105,11 @@ import {
 } from "@/native";
 import type { NativePlatform } from "@/native/contracts";
 import {
+	ASPECT_RATIOS,
+	getAspectRatioLabel,
 	getAspectRatioValue,
 	getNativeAspectRatioValue,
 	isPortraitAspectRatio,
-	ASPECT_RATIOS,
-	getAspectRatioLabel,
 } from "@/utils/aspectRatioUtils";
 
 import { EditorEmptyState } from "./EditorEmptyState";
@@ -356,7 +355,7 @@ export default function VideoEditor() {
 
 	const { shortcuts, isMac } = useShortcuts();
 	// Windows recordings include captured cursor assets. macOS hides the system
-	// cursor in ScreenCaptureKit and renders telemetry samples with OpenScreen's
+	// cursor in ScreenCaptureKit and renders telemetry samples with ScreenForge's
 	// default arrow asset for the editable overlay.
 	const hasEditableCursorRecording =
 		recordingCursorCaptureMode === "editable-overlay" &&
@@ -375,8 +374,7 @@ export default function VideoEditor() {
 	const [isAutoCaptioning, setIsAutoCaptioning] = useState(false);
 	const [showAutoCaptionsDialog, setShowAutoCaptionsDialog] = useState(false);
 	const [showSettingsDialog, setShowSettingsDialog] = useState(false);
-	const [projectName, setProjectName] = useState("Untitled Project");
-	const [isEditingProjectName, setIsEditingProjectName] = useState(false);
+
 	const [captionWordsMin, setCaptionWordsMin] = useState(2);
 	const [captionWordsMax, setCaptionWordsMax] = useState(7);
 	const exporterRef = useRef<VideoExporter | null>(null);
@@ -2653,7 +2651,9 @@ export default function VideoEditor() {
 							className="flex flex-col items-center justify-center gap-1 px-3 py-1 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.06] transition-all group min-w-[70px]"
 						>
 							<FolderIcon className="group-hover:scale-110 transition-transform text-slate-300 group-hover:text-white text-2xl" />
-							<span className="text-[10px] font-medium whitespace-nowrap leading-none">{ts("project.load")}</span>
+							<span className="text-[10px] font-medium whitespace-nowrap leading-none">
+								{ts("project.load")}
+							</span>
 						</button>
 
 						<button
@@ -2662,7 +2662,9 @@ export default function VideoEditor() {
 							className="flex flex-col items-center justify-center gap-1 px-3 py-1 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.06] transition-all group min-w-[70px]"
 						>
 							<ScreenShareIcon className="group-hover:scale-110 transition-transform text-slate-300 group-hover:text-white text-2xl" />
-							<span className="text-[10px] font-medium whitespace-nowrap leading-none">Return to Recorder</span>
+							<span className="text-[10px] font-medium whitespace-nowrap leading-none">
+								Return to Recorder
+							</span>
 						</button>
 
 						<div className="flex items-center justify-center px-1">
@@ -2671,7 +2673,12 @@ export default function VideoEditor() {
 									<button className="flex flex-col items-center justify-center gap-1 px-3 py-1 rounded-md text-slate-300 hover:text-white hover:bg-white/[0.06] transition-all group outline-none min-w-[60px]">
 										<AspectRatioIcon className="group-hover:scale-110 transition-transform text-slate-300 group-hover:text-white text-2xl" />
 										<span className="text-[10px] font-medium flex items-center gap-1 whitespace-nowrap leading-none">
-											Set Aspect Ratio <ChevronDown strokeWidth={3} size={10} className="text-slate-300 group-hover:text-white" />
+											Set Aspect Ratio{" "}
+											<ChevronDown
+												strokeWidth={3}
+												size={10}
+												className="text-slate-300 group-hover:text-white"
+											/>
 										</span>
 									</button>
 								</DropdownMenuTrigger>

@@ -45,7 +45,7 @@ import { patchWebmDurationOnDisk } from "../recording/webm-duration";
 import { registerNativeBridgeHandlers } from "./nativeBridge";
 import { RecordingStreamRegistry, registerRecordingStreamHandlers } from "./recordingStream";
 
-const PROJECT_FILE_EXTENSION = "openscreen";
+const PROJECT_FILE_EXTENSION = "screenforge";
 export const SHORTCUTS_FILE = path.join(app.getPath("userData"), "shortcuts.json");
 const RECORDING_FILE_PREFIX = "recording-";
 const RECORDING_SESSION_SUFFIX = ".session.json";
@@ -655,7 +655,7 @@ function resolvePackagedResourcePath(...segments: string[]) {
 }
 
 function getNativeWindowsCaptureHelperCandidates() {
-	const envPath = process.env.OPENSCREEN_WGC_CAPTURE_EXE?.trim();
+	const envPath = process.env.SCREENFORGE_WGC_CAPTURE_EXE?.trim();
 	const archTag = process.arch === "arm64" ? "win32-arm64" : "win32-x64";
 	return [
 		envPath,
@@ -691,9 +691,9 @@ async function findNativeWindowsCaptureHelperPath() {
 }
 
 function getNativeMacCaptureHelperCandidates() {
-	const envPath = process.env.OPENSCREEN_SCK_CAPTURE_EXE?.trim();
+	const envPath = process.env.SCREENFORGE_SCK_CAPTURE_EXE?.trim();
 	const archTag = process.arch === "arm64" ? "darwin-arm64" : "darwin-x64";
-	const helperName = "openscreen-screencapturekit-helper";
+	const helperName = "screenforge-screencapturekit-helper";
 	return [
 		envPath,
 		resolveUnpackedAppPath("electron", "native", "screencapturekit", "build", helperName),
@@ -1323,7 +1323,7 @@ export function registerIpcHandlers(
 			}
 
 			// Screen recording has no askForMediaAccess equivalent, so trigger the
-			// TCC prompt without opening OpenScreen's source selector above it.
+			// TCC prompt without opening ScreenForge's source selector above it.
 			if (status === "not-determined") {
 				const mainWin = getMainWindow();
 				if (mainWin && !mainWin.isDestroyed()) {
@@ -1448,7 +1448,7 @@ export function registerIpcHandlers(
 			const detail =
 				access.status === "missing-helper"
 					? "The cursor helper couldn't be found in this build, so the editable cursor can't be enabled. Rebuild the native helper (npm run build:native:mac) or switch the HUD cursor mode to system."
-					: "Allow OpenScreen under System Settings → Privacy & Security → Accessibility, then press record again to start the countdown.";
+					: "Allow ScreenForge under System Settings → Privacy & Security → Accessibility, then press record again to start the countdown.";
 			const messageOptions = {
 				type: "warning",
 				buttons: ["Open Accessibility Settings", "Cancel"],
@@ -1483,7 +1483,7 @@ export function registerIpcHandlers(
 					cancelId: 1,
 					message: "Screen Recording permission is required",
 					detail:
-						"Allow OpenScreen in macOS System Settings, then come back and choose a screen or window.",
+						"Allow ScreenForge in macOS System Settings, then come back and choose a screen or window.",
 				} satisfies Electron.MessageBoxOptions;
 				const result =
 					mainWin && !mainWin.isDestroyed()
@@ -2701,7 +2701,7 @@ export function registerIpcHandlers(
 					defaultPath: path.join(RECORDINGS_DIR, defaultName),
 					filters: [
 						{
-							name: mainT("dialogs", "fileDialogs.openscreenProject"),
+							name: mainT("dialogs", "fileDialogs.screenforgeProject"),
 							extensions: [PROJECT_FILE_EXTENSION],
 						},
 						{ name: "JSON", extensions: ["json"] },
@@ -2768,7 +2768,7 @@ export function registerIpcHandlers(
 					defaultPath: defaultDir,
 					filters: [
 						{
-							name: mainT("dialogs", "fileDialogs.openscreenProject"),
+							name: mainT("dialogs", "fileDialogs.screenforgeProject"),
 							extensions: [PROJECT_FILE_EXTENSION],
 						},
 						{ name: "JSON", extensions: ["json"] },
@@ -2967,7 +2967,7 @@ export function registerIpcHandlers(
 		) => {
 			const { filePath, canceled } = await dialog.showSaveDialog({
 				title: "Save Diagnostic File",
-				defaultPath: `openscreen-diagnostic-${Date.now()}.json`,
+				defaultPath: `screenforge-diagnostic-${Date.now()}.json`,
 				filters: [{ name: "JSON", extensions: ["json"] }],
 			});
 

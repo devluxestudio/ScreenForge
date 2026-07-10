@@ -11,7 +11,7 @@ or export pipeline. This task is CSS/JSX layout only.
 
 ## Reference Layout (what to build toward)
 
-Look at the OpenScreen editor layout as your visual reference.
+Look at the ScreenForge editor layout as your visual reference.
 The key structural differences from our current layout are
 listed below. Implement ALL of them.
 
@@ -105,7 +105,7 @@ TARGET toolbar:
 
   The timeline zoom slider (🔍 ──●── 50%) moves OUT of the
   toolbar and into the top-right corner of the timeline area
-  itself (above the ruler, right-aligned), matching OpenScreen's
+  itself (above the ruler, right-aligned), matching ScreenForge's
   "Scroll | Pan | Ctrl+Scroll Zoom" controls placement.
 
 ---
@@ -114,7 +114,7 @@ TARGET toolbar:
 
 Add a subtle colored border/glow around the preview canvas to
 visually separate it from the dark background, matching the
-framed look in OpenScreen.
+framed look in ScreenForge.
 
   border: 2px solid rgba(239, 68, 68, 0.6)   /* red, semi-transparent */
   border-radius: 4px

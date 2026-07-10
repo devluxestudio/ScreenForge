@@ -20,7 +20,7 @@ jobs:
     env:
       TAP_OWNER: ${{ vars.HOMEBREW_TAP_OWNER }}
       TAP_REPO: ${{ vars.HOMEBREW_TAP_REPO }}
-      CASK_NAME: ${{ vars.HOMEBREW_CASK_NAME || 'openscreen' }}
+      CASK_NAME: ${{ vars.HOMEBREW_CASK_NAME || 'screenforge' }}
     steps:
       - name: Resolve tag and version
         id: meta
@@ -143,10 +143,10 @@ jobs:
 
             zap trash: [
               "~/Library/Application Support/Openscreen",
-              "~/Library/Caches/com.etiennelescot.openscreen",
+              "~/Library/Caches/com.etiennelescot.screenforge",
               "~/Library/Logs/Openscreen",
-              "~/Library/Preferences/com.etiennelescot.openscreen.plist",
-              "~/Library/Saved Application State/com.etiennelescot.openscreen.savedState",
+              "~/Library/Preferences/com.etiennelescot.screenforge.plist",
+              "~/Library/Saved Application State/com.etiennelescot.screenforge.savedState",
             ]
           end
           EOF

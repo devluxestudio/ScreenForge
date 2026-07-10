@@ -18,6 +18,31 @@ const ASSET_BASE_URL_ARG = `--asset-base-url=${pathToFileURL(`${ASSET_BASE_DIR}$
 
 let hudOverlayWindow: BrowserWindow | null = null;
 
+export function createSplashWindow(): BrowserWindow {
+	const win = new BrowserWindow({
+		width: 640,
+		height: 260,
+		frame: false,
+		transparent: true,
+		resizable: false,
+		alwaysOnTop: true,
+		show: true,
+		hasShadow: true,
+		webPreferences: {
+			nodeIntegration: false,
+			contextIsolation: true,
+		},
+	});
+
+	if (VITE_DEV_SERVER_URL) {
+		win.loadFile(path.join(APP_ROOT, "public", "splash.html"));
+	} else {
+		win.loadFile(path.join(RENDERER_DIST, "splash.html"));
+	}
+
+	return win;
+}
+
 ipcMain.on("hud-overlay-hide", () => {
 	if (hudOverlayWindow && !hudOverlayWindow.isDestroyed()) {
 		hudOverlayWindow.minimize();
@@ -188,7 +213,7 @@ export function createEditorWindow(): BrowserWindow {
 		resizable: true,
 		alwaysOnTop: false,
 		skipTaskbar: false,
-		title: "OpenScreen",
+		title: "ScreenForge",
 		backgroundColor: "#09090b",
 		autoHideMenuBar: true,
 		show: false, // shown via ready-to-show to avoid white flash on first load

@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# OpenScreen macOS Build Script
-# Produces: release/<version>/OpenScreen-Mac-<arch>-<version>.dmg
+# ScreenForge macOS Build Script
+# Produces: release/<version>/ScreenForge-Mac-<arch>-<version>.dmg
 #
 # Usage: chmod +x scripts/build_macos.sh && ./scripts/build_macos.sh
 #

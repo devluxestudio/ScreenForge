@@ -1806,7 +1806,6 @@ export default function TimelineEditor({
 							<Plus className="w-3.5 h-3.5" />
 						</button>
 					</div>
-
 				</div>
 			</div>
 

@@ -46,7 +46,7 @@
 	"language": "è¯­è¨€",
 	"systemLanguagePrompt": {
 		"title": "ä½¿ç”¨ç³»ç»Ÿè¯­è¨€å—ï¼Ÿ",
-		"description": "æˆ‘ä»¬æ£€æµ‹åˆ°ä½ çš„ç³»ç»Ÿè¯­è¨€æ˜¯{{language}}ã€‚æ˜¯å¦å°† OpenScreen åˆ‡æ¢ä¸º{{language}}ï¼Ÿ",
+		"description": "æˆ‘ä»¬æ£€æµ‹åˆ°ä½ çš„ç³»ç»Ÿè¯­è¨€æ˜¯{{language}}ã€‚æ˜¯å¦å°† ScreenForge åˆ‡æ¢ä¸º{{language}}ï¼Ÿ",
 		"switch": "åˆ‡æ¢åˆ°{{language}}",
 		"keepDefault": "ä¿æŒå½“å‰è¯­è¨€"
 	}

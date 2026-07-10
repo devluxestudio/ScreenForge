@@ -73,7 +73,7 @@ export function ExportConfigDialog({
 
 			// Try to get folder from local preferences
 			try {
-				const prefs = localStorage.getItem("openscreen_user_preferences");
+				const prefs = localStorage.getItem("screenforge_user_preferences");
 				if (prefs) {
 					const parsed = JSON.parse(prefs);
 					if (parsed.exportFolder) {

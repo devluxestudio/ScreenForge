@@ -38,7 +38,7 @@
 	"language": "NgÃ´n ngá»¯",
 	"systemLanguagePrompt": {
 		"title": "Sá»­ dá»¥ng ngÃ´n ngá»¯ há»‡ thá»‘ng cá»§a báº¡n?",
-		"description": "ChÃºng tÃ´i phÃ¡t hiá»‡n {{language}} lÃ  ngÃ´n ngá»¯ há»‡ thá»‘ng cá»§a báº¡n. Báº¡n cÃ³ muá»‘n chuyá»ƒn OpenScreen sang {{language}} khÃ´ng?",
+		"description": "ChÃºng tÃ´i phÃ¡t hiá»‡n {{language}} lÃ  ngÃ´n ngá»¯ há»‡ thá»‘ng cá»§a báº¡n. Báº¡n cÃ³ muá»‘n chuyá»ƒn ScreenForge sang {{language}} khÃ´ng?",
 		"switch": "Chuyá»ƒn sang {{language}}",
 		"keepDefault": "Giá»¯ ngÃ´n ngá»¯ hiá»‡n táº¡i"
 	},

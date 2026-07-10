@@ -46,7 +46,7 @@
 	"language": "Langue",
 	"systemLanguagePrompt": {
 		"title": "Utiliser la langue de votre systÃ¨me ?",
-		"description": "Nous avons dÃ©tectÃ© {{language}} comme langue systÃ¨me. Voulez-vous passer OpenScreen en {{language}} ?",
+		"description": "Nous avons dÃ©tectÃ© {{language}} comme langue systÃ¨me. Voulez-vous passer ScreenForge en {{language}} ?",
 		"switch": "Passer en {{language}}",
 		"keepDefault": "Conserver la langue actuelle"
 	}

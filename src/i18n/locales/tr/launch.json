@@ -46,7 +46,7 @@
 	"language": "Dil",
 	"systemLanguagePrompt": {
 		"title": "Sistem dilinizi kullanmak ister misiniz?",
-		"description": "Sistem diliniz {{language}} olarak algÄ±landÄ±. OpenScreen i {{language}} diline geÃ§irmek ister misiniz?",
+		"description": "Sistem diliniz {{language}} olarak algÄ±landÄ±. ScreenForge i {{language}} diline geÃ§irmek ister misiniz?",
 		"switch": "{{language}} diline geÃ§",
 		"keepDefault": "Mevcut dili koru"
 	}

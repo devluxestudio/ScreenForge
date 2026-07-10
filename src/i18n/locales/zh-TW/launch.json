@@ -46,7 +46,7 @@
 	"language": "èªžè¨€",
 	"systemLanguagePrompt": {
 		"title": "è¦ä½¿ç”¨ç³»çµ±èªžè¨€å—Žï¼Ÿ",
-		"description": "åµæ¸¬åˆ°ç³»çµ±èªžè¨€ç‚º {{language}}ã€‚è¦å°‡ OpenScreen åˆ‡æ›ç‚º {{language}} å—Žï¼Ÿ",
+		"description": "åµæ¸¬åˆ°ç³»çµ±èªžè¨€ç‚º {{language}}ã€‚è¦å°‡ ScreenForge åˆ‡æ›ç‚º {{language}} å—Žï¼Ÿ",
 		"switch": "åˆ‡æ›ç‚º {{language}}",
 		"keepDefault": "ä¿æŒç›®å‰èªžè¨€"
 	}

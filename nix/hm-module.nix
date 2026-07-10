@@ -1,11 +1,11 @@
-# Home Manager module for OpenScreen
+# Home Manager module for ScreenForge
 # Usage in flake-based Home Manager config:
 #
-#   inputs.openscreen.url = "github:EtienneLescot/openscreen";
+#   inputs.screenforge.url = "github:EtienneLescot/screenforge";
 #
 #   { inputs, ... }: {
-#     imports = [ inputs.openscreen.homeManagerModules.default ];
-#     programs.openscreen.enable = true;
+#     imports = [ inputs.screenforge.homeManagerModules.default ];
+#     programs.screenforge.enable = true;
 #   }
 self:
 {
@@ -16,17 +16,17 @@ self:
 }:
 
 let
-  cfg = config.programs.openscreen;
+  cfg = config.programs.screenforge;
 in
 {
-  options.programs.openscreen = {
-    enable = lib.mkEnableOption "OpenScreen screen recorder";
+  options.programs.screenforge = {
+    enable = lib.mkEnableOption "ScreenForge screen recorder";
 
     package = lib.mkOption {
       type = lib.types.package;
-      default = self.packages.${pkgs.stdenv.hostPlatform.system}.openscreen;
-      defaultText = lib.literalExpression "inputs.openscreen.packages.\${pkgs.stdenv.hostPlatform.system}.openscreen";
-      description = "The OpenScreen package to use.";
+      default = self.packages.${pkgs.stdenv.hostPlatform.system}.screenforge;
+      defaultText = lib.literalExpression "inputs.screenforge.packages.\${pkgs.stdenv.hostPlatform.system}.screenforge";
+      description = "The ScreenForge package to use.";
     };
   };
 

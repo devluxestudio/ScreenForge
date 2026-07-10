@@ -1,7 +1,7 @@
 // @see - https://www.electron.build/configuration/configuration
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "com.etiennelescot.openscreen",
+  "appId": "com.etiennelescot.screenforge",
   "asar": true,
   // .node binaries can't be dlopen'd from inside an asar — must live unpacked.
   "asarUnpack": [
@@ -67,10 +67,10 @@
       }
     ],
     "extendInfo": {
-      "NSAudioCaptureUsageDescription": "OpenScreen needs audio capture permission to record system audio.",
-      "NSMicrophoneUsageDescription": "OpenScreen needs microphone access to record voice audio.",
-      "NSCameraUsageDescription": "OpenScreen needs camera access to record webcam video.",
-      "NSScreenCaptureUsageDescription": "OpenScreen needs screen recording permission to detect and capture windows.",
+      "NSAudioCaptureUsageDescription": "ScreenForge needs audio capture permission to record system audio.",
+      "NSMicrophoneUsageDescription": "ScreenForge needs microphone access to record voice audio.",
+      "NSCameraUsageDescription": "ScreenForge needs camera access to record webcam video.",
+      "NSScreenCaptureUsageDescription": "ScreenForge needs screen recording permission to detect and capture windows.",
       "NSCameraUseContinuityCameraDeviceType": true
     }
   },

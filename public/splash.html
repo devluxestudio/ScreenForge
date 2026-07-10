@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ScreenForge Splash</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+    
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: transparent;
+      -webkit-app-region: drag;
+    }
+    
+    .splash-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      display: flex;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      border-radius: 0;
+      overflow: hidden;
+    }
+
+    .left-pane {
+      flex: 1.1;
+      padding: 24px 32px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 2;
+      background: #ffffff;
+    }
+
+    .brand-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-top img {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+    }
+
+    .brand-top span {
+      font-size: 14px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      color: #000;
+      letter-spacing: -0.2px;
+    }
+
+    .center-content {
+      margin-top: auto;
+      margin-bottom: auto;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding-bottom: 10px;
+    }
+
+    .app-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 14px;
+      box-shadow: 0 8px 20px rgba(0, 68, 255, 0.2);
+    }
+
+    .text-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .app-title {
+      margin: 0;
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #000;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+
+    .app-subtitle {
+      margin: 0;
+      font-size: 13px;
+      color: #4B5563;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+    }
+
+    .right-pane {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: #000; /* Fallback */
+    }
+    
+    .hero-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .loading-bar-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: #f1f5f9;
+      z-index: 10;
+    }
+
+    .loading-progress {
+      height: 100%;
+      width: 0%;
+      background: #0044FF; 
+      animation: load 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes load {
+      0% { width: 0%; }
+      30% { width: 35%; }
+      60% { width: 75%; }
+      100% { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="splash-wrapper">
+    <div class="left-pane">
+      <div class="brand-top">
+        <img src="screenforge.png" alt="Logo" />
+        <span>ScreenForge</span>
+      </div>
+      <div class="center-content">
+        <img src="screenforge.png" class="app-icon" alt="App Icon" />
+        <div class="text-group">
+          <h1 class="app-title">ScreenForge Studio</h1>
+          <p class="app-subtitle">Craft stunning videos effortlessly</p>
+        </div>
+      </div>
+    </div>
+    <div class="right-pane">
+      <img src="splash_art.png" class="hero-image" alt="Artwork" />
+    </div>
+    <div class="loading-bar-container">
+      <div class="loading-progress"></div>
+    </div>
+  </div>
+</body>
+</html>

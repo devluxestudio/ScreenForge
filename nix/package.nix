@@ -10,7 +10,7 @@
 
 buildNpmPackage {
   nodejs = nodejs_22;
-  pname = "openscreen";
+  pname = "screenforge";
   version = "1.5.0";
 
   src =
@@ -52,31 +52,31 @@ buildNpmPackage {
   installPhase = ''
     runHook preInstall
 
-    mkdir -p "$out/lib/openscreen"
+    mkdir -p "$out/lib/screenforge"
 
     # Renderer build output (index.html, JS chunks, copied public/ assets)
-    cp -r dist "$out/lib/openscreen/"
+    cp -r dist "$out/lib/screenforge/"
 
     # Main process + preload (compiled by vite-plugin-electron)
-    cp -r dist-electron "$out/lib/openscreen/"
+    cp -r dist-electron "$out/lib/screenforge/"
 
     # Package manifest (electron reads "main" field to find entry point)
-    cp package.json "$out/lib/openscreen/"
+    cp package.json "$out/lib/screenforge/"
 
     # Strip devDependencies (electron, vitest, biome, playwright, etc.)
     npm prune --omit=dev --no-save
-    cp -r node_modules "$out/lib/openscreen/"
+    cp -r node_modules "$out/lib/screenforge/"
 
     # Asset resolution: when app.isPackaged is false, the main process resolves
     # assets at <appPath>/public/. Place wallpapers at that root to match the
     # packaged layout (electron-builder extraResources -> resources/wallpapers).
-    mkdir -p "$out/lib/openscreen/public"
-    cp -r public/wallpapers "$out/lib/openscreen/public/wallpapers"
+    mkdir -p "$out/lib/screenforge/public"
+    cp -r public/wallpapers "$out/lib/screenforge/public/wallpapers"
 
     # Wrap system electron with the app directory
     mkdir -p "$out/bin"
-    makeWrapper "${electron}/bin/electron" "$out/bin/openscreen" \
-      --add-flags "$out/lib/openscreen" \
+    makeWrapper "${electron}/bin/electron" "$out/bin/screenforge" \
+      --add-flags "$out/lib/screenforge" \
       --set ELECTRON_IS_DEV 0
 
     # Install icons to hicolor theme
@@ -84,7 +84,7 @@ buildNpmPackage {
       icon="icons/icons/png/''${size}x''${size}.png"
       if [ -f "$icon" ]; then
         install -Dm644 "$icon" \
-          "$out/share/icons/hicolor/''${size}x''${size}/apps/openscreen.png"
+          "$out/share/icons/hicolor/''${size}x''${size}/apps/screenforge.png"
       fi
     done
 
@@ -98,11 +98,11 @@ buildNpmPackage {
 
   desktopItems = [
     (makeDesktopItem {
-      name = "openscreen";
-      desktopName = "OpenScreen";
+      name = "screenforge";
+      desktopName = "ScreenForge";
       genericName = "Screen Recorder";
-      exec = "openscreen %U";
-      icon = "openscreen";
+      exec = "screenforge %U";
+      icon = "screenforge";
       comment = "Desktop screen recorder with built-in editor";
       categories = [
         "AudioVideo"
@@ -116,9 +116,9 @@ buildNpmPackage {
 
   meta = {
     description = "Desktop screen recorder with built-in editor";
-    homepage = "https://github.com/EtienneLescot/openscreen";
+    homepage = "https://github.com/EtienneLescot/screenforge";
     license = lib.licenses.mit;
-    mainProgram = "openscreen";
+    mainProgram = "screenforge";
     platforms = lib.platforms.linux;
   };
 }
