@@ -602,5 +602,5 @@ appReady?.then(async () => {
 			splashWindow.close();
 		}
 		createWindow();
-	}, 2500);
+	}, 7000);
 });

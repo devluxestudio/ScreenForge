@@ -89,25 +89,41 @@ export default function BackgroundWaveform({
 		if (barWidth > 0) {
 			const topY = topInset;
 			const bottomY = H - bottomInset;
-			ctx.fillStyle = "#0034F5"; // Solid brand blue
-			ctx.fillRect(startX, topY, barWidth, bottomY - topY);
+			const height = bottomY - topY;
 
-			// Top and bottom borders for the bar
-			ctx.strokeStyle = "#0028C2"; // Slightly darker blue for borders
+			// Create a subtle depth effect for the video clip track using a linear gradient
+			const bgGradient = ctx.createLinearGradient(0, topY, 0, bottomY);
+			bgGradient.addColorStop(0, "#1a46f6"); // Very subtle top highlight
+			bgGradient.addColorStop(1, "#002cc2"); // Very subtle bottom shadow
+
+			ctx.fillStyle = bgGradient;
+
+			// Use roundRect for a smoother pill/clip look if supported, fallback to rect
+			ctx.beginPath();
+			if (ctx.roundRect) {
+				ctx.roundRect(startX, topY, barWidth, height, 4);
+			} else {
+				ctx.rect(startX, topY, barWidth, height);
+			}
+			ctx.fill();
+
+			// Add a very subtle 1px top inner highlight
+			ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
 			ctx.lineWidth = 1;
 			ctx.beginPath();
-			ctx.moveTo(startX, topY);
-			ctx.lineTo(startX + barWidth, topY);
-			ctx.moveTo(startX, bottomY);
-			ctx.lineTo(startX + barWidth, bottomY);
+			ctx.moveTo(startX + 4, topY + 1);
+			ctx.lineTo(startX + barWidth - 4, topY + 1);
 			ctx.stroke();
 
-			// Draw "VIDEO" text in the center
-			ctx.fillStyle = "rgba(255, 255, 255, 0.6)"; // White text for contrast
-			ctx.font = "bold 10px sans-serif";
-			ctx.textAlign = "center";
-			ctx.textBaseline = "middle";
-			ctx.fillText("VIDEO", startX + barWidth / 2, topY + (bottomY - topY) / 2);
+			// Add a soft outer stroke for definition
+			ctx.strokeStyle = "rgba(0, 0, 0, 0.25)";
+			ctx.beginPath();
+			if (ctx.roundRect) {
+				ctx.roundRect(startX, topY, barWidth, height, 4);
+			} else {
+				ctx.rect(startX, topY, barWidth, height);
+			}
+			ctx.stroke();
 		}
 
 		if (!peaks || peaks.length === 0 || normFactor === 0) return;

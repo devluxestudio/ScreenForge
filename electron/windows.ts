@@ -20,8 +20,8 @@ let hudOverlayWindow: BrowserWindow | null = null;
 
 export function createSplashWindow(): BrowserWindow {
 	const win = new BrowserWindow({
-		width: 640,
-		height: 260,
+		width: 800,
+		height: 320,
 		frame: false,
 		transparent: true,
 		resizable: false,
