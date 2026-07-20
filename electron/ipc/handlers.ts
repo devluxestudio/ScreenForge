@@ -42,6 +42,7 @@ import { requestMacCursorAccessibilityAccess } from "../native-bridge/cursor/rec
 import type { CursorRecordingSession } from "../native-bridge/cursor/recording/session";
 import { KeystrokeRecorder } from "../native-bridge/keystroke/keystrokeRecorder";
 import { patchWebmDurationOnDisk } from "../recording/webm-duration";
+import { addOrUpdateRecentProject, getRecentProjects, initDb, removeRecentProject } from "./db";
 import { registerNativeBridgeHandlers } from "./nativeBridge";
 import { RecordingStreamRegistry, registerRecordingStreamHandlers } from "./recordingStream";
 
@@ -268,7 +269,12 @@ function resolveRecordingOutputPath(fileName: string): string {
 		throw new Error("Recording file name must not contain path segments");
 	}
 
-	const projectDir = path.join(RECORDINGS_DIR, parsedPath.name);
+	let projectName = parsedPath.name;
+	if (projectName.endsWith("-webcam")) {
+		projectName = projectName.slice(0, -"-webcam".length);
+	}
+
+	const projectDir = path.join(RECORDINGS_DIR, projectName);
 	if (!existsSync(projectDir)) {
 		mkdirSync(projectDir, { recursive: true });
 	}
@@ -1311,6 +1317,16 @@ export function registerIpcHandlers(
 	onRecordingStateChange?: (recording: boolean, sourceName: string) => void,
 	_switchToHud?: () => void,
 ) {
+	initDb();
+
+	ipcMain.handle("get-recent-projects", () => {
+		return getRecentProjects();
+	});
+
+	ipcMain.handle("remove-recent-project", (_, id: string) => {
+		removeRecentProject(id);
+		return { success: true };
+	});
 	async function requestScreenAccess() {
 		if (process.platform !== "darwin") {
 			return { success: true, granted: true, status: "granted" };
@@ -1516,6 +1532,16 @@ export function registerIpcHandlers(
 		// opening the editor. Closing it here too double-closes, leaving ghost
 		// transparent windows and compounding the HUD shadow each cycle.
 		createEditorWindow();
+	});
+
+	ipcMain.handle("close-editor-window", (event) => {
+		const win = BrowserWindow.fromWebContents(event.sender);
+		if (win) win.close();
+	});
+
+	ipcMain.handle("minimize-editor-window", (event) => {
+		const win = BrowserWindow.fromWebContents(event.sender);
+		if (win) win.minimize();
 	});
 
 	ipcMain.handle("switch-to-hud", () => {
@@ -1729,6 +1755,27 @@ export function registerIpcHandlers(
 				});
 
 				await fs.mkdir(RECORDINGS_DIR, { recursive: true });
+				// Write initial session.json for this recording session.
+				try {
+					const sessionJson = {
+						id: `${RECORDING_FILE_PREFIX}${recordingId}`,
+						recordingId,
+						createdAt: new Date().toISOString(),
+						status: "recording",
+						screenVideoPath: outputPath,
+						webcamVideoPath: request.webcam.enabled ? webcamOutputPath : null,
+						cursorCaptureMode,
+						audioEnabled: request.audio.system.enabled || request.audio.microphone.enabled,
+						projectFilePath: null,
+					};
+					await fs.writeFile(
+						path.join(projectDir, "session.json"),
+						JSON.stringify(sessionJson, null, 2),
+						"utf-8",
+					);
+				} catch (sessionErr) {
+					console.warn("[storage] Failed to write initial session.json:", sessionErr);
+				}
 				nativeWindowsCaptureOutput = "";
 				nativeWindowsCaptureTargetPath = outputPath;
 				nativeWindowsCaptureWebcamTargetPath = request.webcam.enabled ? webcamOutputPath : null;
@@ -1891,6 +1938,27 @@ export function registerIpcHandlers(
 			});
 
 			await fs.mkdir(RECORDINGS_DIR, { recursive: true });
+			// Write initial session.json for this recording session.
+			try {
+				const sessionJson = {
+					id: `${RECORDING_FILE_PREFIX}${recordingId}`,
+					recordingId,
+					createdAt: new Date().toISOString(),
+					status: "recording",
+					screenVideoPath: outputPath,
+					webcamVideoPath: null,
+					cursorCaptureMode,
+					audioEnabled: Boolean(request.audio?.microphone?.enabled),
+					projectFilePath: null,
+				};
+				await fs.writeFile(
+					path.join(projectDir, "session.json"),
+					JSON.stringify(sessionJson, null, 2),
+					"utf-8",
+				);
+			} catch (sessionErr) {
+				console.warn("[storage] Failed to write initial session.json:", sessionErr);
+			}
 			nativeMacCaptureOutput = "";
 			nativeMacCaptureTargetPath = outputPath;
 			nativeMacCaptureRecordingId = recordingId;
@@ -2464,6 +2532,31 @@ export function registerIpcHandlers(
 		}
 	});
 
+	ipcMain.on("window-minimize", (event) => {
+		const win = BrowserWindow.fromWebContents(event.sender);
+		if (win && !win.isDestroyed()) {
+			win.minimize();
+		}
+	});
+
+	ipcMain.on("window-toggle-maximize", (event) => {
+		const win = BrowserWindow.fromWebContents(event.sender);
+		if (win && !win.isDestroyed()) {
+			if (win.isMaximized()) {
+				win.unmaximize();
+			} else {
+				win.maximize();
+			}
+		}
+	});
+
+	ipcMain.on("window-close", (event) => {
+		const win = BrowserWindow.fromWebContents(event.sender);
+		if (win && !win.isDestroyed()) {
+			win.close();
+		}
+	});
+
 	// Return base path for assets so renderer can resolve file:// paths in production
 	ipcMain.handle("get-asset-base-path", () => {
 		return resolveAssetBasePath();
@@ -2683,6 +2776,13 @@ export function registerIpcHandlers(
 					"utf-8",
 				);
 				currentProjectPath = trustedExistingProjectPath;
+				addOrUpdateRecentProject({
+					id: trustedExistingProjectPath,
+					name: path.basename(trustedExistingProjectPath, `.${PROJECT_FILE_EXTENSION}`),
+					projectFolder: path.dirname(trustedExistingProjectPath),
+					entryFilePath: trustedExistingProjectPath,
+					lastOpened: Date.now(),
+				});
 				return {
 					success: true,
 					path: trustedExistingProjectPath,
@@ -2690,15 +2790,33 @@ export function registerIpcHandlers(
 				};
 			}
 
-			const safeName = (suggestedName || `project-${Date.now()}`).replace(/[^a-zA-Z0-9-_]/g, "_");
+			const safeName = (suggestedName || `project-${Date.now()}`).replace(/[^a-zA-Z0-9-_ ]/g, "_");
 			const defaultName = safeName.endsWith(`.${PROJECT_FILE_EXTENSION}`)
 				? safeName
 				: `${safeName}.${PROJECT_FILE_EXTENSION}`;
 
+			// Default the dialog to the recording's own folder so the .screenforge
+			// file lands next to the source video by default. If we can derive the
+			// recording folder from the current video path or project path, use that;
+			// otherwise fall back to RECORDINGS_DIR.
+			let defaultSaveDir = RECORDINGS_DIR;
+			const referenceFilePath = currentVideoPath ?? currentProjectPath;
+			if (referenceFilePath) {
+				const parentDir = path.dirname(referenceFilePath);
+				try {
+					const stat = await fs.stat(parentDir);
+					if (stat.isDirectory()) {
+						defaultSaveDir = parentDir;
+					}
+				} catch {
+					// fallback to RECORDINGS_DIR
+				}
+			}
+
 			const dialogOptions = buildDialogOptions(
 				{
 					title: mainT("dialogs", "fileDialogs.saveProject"),
-					defaultPath: path.join(RECORDINGS_DIR, defaultName),
+					defaultPath: path.join(defaultSaveDir, defaultName),
 					filters: [
 						{
 							name: mainT("dialogs", "fileDialogs.screenforgeProject"),
@@ -2722,6 +2840,33 @@ export function registerIpcHandlers(
 
 			await fs.writeFile(result.filePath, JSON.stringify(projectData, null, 2), "utf-8");
 			currentProjectPath = result.filePath;
+
+			// Update session.json in the project folder (best-effort — never fails the save).
+			try {
+				const projectFolder = path.dirname(result.filePath);
+				const sessionJsonPath = path.join(projectFolder, "session.json");
+				let sessionData: Record<string, unknown> = {};
+				try {
+					const existing = await fs.readFile(sessionJsonPath, "utf-8");
+					sessionData = JSON.parse(existing) as Record<string, unknown>;
+				} catch {
+					// No existing session.json; start fresh.
+				}
+				sessionData.projectFilePath = result.filePath;
+				sessionData.status = "saved";
+				sessionData.savedAt = new Date().toISOString();
+				await fs.writeFile(sessionJsonPath, JSON.stringify(sessionData, null, 2), "utf-8");
+
+				addOrUpdateRecentProject({
+					id: (sessionData.id as string) || result.filePath,
+					name: path.basename(result.filePath, `.${PROJECT_FILE_EXTENSION}`),
+					projectFolder,
+					entryFilePath: result.filePath,
+					lastOpened: Date.now(),
+				});
+			} catch (sessionError) {
+				console.warn("[storage] Could not update session.json:", sessionError);
+			}
 
 			return {
 				success: true,
@@ -2790,6 +2935,14 @@ export function registerIpcHandlers(
 			currentProjectPath = filePath;
 			setCurrentRecordingSessionState(await getApprovedProjectSession(project, filePath));
 
+			addOrUpdateRecentProject({
+				id: filePath,
+				name: path.basename(filePath, `.${PROJECT_FILE_EXTENSION}`),
+				projectFolder: path.dirname(filePath),
+				entryFilePath: filePath,
+				lastOpened: Date.now(),
+			});
+
 			return {
 				success: true,
 				path: filePath,
@@ -2838,6 +2991,15 @@ export function registerIpcHandlers(
 				);
 			}
 			setCurrentRecordingSessionState(session);
+
+			addOrUpdateRecentProject({
+				id: filePath,
+				name: path.basename(filePath, `.${PROJECT_FILE_EXTENSION}`),
+				projectFolder: path.dirname(filePath),
+				entryFilePath: filePath,
+				lastOpened: Date.now(),
+			});
+
 			return { success: true, path: filePath, project };
 		} catch (error) {
 			console.error("Failed to load project file from path:", error);
@@ -2999,6 +3161,48 @@ export function registerIpcHandlers(
 			}
 		},
 	);
+
+	// ── Storage helpers ──────────────────────────────────────────────────────
+	ipcMain.handle("get-app-data-path", () => {
+		return app.getPath("userData");
+	});
+
+	ipcMain.handle(
+		"copy-asset-to-project",
+		async (_, projectDir: string, sourcePath: string, assetType: "background" | "watermark") => {
+			try {
+				if (!sourcePath || !projectDir) {
+					return { success: false, error: "Missing source or destination path." };
+				}
+				const assetsDir = path.join(projectDir, "assets");
+				await fs.mkdir(assetsDir, { recursive: true });
+				const ext = path.extname(sourcePath);
+				const destFileName = `${assetType}-${Date.now()}${ext}`;
+				const destPath = path.join(assetsDir, destFileName);
+				await fs.copyFile(sourcePath, destPath);
+				return { success: true, path: destPath };
+			} catch (error) {
+				console.error("[storage] copy-asset-to-project failed:", error);
+				return { success: false, error: String(error) };
+			}
+		},
+	);
+
+	ipcMain.handle("pick-directory", async (_, defaultPath?: string) => {
+		const dialogOptions = buildDialogOptions(
+			{
+				title: mainT("dialogs", "fileDialogs.openFolder") || "Select Folder",
+				defaultPath,
+				properties: ["openDirectory", "createDirectory"],
+			},
+			getMainWindow(),
+		);
+		const result = await dialog.showOpenDialog(dialogOptions);
+		if (result.canceled || result.filePaths.length === 0) {
+			return { canceled: true };
+		}
+		return { canceled: false, path: result.filePaths[0] };
+	});
 
 	registerNativeBridgeHandlers({
 		getPlatform: () => process.platform,

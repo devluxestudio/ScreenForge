@@ -441,7 +441,14 @@ export type KeystrokePosition =
 	| "top-left"
 	| "top-right";
 
-export type KeystrokeDesign = "macos" | "modern" | "classic";
+export type KeystrokeDesign =
+	| "macos"
+	| "modern"
+	| "classic"
+	| "minimal"
+	| "glass"
+	| "neon"
+	| "retro";
 
 export type WatermarkPosition =
 	| "top-left"

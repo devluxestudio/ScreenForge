@@ -2173,7 +2173,11 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 							forceResolveDuration(e.currentTarget);
 						}
 					}}
-					onError={() => onError("Failed to load video")}
+					onError={() => {
+						if (videoPath) {
+							onError("Failed to load video");
+						}
+					}}
 				/>
 				{supplementalAudioPath && (
 					<audio ref={supplementalAudioRef} src={supplementalAudioPath} preload="auto" />

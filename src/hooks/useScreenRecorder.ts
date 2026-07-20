@@ -531,7 +531,7 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 				}
 			}
 		},
-		[cursorCaptureMode, getRecordingDurationMs],
+		[cursorCaptureMode, getRecordingDurationMs, keystrokeCaptureEnabled],
 	);
 
 	const finalizeNativeMacRecording = useCallback(

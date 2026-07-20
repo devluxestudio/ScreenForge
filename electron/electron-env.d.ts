@@ -29,6 +29,8 @@ interface Window {
 		) => Promise<import("../src/native/contracts").NativeBridgeResponse<TData>>;
 		getSources: (opts: Electron.SourcesOptions) => Promise<ProcessedDesktopSource[]>;
 		switchToEditor: () => Promise<void>;
+		closeEditorWindow: () => Promise<void>;
+		minimizeEditorWindow: () => Promise<void>;
 		switchToHud: () => Promise<void>;
 		startNewRecording: () => Promise<{ success: boolean; error?: string }>;
 		openSourceSelector: () => Promise<{
@@ -302,7 +304,28 @@ interface Window {
 		}) => Promise<{ success: boolean; path?: string; canceled?: boolean; error?: string }>;
 		startKeystrokeCapture: (recordingStartMs: number) => Promise<void>;
 		stopKeystrokeCapture: (videoPath: string) => Promise<void>;
+		getAppDataPath: () => Promise<string>;
+		setProjectsRoot: (path: string | null) => Promise<void>;
+		copyAssetToProject: (
+			projectDir: string,
+			sourcePath: string,
+			assetType: "background" | "watermark",
+		) => Promise<{ success: boolean; path?: string; error?: string }>;
+		pickDirectory: (defaultPath?: string) => Promise<{ canceled: boolean; path?: string }>;
+		windowMinimize: () => void;
+		windowToggleMaximize: () => void;
+		windowClose: () => void;
+		getRecentProjects: () => Promise<RecentProject[]>;
+		removeRecentProject: (id: string) => Promise<{ success: boolean }>;
 	};
+}
+
+interface RecentProject {
+	id: string;
+	name: string;
+	projectFolder: string;
+	entryFilePath: string | null;
+	lastOpened: number;
 }
 
 interface ProcessedDesktopSource {

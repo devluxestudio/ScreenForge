@@ -209,6 +209,7 @@ export function createEditorWindow(): BrowserWindow {
 			titleBarStyle: "hiddenInset",
 			trafficLightPosition: { x: 12, y: 12 },
 		}),
+		frame: isMac,
 		transparent: false,
 		resizable: true,
 		alwaysOnTop: false,
@@ -228,11 +229,13 @@ export function createEditorWindow(): BrowserWindow {
 	});
 
 	win.setMenu(null); // Completely remove the native menu bar
-	win.maximize();
 
-	// Show only once painted to avoid a white flash on cold Vite start.
+	// Show maximized once painted to avoid a white flash on cold Vite start.
 	win.once("ready-to-show", () => {
-		if (!HEADLESS) win.show();
+		if (!HEADLESS) {
+			win.maximize();
+			win.show();
+		}
 	});
 
 	// Inject dark background before any React paint so the sub-titlebar area never

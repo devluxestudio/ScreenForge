@@ -15,6 +15,17 @@ export const WALLPAPER_PATHS: readonly string[] = [
 	"/wallpapers/26-Tahoe-Light-6K-thumb.jpeg",
 	"/wallpapers/27-Golden-Gate-thumb-dark.png",
 	"/wallpapers/27-Golden-Gate-thumb.jpg",
+	"/wallpapers/aluminium-os-5000x5000-26374.jpg",
+	"/wallpapers/macbook-neo-stock-5120x3202-25819.jpg",
+	"/wallpapers/macos-sonoma-3840x2160-11574.jpeg",
+	"/wallpapers/macos-tahoe-beach-6016x3384-24083.jpg",
+	"/wallpapers/vivo-pad-6-pro-3840x3840-26312.jpg",
+	"/wallpapers/windows 11-1.png",
+	"/wallpapers/windows 11-2.png",
+	"/wallpapers/windows 11-4.jpg",
+	"/wallpapers/windows 11-7.png",
+	"/wallpapers/windows-11-fluidic-3840x2160-20744.png",
+	"/wallpapers/windows-11-fluidic-3840x2160-20747.png",
 ];
 
 export const WALLPAPER_COUNT = WALLPAPER_PATHS.length;

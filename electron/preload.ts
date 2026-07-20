@@ -38,6 +38,12 @@ contextBridge.exposeInMainWorld("electronAPI", {
 	switchToEditor: () => {
 		return ipcRenderer.invoke("switch-to-editor");
 	},
+	closeEditorWindow: () => {
+		return ipcRenderer.invoke("close-editor-window");
+	},
+	minimizeEditorWindow: () => {
+		return ipcRenderer.invoke("minimize-editor-window");
+	},
 	switchToHud: () => {
 		return ipcRenderer.invoke("switch-to-hud");
 	},
@@ -261,6 +267,36 @@ contextBridge.exposeInMainWorld("electronAPI", {
 	stopKeystrokeCapture: (videoPath: string) => {
 		return ipcRenderer.invoke("stop-keystroke-capture", videoPath);
 	},
+	getAppDataPath: () => {
+		return ipcRenderer.invoke("get-app-data-path") as Promise<string>;
+	},
+	setProjectsRoot: (path: string | null) => {
+		return ipcRenderer.invoke("set-projects-root", path) as Promise<void>;
+	},
+	copyAssetToProject: (
+		projectDir: string,
+		sourcePath: string,
+		assetType: "background" | "watermark",
+	) => {
+		return ipcRenderer.invoke(
+			"copy-asset-to-project",
+			projectDir,
+			sourcePath,
+			assetType,
+		) as Promise<{ success: boolean; path?: string; error?: string }>;
+	},
+	pickDirectory: (defaultPath?: string) => {
+		return ipcRenderer.invoke("pick-directory", defaultPath) as Promise<{
+			canceled: boolean;
+			path?: string;
+		}>;
+	},
+	getRecentProjects: () => {
+		return ipcRenderer.invoke("get-recent-projects");
+	},
+	removeRecentProject: (id: string) => {
+		return ipcRenderer.invoke("remove-recent-project", id);
+	},
 	setMicrophoneExpanded: (expanded: boolean) => {
 		ipcRenderer.send("hud:setMicrophoneExpanded", expanded);
 	},
@@ -301,4 +337,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
 	sendCloseConfirmResponse: (choice: "save" | "discard" | "cancel") => {
 		ipcRenderer.send("close-confirm-response", choice);
 	},
+	windowMinimize: () => ipcRenderer.send("window-minimize"),
+	windowToggleMaximize: () => ipcRenderer.send("window-toggle-maximize"),
+	windowClose: () => ipcRenderer.send("window-close"),
 });

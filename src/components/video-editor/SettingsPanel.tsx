@@ -338,6 +338,7 @@ interface SettingsPanelProps {
 	hasCursorData?: boolean;
 	showCursorSettings?: boolean;
 	activePanelMode?: SettingsPanelMode;
+	currentProjectPath?: string | null;
 	watermarkSettings?: import("./types").WatermarkSettings;
 	onWatermarkSettingsChange?: (settings: import("./types").WatermarkSettings) => void;
 	onWatermarkSettingsCommit?: () => void;
@@ -464,6 +465,7 @@ export function SettingsPanel({
 	hasCursorData = false,
 	showCursorSettings = true,
 	activePanelMode: externalActivePanelMode,
+	currentProjectPath,
 	watermarkSettings,
 	onWatermarkSettingsChange,
 	onWatermarkSettingsCommit,
@@ -663,7 +665,7 @@ export function SettingsPanel({
 		}
 	};
 
-	const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const files = event.target.files;
 		if (!files || files.length === 0) return;
 
@@ -677,25 +679,90 @@ export function SettingsPanel({
 			return;
 		}
 
-		const reader = new FileReader();
+		const filePath = (file as any).path;
 
-		reader.onload = (e) => {
-			const dataUrl = e.target?.result as string;
-			if (dataUrl) {
-				setCustomImages((prev) => [...prev, dataUrl]);
-				onWallpaperChange(dataUrl);
-				toast.success(t("imageUpload.uploadSuccess"));
+		if (currentProjectPath && window.electronAPI?.copyAssetToProject && filePath) {
+			try {
+				const projectDir = currentProjectPath.replace(/\\/g, "/").split("/").slice(0, -1).join("/");
+				const result = await window.electronAPI.copyAssetToProject(
+					projectDir,
+					filePath,
+					"background",
+				);
+				if (result.success && result.path) {
+					const finalUrl = `file://${result.path.replace(/\\/g, "/")}`;
+					setCustomImages((prev) => [...prev, finalUrl]);
+					onWallpaperChange(finalUrl);
+					toast.success(t("imageUpload.uploadSuccess"));
+				} else {
+					throw new Error(result.error || "Unknown IPC error");
+				}
+			} catch (e: any) {
+				console.error("Failed to copy background to project:", e);
+				toast.error(`Failed to copy background: ${e.message || String(e)}`);
 			}
-		};
+		} else {
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				const dataUrl = e.target?.result as string;
+				if (dataUrl) {
+					setCustomImages((prev) => [...prev, dataUrl]);
+					onWallpaperChange(dataUrl);
+					toast.success(t("imageUpload.uploadSuccess"));
+				}
+			};
+			reader.onerror = () => {
+				toast.error(t("imageUpload.failedToUpload"), {
+					description: t("imageUpload.errorReading"),
+				});
+			};
+			reader.readAsDataURL(file);
+		}
 
-		reader.onerror = () => {
-			toast.error(t("imageUpload.failedToUpload"), {
-				description: t("imageUpload.errorReading"),
-			});
-		};
+		event.target.value = "";
+	};
 
-		reader.readAsDataURL(file);
-		// Reset input so the same file can be selected again
+	const handleWatermarkUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		const files = event.target.files;
+		if (!files || files.length === 0 || !onWatermarkSettingsChange || !watermarkSettings) return;
+
+		const file = files[0];
+
+		const filePath = (file as any).path;
+
+		if (currentProjectPath && window.electronAPI?.copyAssetToProject && filePath) {
+			try {
+				const projectDir = currentProjectPath.replace(/\\/g, "/").split("/").slice(0, -1).join("/");
+				const result = await window.electronAPI.copyAssetToProject(
+					projectDir,
+					filePath,
+					"watermark",
+				);
+				if (result.success && result.path) {
+					const finalUrl = `file://${result.path.replace(/\\/g, "/")}`;
+					onWatermarkSettingsChange({ ...watermarkSettings, imageUrl: finalUrl });
+					toast.success("Watermark saved to project assets");
+				} else {
+					throw new Error(result.error || "Unknown IPC error");
+				}
+			} catch (e: any) {
+				console.error("Failed to copy watermark to project:", e);
+				toast.error(`Failed to save watermark: ${e.message || String(e)}`);
+			}
+		} else {
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				const dataUrl = e.target?.result as string;
+				if (dataUrl) {
+					onWatermarkSettingsChange({ ...watermarkSettings, imageUrl: dataUrl });
+				}
+			};
+			reader.onerror = () => {
+				toast.error("Failed to load watermark image");
+			};
+			reader.readAsDataURL(file);
+		}
+
 		event.target.value = "";
 	};
 
@@ -1233,12 +1300,16 @@ export function SettingsPanel({
 										<div className="text-[10px] font-medium text-slate-400">
 											{t("keystrokes.design")}
 										</div>
-										<div className="flex bg-black/40 p-0.5 rounded-lg border border-white/5 gap-0.5">
+										<div className="flex flex-wrap gap-1.5">
 											{(
 												[
 													{ value: "macos", label: "macOS" },
 													{ value: "modern", label: "Modern" },
 													{ value: "classic", label: "Classic" },
+													{ value: "minimal", label: "Minimal" },
+													{ value: "glass", label: "Glass" },
+													{ value: "neon", label: "Neon" },
+													{ value: "retro", label: "Retro" },
 												] as Array<{ value: import("./types").KeystrokeDesign; label: string }>
 											).map((design) => (
 												<button
@@ -1246,10 +1317,10 @@ export function SettingsPanel({
 													type="button"
 													onClick={() => onKeystrokeDesignChange?.(design.value)}
 													className={cn(
-														"h-7 text-[10px] rounded-md transition-all duration-200 flex-1 font-medium",
+														"px-3 py-1.5 text-[10px] rounded-md transition-all duration-200 font-medium border",
 														keystrokeDesign === design.value
-															? "bg-white/15 text-white shadow-sm"
-															: "text-slate-400 hover:text-slate-200",
+															? "bg-[#000AF2] border-[#000AF2] text-white shadow-md shadow-[#000AF2]/20"
+															: "bg-white/[0.02] border-white/10 text-slate-400 hover:text-white hover:bg-white/[0.06] hover:border-white/20",
 													)}
 												>
 													{design.label}
@@ -1574,13 +1645,7 @@ export function SettingsPanel({
 											type="file"
 											accept="image/png,image/jpeg,image/webp"
 											className="hidden"
-											onChange={(e) => {
-												const file = e.target.files?.[0];
-												if (file) {
-													const url = URL.createObjectURL(file);
-													onWatermarkSettingsChange({ ...watermarkSettings, imageUrl: url });
-												}
-											}}
+											onChange={handleWatermarkUpload}
 										/>
 										<Upload className="w-5 h-5 mb-2 text-slate-500 group-hover:text-slate-300" />
 										<span className="text-xs font-medium text-slate-400 group-hover:text-slate-300">

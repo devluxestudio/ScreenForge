@@ -95,6 +95,7 @@ export interface ProjectEditorState {
 	keystrokePosition?: import("./types").KeystrokePosition;
 	keystrokeDesign?: import("./types").KeystrokeDesign;
 	keystrokeSize?: number;
+	watermarkSettings?: import("./types").WatermarkSettings;
 }
 
 export interface EditorProjectData {
@@ -462,7 +463,15 @@ export function normalizeProjectEditor(editor: Partial<ProjectEditorState>): Pro
 		? editor.keystrokePosition
 		: undefined;
 
-	const validKeystrokeDesigns = new Set(["macos", "modern", "classic"]);
+	const validKeystrokeDesigns = new Set([
+		"macos",
+		"modern",
+		"classic",
+		"minimal",
+		"glass",
+		"neon",
+		"retro",
+	]);
 	const normalizedKeystrokeDesign = validKeystrokeDesigns.has(editor.keystrokeDesign as any)
 		? editor.keystrokeDesign
 		: undefined;
@@ -560,6 +569,10 @@ export function normalizeProjectEditor(editor: Partial<ProjectEditorState>): Pro
 			editor.gifSizePreset === "original"
 				? editor.gifSizePreset
 				: DEFAULT_GIF_SETTINGS.sizePreset,
+		watermarkSettings:
+			editor.watermarkSettings && typeof editor.watermarkSettings === "object"
+				? editor.watermarkSettings
+				: undefined,
 	};
 }
 

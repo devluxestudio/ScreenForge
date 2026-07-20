@@ -33,6 +33,11 @@ export interface UserPreferences {
 	projectFolder: string | null;
 	/** Recording HUD control layout */
 	trayLayout: "horizontal" | "vertical";
+	/**
+	 * Custom root folder where per-project folders are stored.
+	 * When null, defaults to <userData>/recordings (the existing RECORDINGS_DIR).
+	 */
+	projectsRootFolder: string | null;
 }
 
 export const DEFAULT_PREFS: UserPreferences = {
@@ -43,6 +48,7 @@ export const DEFAULT_PREFS: UserPreferences = {
 	exportFolder: null,
 	projectFolder: null,
 	trayLayout: "horizontal",
+	projectsRootFolder: null,
 };
 
 /** Parses stored preferences without throwing on malformed JSON. */
@@ -99,6 +105,10 @@ export function loadUserPreferences(): UserPreferences {
 			raw.trayLayout === "horizontal" || raw.trayLayout === "vertical"
 				? raw.trayLayout
 				: DEFAULT_PREFS.trayLayout,
+		projectsRootFolder:
+			typeof raw.projectsRootFolder === "string" && raw.projectsRootFolder.length > 0
+				? raw.projectsRootFolder
+				: DEFAULT_PREFS.projectsRootFolder,
 	};
 }
 

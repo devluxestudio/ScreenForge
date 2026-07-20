@@ -490,6 +490,8 @@ export function LaunchWindow() {
 	);
 
 	useEffect(() => {
+		if (recording) return;
+
 		const checkSelectedSource = async () => {
 			if (!window.electronAPI) {
 				return;
@@ -507,7 +509,7 @@ export function LaunchWindow() {
 
 		const interval = setInterval(checkSelectedSource, 500);
 		return () => clearInterval(interval);
-	}, [applySelectedSource]);
+	}, [applySelectedSource, recording]);
 
 	useEffect(() => {
 		const cleanupSourceChanged = window.electronAPI?.onSelectedSourceChanged?.((source) => {
@@ -969,16 +971,14 @@ export function LaunchWindow() {
 								<div
 									className="flex-1 min-w-0 h-[34px] rounded-[8px] bg-[#17181c] px-3 flex items-center justify-between cursor-pointer hover:bg-[#1f2025] transition-colors"
 									onClick={() =>
-										setCursorCaptureMode(
-											cursorCaptureMode === "system" ? "editable-overlay" : "system",
-										)
+										setCursorCaptureMode(cursorCaptureMode !== "none" ? "none" : "editable-overlay")
 									}
 								>
 									<span className="text-[10px] font-bold text-white truncate mr-2">
-										Use system cursor
+										Capture Cursor
 									</span>
 									<div className="w-[12px] h-[12px] rounded-full border-[1.5px] border-white/20 flex-shrink-0 flex items-center justify-center bg-[#101114]">
-										{cursorCaptureMode === "system" && (
+										{cursorCaptureMode !== "none" && (
 											<div className="w-[5px] h-[5px] rounded-full bg-white"></div>
 										)}
 									</div>
