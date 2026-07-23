@@ -5,9 +5,7 @@ import {
 	Check,
 	ChevronDown,
 	Gauge,
-	Maximize,
 	MessageSquare,
-	Minimize,
 	Minus,
 	Pause,
 	Play,
@@ -36,7 +34,7 @@ import { useShortcuts } from "@/contexts/ShortcutsContext";
 import { useAudioPeaks } from "@/hooks/useAudioPeaks";
 import { matchesShortcut } from "@/lib/shortcuts";
 import { cn } from "@/lib/utils";
-import { ASPECT_RATIOS, type AspectRatio, getAspectRatioLabel } from "@/utils/aspectRatioUtils";
+import { type AspectRatio } from "@/utils/aspectRatioUtils";
 import { BLUR_REGIONS_ENABLED } from "../featureFlags";
 import type { AnnotationRegion, SpeedRegion, TrimRegion, ZoomRegion } from "../types";
 import BackgroundWaveform from "./BackgroundWaveform";
@@ -958,15 +956,11 @@ export default function TimelineEditor({
 	onSpeedDelete,
 	selectedSpeedId,
 	onSelectSpeed,
-	aspectRatio,
-	onAspectRatioChange,
 	videoUrl,
 	showTrimWaveform = false,
 	onGenerateCaptions,
 	isGeneratingCaptions = false,
 	captionsLabel,
-	isFullscreen,
-	onToggleFullscreen,
 }: TimelineEditorProps) {
 	const t = useScopedT("timeline");
 	const [thirdRowMode, setThirdRowMode] = useState<ThirdRowMode>("speed");

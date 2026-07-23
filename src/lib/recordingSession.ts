@@ -5,7 +5,7 @@ export interface ProjectMedia {
 	keystrokeCaptureEnabled?: boolean;
 }
 
-export type CursorCaptureMode = "editable-overlay" | "system";
+export type CursorCaptureMode = "editable-overlay" | "system" | "none";
 
 export interface RecordingSession extends ProjectMedia {
 	createdAt: number;

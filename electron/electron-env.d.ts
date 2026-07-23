@@ -195,6 +195,7 @@ interface Window {
 		writeExportToPath: (
 			videoData: ArrayBuffer,
 			filePath: string,
+			thumbnailPath?: string,
 		) => Promise<{
 			success: boolean;
 			path?: string;

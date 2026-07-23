@@ -459,7 +459,9 @@ export function normalizeProjectEditor(editor: Partial<ProjectEditorState>): Pro
 		"top-left",
 		"top-right",
 	]);
-	const normalizedKeystrokePosition = validKeystrokePositions.has(editor.keystrokePosition as any)
+	const normalizedKeystrokePosition = validKeystrokePositions.has(
+		editor.keystrokePosition as string,
+	)
 		? editor.keystrokePosition
 		: undefined;
 
@@ -472,7 +474,7 @@ export function normalizeProjectEditor(editor: Partial<ProjectEditorState>): Pro
 		"neon",
 		"retro",
 	]);
-	const normalizedKeystrokeDesign = validKeystrokeDesigns.has(editor.keystrokeDesign as any)
+	const normalizedKeystrokeDesign = validKeystrokeDesigns.has(editor.keystrokeDesign as string)
 		? editor.keystrokeDesign
 		: undefined;
 

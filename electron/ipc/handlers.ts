@@ -2613,36 +2613,67 @@ export function registerIpcHandlers(
 		}
 	});
 
-	ipcMain.handle("write-export-to-path", async (_, videoData: ArrayBuffer, filePath: string) => {
-		try {
-			// Sanity-check the path: the renderer is trusted (contextIsolation on), but a
-			// stale-state bug shouldn't be able to clobber arbitrary files.
-			if (typeof filePath !== "string" || !path.isAbsolute(filePath)) {
-				return { success: false, message: "Invalid path" };
-			}
-			const lower = filePath.toLowerCase();
-			if (!lower.endsWith(".mp4") && !lower.endsWith(".gif")) {
-				return { success: false, message: "Invalid file type" };
-			}
+	ipcMain.handle(
+		"write-export-to-path",
+		async (_, videoData: ArrayBuffer, filePath: string, thumbnailPath?: string) => {
+			try {
+				// Sanity-check the path: the renderer is trusted (contextIsolation on), but a
+				// stale-state bug shouldn't be able to clobber arbitrary files.
+				if (typeof filePath !== "string" || !path.isAbsolute(filePath)) {
+					return { success: false, message: "Invalid path" };
+				}
+				const lower = filePath.toLowerCase();
+				if (!lower.endsWith(".mp4") && !lower.endsWith(".gif")) {
+					return { success: false, message: "Invalid file type" };
+				}
 
-			const normalizedPath = path.normalize(filePath);
-			await fs.mkdir(path.dirname(normalizedPath), { recursive: true });
-			await fs.writeFile(normalizedPath, Buffer.from(videoData));
+				const normalizedPath = path.normalize(filePath);
+				await fs.mkdir(path.dirname(normalizedPath), { recursive: true });
 
-			return {
-				success: true,
-				path: normalizedPath,
-				message: "Video exported successfully",
-			};
-		} catch (error) {
-			console.error("Failed to write exported video:", error);
-			return {
-				success: false,
-				message: "Failed to save exported video",
-				error: String(error),
-			};
-		}
-	});
+				let finalVideoData = videoData;
+				if (thumbnailPath && lower.endsWith(".mp4")) {
+					try {
+						const MP4Tag = require("mp4-tag");
+						const mp4tag = new MP4Tag(finalVideoData);
+						mp4tag.read();
+						if (mp4tag.error) {
+							console.warn("Failed to read MP4 tags:", mp4tag.error);
+						} else {
+							const thumbnailBuffer = await fs.readFile(thumbnailPath);
+							mp4tag.tags = mp4tag.tags || {};
+							mp4tag.tags.cover = thumbnailBuffer.buffer.slice(
+								thumbnailBuffer.byteOffset,
+								thumbnailBuffer.byteOffset + thumbnailBuffer.byteLength,
+							);
+							const savedBuffer = mp4tag.save();
+							if (savedBuffer && !mp4tag.error) {
+								finalVideoData = savedBuffer;
+							} else if (mp4tag.error) {
+								console.warn("Failed to save MP4 tags:", mp4tag.error);
+							}
+						}
+					} catch (e) {
+						console.warn("Error embedding cover image:", e);
+					}
+				}
+
+				await fs.writeFile(normalizedPath, Buffer.from(finalVideoData));
+
+				return {
+					success: true,
+					path: normalizedPath,
+					message: "Video exported successfully",
+				};
+			} catch (error) {
+				console.error("Failed to write exported video:", error);
+				return {
+					success: false,
+					message: "Failed to save exported video",
+					error: String(error),
+				};
+			}
+		},
+	);
 
 	ipcMain.handle("open-video-file-picker", async () => {
 		try {

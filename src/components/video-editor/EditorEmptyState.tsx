@@ -1,15 +1,5 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import {
-	AlertCircle,
-	Clock,
-	FileSymlink,
-	FileVideo,
-	FolderOpen,
-	Minus,
-	Trash2,
-	Upload,
-	X,
-} from "lucide-react";
+import { AlertCircle, FileVideo, FolderOpen, Minus, Trash2, Upload, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { useScopedT } from "@/contexts/I18nContext";

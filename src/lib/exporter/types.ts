@@ -49,6 +49,7 @@ export interface ExportSettings {
 	format: ExportFormat;
 	// MP4 settings
 	quality?: ExportQuality;
+	thumbnailPath?: string;
 	// GIF settings
 	gifConfig?: GifExportConfig;
 }

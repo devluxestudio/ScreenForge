@@ -81,6 +81,7 @@
 		"lucide-react": "^0.545.0",
 		"mediabunny": "^1.40.1",
 		"motion": "^12.38.0",
+		"mp4-tag": "^0.1.0-beta",
 		"mp4box": "^2.3.0",
 		"pixi-filters": "^6.1.5",
 		"pixi.js": "^8.18.1",

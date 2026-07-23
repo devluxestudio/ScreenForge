@@ -14,7 +14,7 @@ async function getWatermarkImage(url: string): Promise<HTMLImageElement> {
 
 	await new Promise<void>((resolve, reject) => {
 		img.onload = () => resolve();
-		img.onerror = (e) => reject(new Error("Failed to load watermark image"));
+		img.onerror = () => reject(new Error("Failed to load watermark image"));
 		img.src = url;
 	});
 

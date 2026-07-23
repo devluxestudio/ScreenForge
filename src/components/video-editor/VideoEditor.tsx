@@ -5,7 +5,6 @@ import {
 	FolderOpen,
 	HardDrive,
 	Layers,
-	Loader2,
 	Maximize2,
 	Minus,
 	MonitorPlay,
@@ -39,15 +38,6 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-	AspectRatioIcon,
-	FolderIcon,
-	FullscreenIcon,
-	SaveIcon,
-	ScreenShareIcon,
-	SettingsIcon,
-} from "@/components/ui/icons";
-
 import { Label } from "@/components/ui/label";
 import {
 	Select,
@@ -114,7 +104,6 @@ import {
 
 import { EditorEmptyState } from "./EditorEmptyState";
 import { ExportConfigDialog } from "./ExportConfigDialog";
-import { ExportDialog } from "./ExportDialog";
 import {
 	DEFAULT_CURSOR_SETTINGS,
 	DEFAULT_EXPORT_SETTINGS,
@@ -284,7 +273,6 @@ export default function VideoEditor() {
 	const [isExporting, setIsExporting] = useState(false);
 	const [exportProgress, setExportProgress] = useState<ExportProgress | null>(null);
 	const [exportError, setExportError] = useState<string | null>(null);
-	const [showExportDialog, setShowExportDialog] = useState(false);
 	const [showExportConfigDialog, setShowExportConfigDialog] = useState(false);
 	const [showNewRecordingDialog, setShowNewRecordingDialog] = useState(false);
 
@@ -303,6 +291,7 @@ export default function VideoEditor() {
 		arrayBuffer: ArrayBuffer;
 		fileName: string;
 		format: string;
+		thumbnailPath?: string;
 	} | null>(null);
 	const [isFullscreen, setIsFullscreen] = useState(false);
 	const [showCloseConfirmDialog, setShowCloseConfirmDialog] = useState(false);
@@ -788,7 +777,7 @@ export default function VideoEditor() {
 
 			if (!isAutoSave) {
 				toast.custom(
-					(t) => (
+					() => (
 						<div className="bg-[#121619] border border-white/[0.08] shadow-2xl shadow-black/50 rounded-lg py-2.5 px-3 flex items-center gap-3 w-[260px] pointer-events-auto">
 							<div className="w-6 h-6 rounded-full bg-[#34B27B]/15 flex items-center justify-center shrink-0 border border-[#34B27B]/20">
 								<Check className="w-3.5 h-3.5 text-[#34B27B]" />
@@ -1933,6 +1922,7 @@ export default function VideoEditor() {
 			const saveResult = await window.electronAPI.writeExportToPath(
 				unsavedExport.arrayBuffer,
 				pickResult.path,
+				unsavedExport.thumbnailPath,
 			);
 			if (saveResult.success && saveResult.path) {
 				setUnsavedExport(null);
@@ -1978,7 +1968,7 @@ export default function VideoEditor() {
 				getExportFolder(),
 			);
 			if (pickResult.canceled || !pickResult.success || !pickResult.path) {
-				setShowExportDialog(false);
+				// setShowExportDialog(false); - No longer needed
 				return;
 			}
 			const targetPath = pickResult.path;
@@ -2173,13 +2163,22 @@ export default function VideoEditor() {
 							}
 						}
 
-						const saveResult = await window.electronAPI.writeExportToPath(arrayBuffer, targetPath);
+						const saveResult = await window.electronAPI.writeExportToPath(
+							arrayBuffer,
+							targetPath,
+							settings.thumbnailPath,
+						);
 
 						if (saveResult.success && saveResult.path) {
 							setUnsavedExport(null);
 							handleExportSaved("Video", saveResult.path);
 						} else {
-							setUnsavedExport({ arrayBuffer, fileName: targetFileName, format: "mp4" });
+							setUnsavedExport({
+								arrayBuffer,
+								fileName: targetFileName,
+								format: "mp4",
+								thumbnailPath: settings.thumbnailPath,
+							});
 							const message = buildSaveDiagnosticMessage(
 								"Video",
 								saveResult.message || "Failed to save video",
@@ -2227,7 +2226,7 @@ export default function VideoEditor() {
 				exporterRef.current = null;
 				// Reset so the next export can reopen the dialog (second export
 				// otherwise wouldn't show the save dialog).
-				setShowExportDialog(false);
+				// setShowExportDialog(false); - No longer needed
 				setExportProgress(null);
 			}
 		},
@@ -2321,7 +2320,8 @@ export default function VideoEditor() {
 					: undefined,
 		};
 
-		setShowExportDialog(true);
+		// Export progress is now shown inside ExportConfigDialog
+		// setShowExportDialog(true);
 		setExportError(null);
 		setExportedFilePath(null);
 
@@ -2343,7 +2343,6 @@ export default function VideoEditor() {
 		if (exporterRef.current) {
 			exporterRef.current.cancel();
 			toast.info("Export canceled");
-			setShowExportDialog(false);
 			setIsExporting(false);
 			setExportProgress(null);
 			setExportError(null);
@@ -2353,7 +2352,7 @@ export default function VideoEditor() {
 
 	const handleStartExport = useCallback(
 		(settings: ExportSettings) => {
-			setShowExportDialog(true);
+			// setShowExportDialog(true);
 			setExportError(null);
 			setExportedFilePath(null);
 
@@ -2534,29 +2533,38 @@ export default function VideoEditor() {
 		<div className="flex flex-col h-screen text-slate-200 overflow-hidden selection:bg-[#34B27B]/30 bg-[#0A0D0F]">
 			<Dialog open={showNewRecordingDialog} onOpenChange={setShowNewRecordingDialog}>
 				<DialogContent
-					className="sm:max-w-[425px]"
+					className="bg-[#0A0D0F] border border-white/10 rounded-2xl max-w-[380px] p-5 overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200"
 					style={{ WebkitAppRegion: "no-drag" } as CSSProperties}
 				>
-					<DialogHeader>
-						<DialogTitle>{t("newRecording.title")}</DialogTitle>
-						<DialogDescription>{t("newRecording.description")}</DialogDescription>
-					</DialogHeader>
-					<DialogFooter>
+					<div className="flex items-center gap-2 mb-1">
+						<img src="screenforge.png" alt="ScreenForge" className="w-[18px] h-[18px] opacity-80" />
+					</div>
+
+					<div className="flex flex-col gap-1">
+						<DialogTitle className="text-xl font-bold text-white tracking-tight">
+							{t("newRecording.title")}
+						</DialogTitle>
+						<DialogDescription className="text-[13px] text-slate-400 leading-relaxed">
+							{t("newRecording.description")}
+						</DialogDescription>
+					</div>
+
+					<div className="flex items-center justify-end gap-2.5 mt-5">
 						<button
 							type="button"
 							onClick={() => setShowNewRecordingDialog(false)}
-							className="px-4 py-2 rounded-md bg-white/10 text-white hover:bg-white/20 text-sm font-medium transition-colors"
+							className="flex items-center justify-center h-9 px-5 rounded-xl bg-white/[0.04] border border-white/[0.05] text-slate-300 hover:text-white hover:bg-white/[0.08] font-medium text-[13px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-white/20"
 						>
 							{t("newRecording.cancel")}
 						</button>
 						<button
 							type="button"
 							onClick={handleNewRecordingConfirm}
-							className="px-4 py-2 rounded-md bg-[#34B27B] text-white hover:bg-[#34B27B]/90 text-sm font-medium transition-colors"
+							className="flex items-center justify-center h-9 px-5 rounded-xl bg-[#000AF2] text-white hover:bg-[#1a1fff] font-bold text-[13px] transition-all shadow-md shadow-[#000AF2]/20 hover:scale-[1.02] active:scale-[0.98] outline-none focus-visible:ring-2 focus-visible:ring-[#000AF2] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0D0F]"
 						>
 							{t("newRecording.confirm")}
 						</button>
-					</DialogFooter>
+					</div>
 				</DialogContent>
 			</Dialog>
 
@@ -3569,20 +3577,15 @@ export default function VideoEditor() {
 				cropRegion={cropRegion}
 				aspectRatio={aspectRatio}
 				onExport={handleStartExport}
-			/>
-
-			<ExportDialog
-				isOpen={showExportDialog}
-				onClose={() => setShowExportDialog(false)}
-				progress={exportProgress}
 				isExporting={isExporting}
+				progress={exportProgress}
 				error={exportError}
-				onCancel={handleCancelExport}
-				exportFormat={exportFormat}
+				onCancelExport={handleCancelExport}
 				exportedFilePath={exportedFilePath || undefined}
 				onShowInFolder={
 					exportedFilePath ? () => void handleShowExportedFile(exportedFilePath) : undefined
 				}
+				currentProjectPath={currentProjectPath}
 			/>
 
 			<UnsavedChangesDialog
