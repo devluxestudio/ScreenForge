@@ -3000,7 +3000,7 @@ export function registerIpcHandlers(
 			}
 			// Validate extension and readability
 			if (path.extname(filePath).toLowerCase() !== `.${PROJECT_FILE_EXTENSION}`) {
-				return { success: false, message: "Not an Openscreen project file" };
+				return { success: false, message: "Not a ScreenForge project file" };
 			}
 			const stats = await fs.stat(filePath).catch(() => null);
 			if (!stats?.isFile()) {
